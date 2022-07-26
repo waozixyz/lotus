@@ -7,16 +7,196 @@
 |90 @Mouse &vector $2 &x $2 &y $2 &state $1 &chord $1
 |a0 @File &vector $2 &success $2 &stat $2 &delete $1 &append $1 &name $2 &length $2 &read $2 &write $2
 
+%menu-def { #01 }
+%menu-sel { #07 }
+%menu-hov { #0d }
+%menu-hit { #000c }
+%menu-auto { #01 }
+%menu-label { DEO }
+%menu-l { #30 }
+%menu-r { #03 }
+
 |0000
+
+@cursor
+	&x $2 &y $2 &last $1
 
 |0100 ( -> )
 
 	( theme )
-	#086f .System/r DEO2
-	#059f .System/g DEO2
-	#0abf .System/b DEO2
-	( size )
-	#012e .Screen/width DEO2
-	#00f0 .Screen/height DEO2
+	#500f .System/r DEO2
+	#b70f .System/g DEO2
+	#a70f .System/b DEO2
+
+	;draw-menu JSR2
+	;draw-desktop JSR2
+	;untrap JSR2
 
 BRK
+
+@manifest
+
+	&name "Potato $1
+	&date "2022-07-03 $1
+	&menu
+		01 "File $1
+			01 'n :file-new "New $1
+		04 "Edit $1
+			01 'c :edit-copy "Copy $1
+			01 'v :edit-paste "Paste $1
+			01 'x :edit-cut "Cut $1
+			00 08 :edit-erase "Erase $1
+		01 "View $1
+			02 00 :toggle-zoom "Zoom $1
+		$1
+
+@untrap ( -- )
+
+	;on-mouse .Mouse/vector DEO2
+
+	( ;on-frame .Screen/vector DEO2
+	;on-button .Controller/vector DEO2
+	 )
+	( release mouse ) #00 .Mouse/state DEO
+
+JMP2r
+
+@trap ( -- )
+
+	( ;on-frame-trap .Screen/vector DEO2
+	;on-button-trap .Controller/vector DEO2
+	;on-mouse-trap .Mouse/vector DEO2 )
+	( clear cursor )
+	#40 ;draw-cursor JSR2
+	( release mouse ) #00 .Mouse/state DEO
+
+JMP2r
+
+@on-mouse ( -> )
+
+	.Mouse/y DEI2 #000c LTH2 ;trap-menu JCN2
+
+	#00 .Screen/auto DEO
+	( clear last cursor )
+	#40 ;draw-cursor JSR2
+	( record mouse positions )
+	.Mouse/x DEI2 DUP2 .cursor/x STZ2 .Screen/x DEO2
+	.Mouse/y DEI2 DUP2 .cursor/y STZ2 .Screen/y DEO2
+	( draw new cursor )
+	;cursor-icn .Screen/addr DEO2
+	#42 .Mouse/state DEI #00 NEQ ADD .Screen/sprite DEO
+
+BRK
+
+@file-new ( -- ) JMP2r
+@edit-copy ( -- ) JMP2r
+@edit-paste ( -- ) JMP2r
+@edit-cut ( -- ) JMP2r
+@edit-erase ( -- ) JMP2r
+@toggle-zoom ( -- ) JMP2r
+
+@redraw-all ( -- )
+
+@draw-desktop ( -- )
+
+	;draw-wallpaper JSR2
+
+	#0e ;draw-chr/color STA
+
+	#0010 .Screen/x DEO2
+	#0020 .Screen/y DEO2
+	;disk1-txt ;potato-chr ;draw-file JSR2
+
+	#07 ;draw-chr/color STA
+	#0010 .Screen/x DEO2
+	#0040 .Screen/y DEO2
+	;disk2-txt ;folder-chr ;draw-file JSR2
+
+JMP2r
+
+@disk1-txt "Potato $1
+@disk2-txt "Disk2 $1
+
+@draw-wallpaper ( -- )
+
+	#0010 .Screen/y DEO2
+	#71 .Screen/auto DEO
+	;patt-icn .Screen/addr DEO2
+	.Screen/height DEI2 #06 SFT2 NIP INC #00
+	&h
+		#0008 .Screen/x DEO2
+		.Screen/width DEI2 #03 SFT2 NIP #01 SUB #00
+		&w
+			#03 .Screen/sprite DEO
+			INC GTHk ,&w JCN
+		POP2
+		.Screen/y DEI2k #0040 ADD2 ROT DEO2
+		INC GTHk ,&h JCN
+	POP2
+	#15 .Screen/auto DEO
+
+JMP2r
+
+@draw-file ( name* icon* -- )
+
+	,draw-icon JSR
+	.Screen/x DEI2k #0020 ADD2 ROT DEO2
+	.Screen/y DEI2k #0010 SUB2 ROT DEO2
+	;draw-str JSR2 POP2
+
+JMP2r
+
+@draw-icon ( addr* -- )
+
+	.Screen/addr DEO2
+	#26 .Screen/auto DEO
+	#81 .Screen/sprite DEOk DEOk DEO
+
+JMP2r
+
+@draw-chr ( char -- )
+
+	#20 SUB #00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
+	[ LIT &color 03 ] .Screen/sprite DEO
+
+JMP2r
+
+@get-strw ( str* -- width* )
+
+	;slen JSR2 #30 SFT2
+
+JMP2r
+
+@patt-icn
+	8000 0000 0000 0000
+@cursor-icn
+	0040 6070 787c 7008
+
+@folder-chr
+0000 0000 0700 1f1f 0000 0007 081f 3f3f 
+0000 0000 fd03 ffff 0000 01ff 03ff ffff 
+0000 fe06 fafa fafa 00fe 01f9 fdfd fdfd 
+1f1f 1f1f 1f1f 1f1f 3f3f 3f3f 3f3f 3f3f 
+ffff ffff ffff ffff ffff e7c3 c3e7 ffff 
+fafa fafa fafa fafa fdfd fdfd fdfd fdfd 
+1f1f 0000 0000 0000 3f3f 1f00 0000 0000 
+ffff 0000 0000 0000 ffff ff00 0000 0000 
+faf8 0000 0000 0000 fdfe f800 0000 0000
+@potato-chr
+0000 0100 0706 0505 0001 0207 0f0f 0f0f
+0000 ff00 ff00 ffff 00ff 00ff ffff ffff
+0000 f818 e868 a8a8 00f8 04e4 f4f4 f4f4
+0505 0505 0505 0607 0f0f 0f0f 0f0f 0f0f
+ffff ffff ffff 00ff ffff 7eff e7ff ffff
+a8a8 a8a8 a8a8 68e8 f4f4 f4f4 f4f4 f4f4
+0007 0507 0100 0000 0f0f 0f0f 0701 0000
+00ff faff 0000 0000 ffff ffff ff00 0000
+08e8 20e0 8000 0000 f4f4 f8f0 e080 0000
+
+
+
+~src/manifest.tal
+~src/font.tal
+
+
+
