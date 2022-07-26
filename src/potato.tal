@@ -1,0 +1,22 @@
+( a potato. )
+
+|00 @System &vector $2 &pad $6 &r $2 &g $2 &b $2
+|10 @Console &vector $2 &read $1 &pad $5 &write $1
+|20 @Screen &vector $2 &width $2 &height $2 &auto $1 &pad $1 &x $2 &y $2 &addr $2 &pixel $1 &sprite $1
+|80 @Controller &vector $2 &button $1 &key $1
+|90 @Mouse &vector $2 &x $2 &y $2 &state $1 &chord $1
+|a0 @File &vector $2 &success $2 &stat $2 &delete $1 &append $1 &name $2 &length $2 &read $2 &write $2
+
+|0000
+
+|0100 ( -> )
+
+	( theme )
+	#086f .System/r DEO2
+	#059f .System/g DEO2
+	#0abf .System/b DEO2
+	( size )
+	#012e .Screen/width DEO2
+	#00f0 .Screen/height DEO2
+
+BRK
