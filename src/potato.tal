@@ -112,34 +112,64 @@ BRK
 	#0040 .Screen/y DEO2
 	;disk2-txt ;folder-chr ;draw-file JSR2
 
-	#0060 .Screen/x DEO2
-	#0040 .Screen/y DEO2
-	;draw-window JSR2
+	;test-win ;draw-window JSR2
 
 JMP2r
 
 @disk1-txt "Potato $1
 @disk2-txt "Disk2 $1
 
-@draw-window ( -- )
+@draw-window ( win* -- )
 
-	#0060 .Screen/x DEO2
-	#0040 .Screen/y DEO2
+	( set pos )
+	LDA2k DUP2 ,&x STR2 .Screen/x DEO2 INC2 INC2
+	LDA2k DUP2 ,&y STR2 .Screen/y DEO2 INC2 INC2
+	( set width )
+	LDAk STH INC2
+	LDAk STHr SWP
+		DUP2 ;draw-fill JSR2
+	[ LIT2 &x $2 ] #0008 SUB2 .Screen/x DEO2
+	[ LIT2 &y $2 ] #0008 SUB2 .Screen/y DEO2
+		;draw-frame JSR2
+	( name )
+	,&x LDR2 .Screen/x DEO2
+	,&y LDR2 .Screen/y DEO2
+	#01 .Screen/auto DEO
+	;state-icn .Screen/addr DEO2
+	#05 .Screen/sprite DEO
+	#0a ;draw-chr/color STA
+	INC2 LDA2 ;draw-str JSR2 POP2
 
-	#20 #10 ;draw-fill JSR2
+JMP2r
 
-	#0060 .Screen/x DEO2
-	#0040 .Screen/y DEO2
+@print-str ( str* -- )
 
-	#20 #10 ;draw-frame JSR2
+	&w
+		LDAk #18 DEO
+		INC2 LDAk ,&w JCN
+	POP2
 
 JMP2r
 
 @draw-fill ( w h -- )
 
-
+	#01 .Screen/auto DEO
+	;&fill .Screen/addr DEO2
+	SWP ,&x STR
+	#00
+	&h
+		[ LIT &x $1 ] #00
+		&w
+			#03 .Screen/sprite DEO
+			INC GTHk ,&w JCN
+		POP2
+		.Screen/y DEI2k #0008 ADD2 ROT DEO2
+		.Screen/x DEI2k #00 ,&x LDR #30 SFT2 SUB2 ROT DEO2
+		INC GTHk ,&h JCN
+	POP2
 
 JMP2r
+	&fill ffff ffff ffff ffff
 
 @draw-frame ( w h -- )
 
@@ -224,20 +254,21 @@ JMP2r
 
 JMP2r
 
-@window-test
+@test-win
 	( x ) 0040
 	( y ) 0040
-	( w ) 0010
-	( h ) 0007
+	( w ) 12
+	( h ) 09
 	:window-name
 
-@window-name "potato $1
+@window-name "Potato $1
 
 @patt-icn
 	8000 0000 0000 0000
 @cursor-icn
 	0040 6070 787c 7008
-
+@state-icn
+	0000 183c 3c18 0000
 @folder-chr
 	0000 0000 0700 1f1f 0000 0007 081f 3f3f
 	0000 0000 fd03 ffff 0000 01ff 03ff ffff
@@ -263,10 +294,5 @@ JMP2r
 	&h 0000 0000 0000 ffff 0000 0000 00ff ffff
 	&v 8080 8080 8080 8080 c0c0 c0c0 c0c0 c0c0
 
-
-
 ~src/manifest.tal
 ~src/font.tal
-
-
-
