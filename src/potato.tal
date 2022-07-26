@@ -123,30 +123,29 @@ JMP2r
 @draw-window ( win* -- )
 
 	DUP2
-	( set pos )
-	LDA2k DUP2 ,&x STR2 .Screen/x DEO2 INC2 INC2
-	LDA2k DUP2 ,&y STR2 .Screen/y DEO2 INC2 INC2
-	( set width )
-	LDAk STH INC2
-	LDAk STHkr SWP
-		DUP2 ;draw-fill JSR2
-	[ LIT2 &x $2 ] #0008 SUB2 .Screen/x DEO2
-	[ LIT2 &y $2 ] #0008 SUB2 .Screen/y DEO2
-		;draw-frame JSR2
-	( name )
-	,&x LDR2 .Screen/x DEO2
-	,&y LDR2 .Screen/y DEO2
-	#01 .Screen/auto DEO
-	;state-icn .Screen/addr DEO2
-	#05 .Screen/sprite DEO
+	LDA2k .Screen/x DEO2 INC2 INC2
+	LDA2k .Screen/y DEO2 INC2 INC2
+	LDA2k ;draw-window-decor JSR2 INC2 INC2
+	( draw name )
+	#05 ;draw-chr/color STA
+	LDA2k STH2k LDA2 ;draw-str JSR2 POP2 INC2 INC2
+	( file name )
 	#0a ;draw-chr/color STA
-	INC2 LDA2k ;draw-str JSR2 POP2 INC2 INC2
-	( underline )
-	,&x LDR2 .Screen/x DEO2
-	,&y LDR2 #0008 ADD2 .Screen/y DEO2
-	STHr ;draw-dotted JSR2
-	( body )
-	LDA2 JSR2
+	LDA2 ;draw-str JSR2 POP2
+	STH2r INC2 INC2 JMP2
+
+JMP2r
+
+@draw-window-decor ( w h -- )
+
+	STH2
+	.Screen/x DEI2 .Screen/y DEI2
+	STH2kr ;draw-fill JSR2
+	OVR2 OVR2 .Screen/y DEO2 .Screen/x DEO2
+	STH2kr ;draw-frame JSR2
+	OVR2 OVR2 #0008 ADD2 .Screen/y DEO2 .Screen/x DEO2
+	STH2r POP ;draw-dotted JSR2
+	.Screen/y DEO2 .Screen/x DEO2
 
 JMP2r
 
@@ -190,16 +189,16 @@ JMP2r
 @draw-frame ( w h -- )
 
 	,&h STR ,&w STR
-	.Screen/x DEI2
-	.Screen/y DEI2 #0008 ADD2
+	.Screen/x DEI2  DUP2 #0008 SUB2 .Screen/x DEO2
+	.Screen/y DEI2  #0008 SUB2 DUP2 .Screen/y DEO2
 
 	( ul ) #85 ;win-chr/e #05 ,&single JSR
 	( uu ) [ LIT &w $1 ] #85 ;win-chr/h #01 ,&repeat JSR
 	( ur ) #95 ;win-chr/e #06 ,&single JSR
 	( rr ) [ LIT &h $1 ] #85 ;win-chr/v #02 ,&repeat JSR
 
-	.Screen/y DEO2
-	.Screen/x DEO2
+	#0008 ADD2 .Screen/y DEO2
+	#0008 SUB2 .Screen/x DEO2
 
 	( ll ) ,&h LDR #95 ;win-chr/v #02 ,&repeat JSR
 	( dl ) #a5 ;win-chr/e #01 ,&single JSR
@@ -270,13 +269,21 @@ JMP2r
 
 JMP2r
 
-@app-view ( win* -- )
+@app-view
+	&name :view-name
+	&draw
+( win* -- )
 
 	POP2
 
 JMP2r
 
-@app-pict ( win* -- )
+@view-name "<view> $1
+
+@app-pict
+	&name :pict-name
+	&draw
+( win* -- )
 
 	( set pos )
 	LDA2k #0008 ADD2 .Screen/x DEO2
@@ -287,6 +294,8 @@ JMP2r
 
 JMP2r
 	&target "etc/akane20x10.icn $1
+
+@pict-name "<pict> $1
 
 @read-size ( 00x00* -- w h )
 
@@ -347,19 +356,19 @@ JMP2r
 	( y ) 0049
 	( w ) 12
 	( h ) 09
-	:window-name
 	:app-view
+	:window-name
 
 @test-win2
 	( x ) 0062
 	( y ) 0064
 	( w ) 22
 	( h ) 19
-	:window-name2
 	:app-pict
+	:window-name2
 
-@window-name "<FILE>Disk1 $1
-@window-name2 "<PICT>akane20x10.icn $1
+@window-name "Disk1 $1
+@window-name2 "akane20x10.icn $1
 
 @patt-icn
 	8000 0000 0000 0000
