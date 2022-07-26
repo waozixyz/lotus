@@ -113,6 +113,7 @@ BRK
 	;disk2-txt ;folder-chr ;draw-file JSR2
 
 	;test-win ;draw-window JSR2
+	;test-win2 ;draw-window JSR2
 
 JMP2r
 
@@ -121,6 +122,7 @@ JMP2r
 
 @draw-window ( win* -- )
 
+	DUP2
 	( set pos )
 	LDA2k DUP2 ,&x STR2 .Screen/x DEO2 INC2 INC2
 	LDA2k DUP2 ,&y STR2 .Screen/y DEO2 INC2 INC2
@@ -138,11 +140,13 @@ JMP2r
 	;state-icn .Screen/addr DEO2
 	#05 .Screen/sprite DEO
 	#0a ;draw-chr/color STA
-	INC2 LDA2 ;draw-str JSR2 POP2
+	INC2 LDA2k ;draw-str JSR2 POP2 INC2 INC2
 	( underline )
 	,&x LDR2 .Screen/x DEO2
 	,&y LDR2 #0008 ADD2 .Screen/y DEO2
 	STHr ;draw-dotted JSR2
+	( body )
+	LDA2 JSR2
 
 JMP2r
 
@@ -266,14 +270,96 @@ JMP2r
 
 JMP2r
 
+@app-view ( win* -- )
+
+	POP2
+
+JMP2r
+
+@app-pict ( win* -- )
+
+	( set pos )
+	LDA2k #0008 ADD2 .Screen/x DEO2
+	INC2 INC2 LDA2 #0010 ADD2 .Screen/y DEO2
+
+	;&target DUP2 ;scap JSR2 #0009 SUB2 ;read-size JSR2 ;draw-image JSR2
+
+
+JMP2r
+	&target "etc/akane20x10.icn $1
+
+@read-size ( 00x00* -- w h )
+
+	DUP2 ;sbyte JSR2 #00 EQU ,&cancel JCN
+	INC2k INC2 LDA LIT 'x NEQ ,&cancel JCN
+	DUP2 #0003 ADD2 ;sbyte JSR2 #00 EQU ,&cancel JCN
+	( y ) DUP2 #0003 ADD2 ;sbyte JSR2 STH
+	( x ) ;sbyte JSR2 STHr
+
+JMP2r
+	&cancel POP2 #0000 JMP2r
+
+@draw-image ( name* w h -- )
+
+	POP ,&w STR
+	.Screen/x DEI2 ,&x STR2
+	.File/name DEO2
+	[ LIT2 &length 0008 ] .File/length DEO2
+	;&buf .Screen/addr DEO2
+	#01 .Screen/auto DEO
+	#00
+	&stream
+		;&buf .File/read DEO2
+		[ LIT &color 0e ] .Screen/sprite DEO
+		INC DUP [ LIT &w $1 ] LTH ,&no-line JCN
+			[ LIT2 &x $2 ] .Screen/x DEO2
+			.Screen/y DEI2k #0008 ADD2 ROT DEO2
+			POP #00
+			&no-line
+		.File/success DEI2 ORA ,&stream JCN
+	POP
+
+JMP2r
+	&buf $10
+
+@sbyte ( str* -- byte )
+
+	LDAk ,chex JSR STH
+	INC2 LDA ,chex JSR
+	STHr #40 SFT ADD
+
+JMP2r
+
+@chex ( char -- hex )
+
+	DUP #2f GTH OVR #3a LTH AND ,&number JCN
+	DUP #60 GTH OVR #67 LTH AND ,&lc JCN
+	DUP #40 GTH OVR #47 LTH AND ,&uc JCN
+		POP #00 JMP2r
+	&number #30 SUB JMP2r
+	&uc #37 SUB JMP2r
+	&lc #57 SUB
+
+JMP2r
+
 @test-win
-	( x ) 0040
-	( y ) 0040
+	( x ) 0043
+	( y ) 0049
 	( w ) 12
 	( h ) 09
 	:window-name
+	:app-view
 
-@window-name "Potato $1
+@test-win2
+	( x ) 0062
+	( y ) 0064
+	( w ) 22
+	( h ) 19
+	:window-name2
+	:app-pict
+
+@window-name "<FILE>Disk1 $1
+@window-name2 "<PICT>akane20x10.icn $1
 
 @patt-icn
 	8000 0000 0000 0000
