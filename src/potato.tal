@@ -126,7 +126,7 @@ JMP2r
 	LDA2k DUP2 ,&y STR2 .Screen/y DEO2 INC2 INC2
 	( set width )
 	LDAk STH INC2
-	LDAk STHr SWP
+	LDAk STHkr SWP
 		DUP2 ;draw-fill JSR2
 	[ LIT2 &x $2 ] #0008 SUB2 .Screen/x DEO2
 	[ LIT2 &y $2 ] #0008 SUB2 .Screen/y DEO2
@@ -139,6 +139,18 @@ JMP2r
 	#05 .Screen/sprite DEO
 	#0a ;draw-chr/color STA
 	INC2 LDA2 ;draw-str JSR2 POP2
+	( underline )
+	,&x LDR2 .Screen/x DEO2
+	,&y LDR2 #0008 ADD2 .Screen/y DEO2
+	STHr ;draw-dotted JSR2
+
+JMP2r
+
+@draw-dotted ( w -- )
+
+	#01 .Screen/auto DEO
+	;line-icn .Screen/addr DEO2
+	#00 &l #0a .Screen/sprite DEO INC GTHk ,&l JCN POP2
 
 JMP2r
 
@@ -265,6 +277,8 @@ JMP2r
 
 @patt-icn
 	8000 0000 0000 0000
+@line-icn
+	00aa 0000 0000 0000
 @cursor-icn
 	0040 6070 787c 7008
 @state-icn
