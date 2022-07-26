@@ -7,9 +7,9 @@
 |90 @Mouse &vector $2 &x $2 &y $2 &state $1 &chord $1
 |a0 @File &vector $2 &success $2 &stat $2 &delete $1 &append $1 &name $2 &length $2 &read $2 &write $2
 
-%menu-def { #01 }
-%menu-sel { #07 }
-%menu-hov { #0d }
+%menu-def { #0a }
+%menu-sel { #0b }
+%menu-hov { #03 }
 %menu-hit { #000c }
 %menu-auto { #01 }
 %menu-label { DEO }
@@ -28,6 +28,7 @@
 	#b70f .System/g DEO2
 	#a70f .System/b DEO2
 
+	;draw-menu-bg JSR2
 	;draw-menu JSR2
 	;draw-desktop JSR2
 	;untrap JSR2
@@ -97,6 +98,8 @@ BRK
 
 @redraw-all ( -- )
 
+	;draw-menu-bg JSR2
+
 @draw-desktop ( -- )
 
 	;draw-wallpaper JSR2
@@ -114,6 +117,20 @@ BRK
 
 	;test-win ;draw-window JSR2
 	;test-win2 ;draw-window JSR2
+
+JMP2r
+
+@draw-menu-bg ( -- )
+
+	#0000 DUP2 .Screen/x DEO2 .Screen/y DEO2
+	;menu-chr .Screen/addr DEO2
+	#15 .Screen/auto DEO
+	.Screen/width DEI2 #03 SFT2 NIP #00
+	&l
+		;menu-chr .Screen/addr DEO2
+		#81 .Screen/sprite DEO
+		INC GTHk ,&l JCN
+	POP2
 
 JMP2r
 
@@ -402,6 +419,9 @@ JMP2r
 	&e 0000 0000 0000 0001 0000 0000 0000 0103
 	&h 0000 0000 0000 ffff 0000 0000 00ff ffff
 	&v 8080 8080 8080 8080 c0c0 c0c0 c0c0 c0c0
+@menu-chr
+	ffff ffff ffff ffff ffff ffff ffff ffff
+	ffff ffff ffff ff00 ffff ffff ffff ffff
 
 ~src/manifest.tal
 ~src/font.tal
