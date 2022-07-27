@@ -239,6 +239,15 @@ JMP2r
 JMP2r
 	&cancel POP2 #0000 JMP2r
 
+@draw-drag ( win* color -- )
+
+	;draw-frame/color STA
+	LDA2k .Screen/x DEO2
+	INC2 INC2 LDA2k .Screen/y DEO2
+	INC2 INC2 LDA2 ;frame2-chr ;draw-frame JSR2
+
+JMP2r
+
 @draw-image ( name* w h -- )
 
 	POP ,&w STR

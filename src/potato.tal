@@ -38,10 +38,10 @@
 	#b70f .System/g DEO2
 	#a70f .System/b DEO2
 
-	;window-name ;app-view #1812 #0023 #0073 ;add-win JSR2
-	;window-name2 ;app-pict #2219 #0064 #0032 ;add-win JSR2
-
+		;window-name ;app-view #1812 #0023 #0073 ;add-win JSR2
 	(
+
+	;window-name2 ;app-pict #2219 #0064 #0032 ;add-win JSR2
 	;window-name3 ;app-term #1909 #0080 #0090 ;add-win JSR2
 	)
 
@@ -53,19 +53,6 @@
 	;untrap JSR2
 
 BRK
-
-@manifest
-
-	01 "Potato $1
-		01 'n :file-new "New $1
-	04 "Edit $1
-		01 'c :edit-copy "Copy $1
-		01 'v :edit-paste "Paste $1
-		01 'x :edit-cut "Cut $1
-		00 08 :edit-erase "Erase $1
-	01 "View $1
-		02 00 :toggle-zoom "Zoom $1
-	$1
 
 @untrap ( -- )
 
@@ -121,21 +108,44 @@ BRK
 
 	.drag LDZ ;get-win JSR2 STH2k
 
+	( clear )
 	DUP2 #40 ;draw-drag JSR2
 
-	.Mouse/x DEI2 [ LIT2 &x $2 ] SUB2 STH2kr LDA2 ADD2 STH2kr STA2
+	( move window )
+	.Mouse/x DEI2 [ LIT2 &x $2 ] SUB2 STH2kr LDA2 ADD2
+		;clamp-x JSR2 STH2kr STA2
 	INC2r INC2r
-	.Mouse/y DEI2 [ LIT2 &y $2 ] SUB2 STH2kr LDA2 ADD2 STH2r STA2
+	.Mouse/y DEI2 [ LIT2 &y $2 ] SUB2 STH2kr LDA2 ADD2
+		;clamp-y JSR2 STH2r STA2
 
+	( update )
 	.Mouse/x DEI2 .Mouse/y DEI2
 		;on-drag/y STA2 ;on-drag/x STA2
 
+	( draw )
 	#cf ;draw-drag JSR2
 
 BRK
 
+@clamp-x ( x* -- x* )
+
+	DUP2 #000a STH2k SUB2 #8000 GTH2 ,&gth JCN
+	POP2r
+
+JMP2r
+	&gth POP2 STH2r JMP2r
+
+@clamp-y ( x* -- x* )
+
+	DUP2 #001b STH2k SUB2 #8000 GTH2 ,&gth JCN
+	POP2r
+
+JMP2r
+	&gth POP2 STH2r JMP2r
+
 @on-drag-end ( -> )
 
+	( clear )
 	.drag LDZ ;get-win JSR2 #40 ;draw-drag JSR2
 	#ff .drag STZ
 	;draw-desktop JSR2
@@ -152,22 +162,6 @@ BRK
 
 BRK
 	&no-win POP2 POP2 BRK
-
-@draw-drag ( win* color -- )
-
-	;draw-frame/color STA
-	LDA2k .Screen/x DEO2
-	INC2 INC2 LDA2k .Screen/y DEO2
-	INC2 INC2 LDA2 ;frame2-chr ;draw-frame JSR2
-
-JMP2r
-
-@file-new ( -- ) JMP2r
-@edit-copy ( -- ) JMP2r
-@edit-paste ( -- ) JMP2r
-@edit-cut ( -- ) JMP2r
-@edit-erase ( -- ) JMP2r
-@toggle-zoom ( -- ) JMP2r
 
 @sbyte ( str* -- byte )
 
@@ -230,7 +224,7 @@ JMP2r
 
 @sel-win ( id -- )
 
-	DUP #ff EQU ,&unchanged JCN
+	DUP #ff EQU ;sel-desktop JCN2
 	DUP .length LDZ GTH ,&unchanged JCN
 
 	;get-win JSR2 #000a SWP2 .length LDZ #01 SUB ;get-win JSR2 ;mswp JSR2
@@ -246,6 +240,14 @@ JMP2r
 
 JMP2r
 	&unchanged POP JMP2r
+
+@sel-desktop ( ff -- )
+
+	;manifest ;draw-menu/manifest STA2
+	;draw-menu-bg JSR2
+	;draw-menu JSR2
+
+JMP2r
 
 @mswp ( len* a* b* -- )
 
@@ -271,12 +273,13 @@ JMP2r
 
 JMP2r
 
-@window-name "FloppyA $1
+@window-name "Disk 20 "A $1
 @window-name2 "akane20x10.icn $1
 @window-name3 "session0000 $1
 
 ~src/draw.tal
 ~src/assets.tal
+~src/app-desktop.tal
 ~src/app-view.tal
 ~src/app-term.tal
 ~src/app-pict.tal

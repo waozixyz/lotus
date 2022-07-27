@@ -26,7 +26,7 @@ JMP2r
 
 @view-manifest
 
-	01 "Potato $1
+	01 "Finder $1
 		01 'n :file-new "Close $1
 	01 "Settings $1
 		02 00 :toggle-zoom "Zoom $1

@@ -1,0 +1,34 @@
+@app-desktop
+	:manifest
+	:&on-draw
+	:&on-mouse
+	:&on-button
+
+&on-button ( win* -> ) POP2 BRK
+&on-mouse ( win* -> ) POP2 BRK
+
+&on-draw ( win* -- )
+
+	POP2
+
+JMP2r
+
+@manifest
+
+	01 "Potato $1
+		01 'n :file-new "New $1
+	04 "Edit $1
+		01 'c :edit-copy "Copy $1
+		01 'v :edit-paste "Paste $1
+		01 'x :edit-cut "Cut $1
+		00 08 :edit-erase "Erase $1
+	01 "View $1
+		02 00 :toggle-zoom "Zoom $1
+	$1
+
+@file-new ( -- ) JMP2r
+@edit-copy ( -- ) JMP2r
+@edit-paste ( -- ) JMP2r
+@edit-cut ( -- ) JMP2r
+@edit-erase ( -- ) JMP2r
+@toggle-zoom ( -- ) JMP2r
