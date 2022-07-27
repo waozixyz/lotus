@@ -116,7 +116,10 @@ BRK
 
 	.Mouse/state DEI #00 EQU ;on-drag-end JCN2
 
-	.drag LDZ ;get-win JSR2 STH2
+	.drag LDZ ;get-win JSR2 STH2k
+
+	DUP2 #40 ;draw-drag JSR2
+
 	.Mouse/x DEI2 [ LIT2 &x $2 ] SUB2 STH2kr LDA2 ADD2 STH2kr STA2
 	INC2r INC2r
 	.Mouse/y DEI2 [ LIT2 &y $2 ] SUB2 STH2kr LDA2 ADD2 STH2r STA2
@@ -124,13 +127,15 @@ BRK
 	.Mouse/x DEI2 .Mouse/y DEI2
 		;on-drag/y STA2 ;on-drag/x STA2
 
-	;draw-desktop JSR2
+	#cf ;draw-drag JSR2
 
 BRK
 
 @on-drag-end ( -> )
 
+	.drag LDZ ;get-win JSR2 #40 ;draw-drag JSR2
 	#ff .drag STZ
+	;draw-desktop JSR2
 
 BRK
 
@@ -144,6 +149,15 @@ BRK
 
 BRK
 	&no-win POP2 POP2 BRK
+
+@draw-drag ( win* color -- )
+
+	;draw-frame/color STA
+	LDA2k .Screen/x DEO2
+	INC2 INC2 LDA2k .Screen/y DEO2
+	INC2 INC2 LDA2 ;frame2-chr ;draw-frame JSR2
+
+JMP2r
 
 @file-new ( -- ) JMP2r
 @edit-copy ( -- ) JMP2r

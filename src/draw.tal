@@ -62,6 +62,7 @@ JMP2r
 	.Screen/x DEI2 .Screen/y DEI2
 	STH2kr ;draw-fill JSR2
 	OVR2 OVR2 .Screen/y DEO2 .Screen/x DEO2
+	#85 ;draw-frame/color STA
 	STH2kr ;frame1-chr ;draw-frame JSR2
 	OVR2 OVR2 #0008 ADD2 .Screen/y DEO2 .Screen/x DEO2
 	STH2r POP ;draw-dotted JSR2
