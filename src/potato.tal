@@ -24,8 +24,10 @@
 
 @cursor
 	&x $2 &y $2
+@active $1
 @length $1
 @windows
+	( x* y* size* app* name* )
 
 |0100 ( -> )
 
@@ -43,6 +45,8 @@
 	;draw-clock JSR2
 	;draw-desktop JSR2
 	;untrap JSR2
+
+	#01 ;sel-window JSR2
 
 BRK
 
@@ -133,6 +137,15 @@ JMP2r
 	STHkr STZ2 INCr INCr
 	STHr STZ2
 	.length LDZk INC SWP STZ
+
+JMP2r
+
+@sel-window ( id -- )
+
+	DUP ;print/byte JSR2 #0a18 DEO
+
+	( get app ) #0a MUL .windows ADD #06 ADD #00 SWP LDA2
+	( get app/name ) LDA2 ;print-str JSR2 #0a18 DEO
 
 JMP2r
 

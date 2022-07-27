@@ -100,34 +100,32 @@ JMP2r
 @draw-frame ( w h -- )
 
 	,&h STR ,&w STR
-	.Screen/x DEI2  DUP2 #0008 SUB2 .Screen/x DEO2
-	.Screen/y DEI2  #0008 SUB2 DUP2 .Screen/y DEO2
-
-	( ul ) #85 ;win-chr/e #05 ,&single JSR
-	( uu ) [ LIT &w $1 ] #85 ;win-chr/h #01 ,&repeat JSR
-	( ur ) #95 ;win-chr/e #06 ,&single JSR
-	( rr ) [ LIT &h $1 ] #85 ;win-chr/v #02 ,&repeat JSR
-
+	.Screen/x DEI2 DUP2 #0008 SUB2 .Screen/x DEO2
+	.Screen/y DEI2 #0008 SUB2 DUP2 .Screen/y DEO2
+	( ul ) #00 ;win-chr/e #05 ,&single JSR
+	( uu ) [ LIT &w $1 ] #00 ;win-chr/h #01 ,&repeat JSR
+	( ur ) #10 ;win-chr/e #06 ,&single JSR
+	( rr ) [ LIT &h $1 ] #00 ;win-chr/v #02 ,&repeat JSR
 	#0008 ADD2 .Screen/y DEO2
 	#0008 SUB2 .Screen/x DEO2
-
-	( ll ) ,&h LDR #95 ;win-chr/v #02 ,&repeat JSR
-	( dl ) #a5 ;win-chr/e #01 ,&single JSR
-	( bb ) ,&w LDR #a5 ;win-chr/h #01 ,&repeat JSR
-	( dr ) #b5 ;win-chr/e #00 ,&single JSR
+	( ll ) ,&h LDR #10 ;win-chr/v #02 ,&repeat JSR
+	( dl ) #20 ;win-chr/e #01 ,&single JSR
+	( bb ) ,&w LDR #20 ;win-chr/h #01 ,&repeat JSR
+	( dr ) #30 ;win-chr/e #00 ,&single JSR
 
 JMP2r
-	&single ( color addr* auto -- )
-		.Screen/auto DEO
-		.Screen/addr DEO2
-		.Screen/sprite DEO
-	JMP2r
 	&repeat ( times color addr* auto -- )
 		.Screen/auto DEO
 		.Screen/addr DEO2
 		STH
-		#00 &l STHkr .Screen/sprite DEO INC GTHk ,&l JCN POP2
+		#00 &l STHkr ,&paint JSR INC GTHk ,&l JCN POP2
 		POPr
+	JMP2r
+	&single ( color addr* auto -- )
+		.Screen/auto DEO
+		.Screen/addr DEO2
+	&paint ( mask -- )
+		[ LIT &color 85 ] SWP ORA .Screen/sprite DEO
 	JMP2r
 
 @draw-wallpaper ( -- )
