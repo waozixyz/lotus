@@ -24,6 +24,8 @@
 
 @cursor
 	&x $2 &y $2
+@drag
+	&id $1
 @length $1
 @windows ( x* y* size* app* name* )
 
@@ -38,6 +40,7 @@
 	;window-name2 ;app-pict #2219 #0064 #0032 ;add-win JSR2
 	;window-name3 ;app-term #1909 #0080 #0090 ;add-win JSR2
 
+	#ff .drag STZ
 	#02 ;sel-win JSR2
 
 	;draw-menu-bg JSR2
@@ -99,10 +102,37 @@ JMP2r
 	;cursor-icn .Screen/addr DEO2
 	#42 .Mouse/state DEI #00 NEQ SUB .Screen/sprite DEO
 
+	.drag LDZ #ff NEQ ;on-drag JCN2
+	.Mouse/state DEI .Controller/button DEI #0102 EQU2 ;on-drag-start JCN2
+
 	.Mouse/state DEI #00 EQU ,&no-touch JCN
 		.Mouse/x DEI2 .Mouse/y DEI2 ;pick-win JSR2 ;sel-win JSR2
 		#00 .Mouse/state DEO
 		&no-touch
+
+BRK
+
+@on-drag ( -> )
+
+	.Mouse/state DEI #00 EQU ;on-drag-end JCN2
+	#0b ;print/byte JSR2 #0a18 DEO
+
+BRK
+
+@on-drag-end ( -> )
+
+	#0c ;print/byte JSR2 #0a18 DEO
+	#ff .drag STZ
+
+BRK
+
+@on-drag-start ( -> )
+
+	#0a ;print/byte JSR2 #0a18 DEO
+
+	.Mouse/x DEI2 .Mouse/y DEI2 ;pick-win JSR2
+		DUP ;print/byte JSR2 #0a18 DEO
+		.drag STZ
 
 BRK
 
