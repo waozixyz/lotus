@@ -6,6 +6,7 @@
 
 	;draw-wallpaper JSR2
 
+	( placeholders desktop )
 	#0e ;draw-chr/color STA
 	#0010 .Screen/x DEO2
 	#0020 .Screen/y DEO2
@@ -51,7 +52,11 @@ JMP2r
 	LDA2k ;draw-win-decor JSR2 INC2 INC2
 	( draw name )
 	#05 ;draw-chr/color STA
-	LDA2k STH2k LDA2 ;draw-str JSR2 POP2 INC2 INC2
+	#20 ;draw-chr JSR2
+	( app/manifest ) LDA2k STH2k INC2 INC2
+	( app/manifest/name ) LDA2 INC2 ;draw-str JSR2 POP2
+	#20 ;draw-chr JSR2
+	INC2 INC2
 	( file name )
 	#0a ;draw-chr/color STA
 	LDA2 ;draw-str JSR2 POP2
