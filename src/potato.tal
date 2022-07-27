@@ -54,9 +54,6 @@
 
 BRK
 
-@foo "foo
-@bar "bar $1
-
 @manifest
 
 	01 "Potato $1
