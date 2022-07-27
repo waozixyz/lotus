@@ -23,7 +23,7 @@
 |0000
 
 @cursor
-	&x $2 &y $2 &last $1
+	&x $2 &y $2
 
 |0100 ( -> )
 
@@ -180,15 +180,6 @@ JMP2r
 
 JMP2r
 
-@print-str ( str* -- )
-
-	&w
-		LDAk #18 DEO
-		INC2 LDAk ,&w JCN
-	POP2
-
-JMP2r
-
 @draw-fill ( w h -- )
 
 	#01 .Screen/auto DEO
@@ -290,11 +281,8 @@ JMP2r
 	.DateTime/minute DEI ,&d JSR
 
 JMP2r
-	&d
-		DUP #0a DIV ,&c JSR #0a MOD
-	&c
-		#30 ADD ;draw-chr JSR2 JMP2r
-	&test "16:51 $1
+	&d DUP #0a DIV ,&c JSR #0a MOD
+	&c #30 ADD ;draw-chr JSR2 JMP2r
 
 @draw-chr ( char -- )
 
