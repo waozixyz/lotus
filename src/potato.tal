@@ -115,24 +115,32 @@ BRK
 @on-drag ( -> )
 
 	.Mouse/state DEI #00 EQU ;on-drag-end JCN2
-	#0b ;print/byte JSR2 #0a18 DEO
+
+	.drag LDZ ;get-win JSR2 STH2
+	.Mouse/x DEI2 [ LIT2 &x $2 ] SUB2 STH2kr LDA2 ADD2 STH2kr STA2
+	INC2r INC2r
+	.Mouse/y DEI2 [ LIT2 &y $2 ] SUB2 STH2kr LDA2 ADD2 STH2r STA2
+
+	.Mouse/x DEI2 .Mouse/y DEI2
+		;on-drag/y STA2 ;on-drag/x STA2
+
+	;draw-desktop JSR2
 
 BRK
 
 @on-drag-end ( -> )
 
-	#0c ;print/byte JSR2 #0a18 DEO
 	#ff .drag STZ
 
 BRK
 
 @on-drag-start ( -> )
 
-	#0a ;print/byte JSR2 #0a18 DEO
-
-	.Mouse/x DEI2 .Mouse/y DEI2 ;pick-win JSR2
-		DUP ;print/byte JSR2 #0a18 DEO
-		.drag STZ
+	.Mouse/x DEI2 .Mouse/y DEI2
+		OVR2 OVR2 ;pick-win JSR2
+		;sel-win JSR2
+		.length LDZ #01 SUB .drag STZ
+		;on-drag/y STA2 ;on-drag/x STA2
 
 BRK
 
@@ -208,7 +216,6 @@ JMP2r
 
 	;get-win JSR2 #000a SWP2 .length LDZ #01 SUB ;get-win JSR2 ;mswp JSR2
 
-	( .length LDZ #01 SUB ;get-win JSR2 ;draw-win JSR2 )
 	;draw-desktop JSR2
 
 	( draw menu )
