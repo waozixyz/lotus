@@ -1,5 +1,4 @@
 @app-pict
-	:&name
 	:pict-manifest
 	:&on-draw
 	:&on-mouse
@@ -19,8 +18,6 @@
 JMP2r
 
 	&target "etc/akane20x10.icn $1
-
-&name "<pict> $1
 
 @pict-manifest
 

@@ -1,5 +1,4 @@
 @app-term
-	:&name
 	:term-manifest
 	:&on-draw
 	:&on-mouse
@@ -17,8 +16,6 @@
 JMP2r
 	&path ". $1
 	&prompt "~> 20 "LIST $1
-
-&name "<term> $1
 
 @term-manifest
 

@@ -53,14 +53,14 @@ JMP2r
 	( draw name )
 	#05 ;draw-chr/color STA
 	#20 ;draw-chr JSR2
-	( app/manifest ) LDA2k STH2k INC2 INC2
+	( app/manifest ) LDA2k STH2k
 	( app/manifest/name ) LDA2 INC2 ;draw-str JSR2 POP2
 	#20 ;draw-chr JSR2
 	INC2 INC2
 	( file name )
 	#0a ;draw-chr/color STA
 	LDA2 ;draw-str JSR2 POP2
-	STH2r #0004 ADD2 LDA2 JMP2
+	STH2r #0002 ADD2 LDA2 JMP2
 
 JMP2r
 

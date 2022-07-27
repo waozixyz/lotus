@@ -1,5 +1,4 @@
 @app-view
-	:&name
 	:view-manifest
 	:&on-draw
 	:&on-mouse
@@ -24,8 +23,6 @@
 
 JMP2r
 	&path ". $1
-
-&name "<view> $1
 
 @view-manifest
 
