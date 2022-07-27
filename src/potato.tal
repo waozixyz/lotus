@@ -39,11 +39,13 @@
 	#a70f .System/b DEO2
 
 	;window-name ;app-view #1812 #0023 #0073 ;add-win JSR2
+
+	(
 	;window-name2 ;app-pict #2219 #0064 #0032 ;add-win JSR2
 	;window-name3 ;app-term #1909 #0080 #0090 ;add-win JSR2
+	)
 
 	#ff .drag STZ
-	#02 ;sel-win JSR2
 
 	;draw-menu-bg JSR2
 	;draw-menu JSR2
@@ -113,6 +115,8 @@ JMP2r
 		&no-touch
 
 BRK
+
+( drag )
 
 @on-drag ( -> )
 
@@ -230,6 +234,7 @@ JMP2r
 @sel-win ( id -- )
 
 	DUP #ff EQU ,&unchanged JCN
+	DUP .length LDZ GTH ,&unchanged JCN
 
 	;get-win JSR2 #000a SWP2 .length LDZ #01 SUB ;get-win JSR2 ;mswp JSR2
 
@@ -237,7 +242,6 @@ JMP2r
 
 	( draw menu )
 	.length LDZ #01 SUB ;get-win JSR2 #0006 ADD2 LDA2
-	( print name ) LDA2k ;print-str JSR2 #0a18 DEO
 	( get manifest )
 	INC2 INC2 LDA2 ;draw-menu/manifest STA2
 	;draw-menu-bg JSR2

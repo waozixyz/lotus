@@ -15,13 +15,16 @@
 	#0040 .Screen/y DEO2
 	;window-name ;folder-chr ;draw-file JSR2
 
-	.length LDZ #00
+@draw-windows ( -- )
+
+	.length LDZ DUP #00 EQU ,&empty JCN #00
 	&loop
 		DUP ;get-win JSR2 ;draw-win JSR2
 		INC GTHk ,&loop JCN
 	POP2
 
 JMP2r
+	&empty POP JMP2r
 
 @draw-menu-bg ( -- )
 
