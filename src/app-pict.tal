@@ -1,5 +1,6 @@
 @app-pict
 	:&name
+	:pict-manifest
 	:&on-draw
 	:&on-mouse
 	:&on-button
@@ -20,3 +21,16 @@ JMP2r
 	&target "etc/akane20x10.icn $1
 
 &name "<pict> $1
+
+@pict-manifest
+
+	01 "Picture $1
+		01 'n :file-new "Close $1
+	04 "Edit $1
+		01 'c :edit-copy "Copy $1
+		01 'v :edit-paste "Paste $1
+		01 'x :edit-cut "Cut $1
+		00 08 :edit-erase "Erase $1
+	01 "View $1
+		02 00 :toggle-zoom "Zoom $1
+	$1

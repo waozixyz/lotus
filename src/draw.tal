@@ -1,7 +1,6 @@
 @redraw-all ( -- )
 
 	;draw-menu-bg JSR2
-	;draw-clock JSR2
 
 @draw-desktop ( -- )
 
@@ -16,11 +15,11 @@
 	#0040 .Screen/y DEO2
 	;window-name ;folder-chr ;draw-file JSR2
 
-	#00 .length LDZ
+	.length LDZ #00
 	&loop
-        DUP #01 SUB #0a MUL #00 SWP .windows ADD ;draw-window JSR2
-        #01 SUB LTHk ,&loop JCN
-    POP2
+		DUP ;get-win JSR2 ;draw-win JSR2
+		INC GTHk ,&loop JCN
+	POP2
 
 JMP2r
 
@@ -35,28 +34,29 @@ JMP2r
 		#81 .Screen/sprite DEO
 		INC GTHk ,&l JCN
 	POP2
+	;draw-clock JSR2
 
 JMP2r
 
 @disk1-txt "Potato $1
 
-@draw-window ( win* -- )
+@draw-win ( win* -- )
 
 	DUP2
 	LDA2k .Screen/x DEO2 INC2 INC2
 	LDA2k .Screen/y DEO2 INC2 INC2
-	LDA2k ;draw-window-decor JSR2 INC2 INC2
+	LDA2k ;draw-win-decor JSR2 INC2 INC2
 	( draw name )
 	#05 ;draw-chr/color STA
 	LDA2k STH2k LDA2 ;draw-str JSR2 POP2 INC2 INC2
 	( file name )
 	#0a ;draw-chr/color STA
 	LDA2 ;draw-str JSR2 POP2
-	STH2r INC2 INC2 LDA2 JMP2
+	STH2r #0004 ADD2 LDA2 JMP2
 
 JMP2r
 
-@draw-window-decor ( w h -- )
+@draw-win-decor ( w h -- )
 
 	STH2
 	.Screen/x DEI2 .Screen/y DEI2

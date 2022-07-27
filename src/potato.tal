@@ -24,7 +24,6 @@
 
 @cursor
 	&x $2 &y $2
-@active $1
 @length $1
 @windows ( x* y* size* app* name* )
 
@@ -39,15 +38,17 @@
 	;window-name2 ;app-pict #2219 #0064 #0032 ;add-win JSR2
 	;window-name3 ;app-term #1909 #0080 #0090 ;add-win JSR2
 
+	#02 ;sel-win JSR2
+
 	;draw-menu-bg JSR2
 	;draw-menu JSR2
-	;draw-clock JSR2
 	;draw-desktop JSR2
 	;untrap JSR2
 
-	#01 ;sel-win JSR2
-
 BRK
+
+@foo "foo
+@bar "bar $1
 
 @manifest
 
@@ -96,7 +97,7 @@ JMP2r
 	.Mouse/y DEI2 DUP2 .cursor/y STZ2 .Screen/y DEO2
 	( draw new cursor )
 	;cursor-icn .Screen/addr DEO2
-	#42 .Mouse/state DEI #00 NEQ ADD .Screen/sprite DEO
+	#42 .Mouse/state DEI #00 NEQ SUB .Screen/sprite DEO
 
 	.Mouse/state DEI #00 EQU ,&no-touch JCN
 		.Mouse/x DEI2 .Mouse/y DEI2 ;pick-win JSR2 ;sel-win JSR2
@@ -174,16 +175,37 @@ JMP2r
 @sel-win ( id -- )
 
 	DUP #ff EQU ,&unchanged JCN
-	DUP .active LDZ EQU ,&unchanged JCN
 
-	( get app ) DUP #0a MUL .windows ADD #06 ADD #00 SWP LDA2
-	( get app/name ) LDA2 ;print-str JSR2 #0a18 DEO
+	;get-win JSR2 #000a SWP2 .length LDZ #01 SUB ;get-win JSR2 ;mswp JSR2
 
-	.active STZ
+	( .length LDZ #01 SUB ;get-win JSR2 ;draw-win JSR2 )
+	;draw-desktop JSR2
+
+	( draw menu )
+	.length LDZ #01 SUB ;get-win JSR2 #0006 ADD2 LDA2
+	( print name ) LDA2k ;print-str JSR2 #0a18 DEO
+	( get manifest )
+	INC2 INC2 LDA2 ;draw-menu/manifest STA2
+	;draw-menu-bg JSR2
+	;draw-menu JSR2
 
 JMP2r
 	&unchanged POP JMP2r
-	&buf $a
+
+@mswp ( len* a* b* -- )
+
+	,&b STR2 ,&a STR2
+	#0000
+	&l
+		DUP2 [ LIT2 &a $2 ] ADD2 LDAk STH
+		OVR2 [ LIT2 &b $2 ] ADD2 LDAk STH
+		SWPr
+		STHr ROT ROT STA
+		STHr ROT ROT STA
+		INC2 GTH2k ,&l JCN
+	POP2 POP2
+
+JMP2r
 
 @get-win ( id -- addr* )
 
