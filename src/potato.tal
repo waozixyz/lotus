@@ -111,18 +111,16 @@ BRK
 	;draw-wallpaper JSR2
 
 	#0e ;draw-chr/color STA
-
 	#0010 .Screen/x DEO2
 	#0020 .Screen/y DEO2
 	;disk1-txt ;potato-chr ;draw-file JSR2
-
 	#07 ;draw-chr/color STA
 	#0010 .Screen/x DEO2
 	#0040 .Screen/y DEO2
-	;disk2-txt ;folder-chr ;draw-file JSR2
+	;window-name ;folder-chr ;draw-file JSR2
 
-	;test-win ;draw-window JSR2
 	;test-win2 ;draw-window JSR2
+	;test-win ;draw-window JSR2
 
 JMP2r
 
@@ -141,7 +139,7 @@ JMP2r
 JMP2r
 
 @disk1-txt "Potato $1
-@disk2-txt "Disk2 $1
+
 
 @draw-window ( win* -- )
 
@@ -235,7 +233,7 @@ JMP2r
 
 @draw-wallpaper ( -- )
 
-	#0010 .Screen/y DEO2
+	#0018 .Screen/y DEO2
 	#71 .Screen/auto DEO
 	;patt-icn .Screen/addr DEO2
 	.Screen/height DEI2 #06 SFT2 NIP INC #00
@@ -302,6 +300,51 @@ JMP2r
 	&draw
 ( win* -- )
 
+
+	LDA2k #0008 ADD2 .Screen/x DEO2 INC2 INC2
+	LDA2k #0010 ADD2 .Screen/y DEO2 INC2 INC2
+	LDA #00 SWP #30 SFT2 .Screen/x DEI2 ADD2 ;draw-str-lb/max STA2
+
+	#01 .Screen/auto DEO
+
+	;&path .File/name DEO2
+	#8000 .File/length DEO2
+	;buffer .File/read DEO2
+
+	;buffer ;draw-str-lb JSR2
+
+
+
+
+JMP2r
+	&path ". $1
+
+@draw-str-lb ( str* -- )
+
+	.Screen/x DEI2 ,&x STR2
+
+	&w
+		LDAk #0a EQU ,&lb JCN
+		.Screen/x DEI2 [ LIT2 &max $2 ] #0018 SUB2 GTH2 ,&skip JCN
+			LDAk ;draw-chr JSR2
+			&skip
+
+
+		INC2 LDAk ,&w JCN
+	POP2
+
+
+JMP2r
+	&lb
+		[ LIT2 &x $2 ] .Screen/x DEO2
+		.Screen/y DEI2k #0008 ADD2 ROT DEO2
+		INC2 ,&w JMP
+
+@print-str ( str* -- )
+
+	&w
+		LDAk #18 DEO
+		INC2 LDAk ,&w JCN
 	POP2
 
 JMP2r
@@ -380,22 +423,22 @@ JMP2r
 JMP2r
 
 @test-win
-	( x ) 0043
+	( x ) 0073
 	( y ) 0049
-	( w ) 12
-	( h ) 09
+	( w ) 18
+	( h ) 12
 	:app-view
 	:window-name
 
 @test-win2
-	( x ) 0062
+	( x ) 0032
 	( y ) 0064
 	( w ) 22
 	( h ) 19
 	:app-pict
 	:window-name2
 
-@window-name "Disk1 $1
+@window-name "FloppyA $1
 @window-name2 "akane20x10.icn $1
 
 @patt-icn
@@ -436,3 +479,5 @@ JMP2r
 
 ~src/manifest.tal
 ~src/font.tal
+
+@buffer
