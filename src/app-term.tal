@@ -1,0 +1,10 @@
+@app-term
+	&name :term-name
+	&draw
+( win* -- )
+    POP2
+
+JMP2r
+	&path ". $1
+
+@term-name "<term> $1

@@ -295,30 +295,6 @@ JMP2r
 
 JMP2r
 
-@app-view
-	&name :view-name
-	&draw
-( win* -- )
-
-
-	LDA2k #0008 ADD2 .Screen/x DEO2 INC2 INC2
-	LDA2k #0010 ADD2 .Screen/y DEO2 INC2 INC2
-	LDA #00 SWP #30 SFT2 .Screen/x DEI2 ADD2 ;draw-str-lb/max STA2
-
-	#01 .Screen/auto DEO
-
-	;&path .File/name DEO2
-	#8000 .File/length DEO2
-	;buffer .File/read DEO2
-
-	;buffer ;draw-str-lb JSR2
-
-
-
-
-JMP2r
-	&path ". $1
-
 @draw-str-lb ( str* -- )
 
 	.Screen/x DEI2 ,&x STR2
@@ -328,11 +304,8 @@ JMP2r
 		.Screen/x DEI2 [ LIT2 &max $2 ] #0018 SUB2 GTH2 ,&skip JCN
 			LDAk ;draw-chr JSR2
 			&skip
-
-
 		INC2 LDAk ,&w JCN
 	POP2
-
 
 JMP2r
 	&lb
@@ -348,25 +321,6 @@ JMP2r
 	POP2
 
 JMP2r
-
-@view-name "<view> $1
-
-@app-pict
-	&name :pict-name
-	&draw
-( win* -- )
-
-	( set pos )
-	LDA2k #0008 ADD2 .Screen/x DEO2
-	INC2 INC2 LDA2 #0010 ADD2 .Screen/y DEO2
-
-	;&target DUP2 ;scap JSR2 #0009 SUB2 ;read-size JSR2 ;draw-image JSR2
-
-
-JMP2r
-	&target "etc/akane20x10.icn $1
-
-@pict-name "<pict> $1
 
 @read-size ( 00x00* -- w h )
 
@@ -477,6 +431,9 @@ JMP2r
 	ffff ffff ffff ffff ffff ffff ffff ffff
 	ffff ffff ffff ff00 ffff ffff ffff ffff
 
+~src/app-view.tal
+~src/app-term.tal
+~src/app-pict.tal
 ~src/manifest.tal
 ~src/font.tal
 

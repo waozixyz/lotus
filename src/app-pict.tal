@@ -1,0 +1,16 @@
+@app-pict
+	&name :pict-name
+	&draw
+( win* -- )
+
+	( set pos )
+	LDA2k #0008 ADD2 .Screen/x DEO2
+	INC2 INC2 LDA2 #0010 ADD2 .Screen/y DEO2
+
+	;&target DUP2 ;scap JSR2 #0009 SUB2 ;read-size JSR2 ;draw-image JSR2
+
+
+JMP2r
+	&target "etc/akane20x10.icn $1
+
+@pict-name "<pict> $1
