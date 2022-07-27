@@ -137,12 +137,13 @@ BRK
 @on-drag-start ( -> )
 
 	.Mouse/x DEI2 .Mouse/y DEI2
-		OVR2 OVR2 ;pick-win JSR2
+		OVR2 OVR2 ;pick-win JSR2 DUP #ff EQU ,&no-win JCN
 		;sel-win JSR2
 		.length LDZ #01 SUB .drag STZ
 		;on-drag/y STA2 ;on-drag/x STA2
 
 BRK
+	&no-win POP2 POP2 BRK
 
 @file-new ( -- ) JMP2r
 @edit-copy ( -- ) JMP2r
