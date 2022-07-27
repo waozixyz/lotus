@@ -112,11 +112,11 @@ BRK
 	DUP2 #40 ;draw-drag JSR2
 
 	( move window )
-	.Mouse/x DEI2 [ LIT2 &x $2 ] SUB2 STH2kr LDA2 ADD2
-		;clamp-x JSR2 STH2kr STA2
+	#000a .Mouse/x DEI2 [ LIT2 &x $2 ] SUB2 STH2kr LDA2 ADD2
+		;clamp-win JSR2 STH2kr STA2
 	INC2r INC2r
-	.Mouse/y DEI2 [ LIT2 &y $2 ] SUB2 STH2kr LDA2 ADD2
-		;clamp-y JSR2 STH2r STA2
+	#001b .Mouse/y DEI2 [ LIT2 &y $2 ] SUB2 STH2kr LDA2 ADD2
+		;clamp-win JSR2 STH2r STA2
 
 	( update )
 	.Mouse/x DEI2 .Mouse/y DEI2
@@ -127,17 +127,9 @@ BRK
 
 BRK
 
-@clamp-x ( x* -- x* )
+@clamp-win ( x* -- x* )
 
-	DUP2 #000a STH2k SUB2 #8000 GTH2 ,&gth JCN
-	POP2r
-
-JMP2r
-	&gth POP2 STH2r JMP2r
-
-@clamp-y ( x* -- x* )
-
-	DUP2 #001b STH2k SUB2 #8000 GTH2 ,&gth JCN
+	DUP2 ROT2 STH2k SUB2 #8000 GTH2 ,&gth JCN
 	POP2r
 
 JMP2r
