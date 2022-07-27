@@ -16,10 +16,10 @@
 	#0040 .Screen/y DEO2
 	;window-name ;folder-chr ;draw-file JSR2
 
-	.length LDZ #00
+	#00 .length LDZ
 	&loop
-        DUP #0a MUL #00 SWP .windows ADD ;draw-window JSR2
-        INC GTHk ,&loop JCN
+        DUP #01 SUB #0a MUL #00 SWP .windows ADD ;draw-window JSR2
+        #01 SUB LTHk ,&loop JCN
     POP2
 
 JMP2r
