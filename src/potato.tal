@@ -35,9 +35,9 @@
 	#b70f .System/g DEO2
 	#a70f .System/b DEO2
 
-	;window-name ;app-view #1812 #0023 #0073 ;add-window JSR2
-	;window-name2 ;app-pict #2219 #0064 #0032 ;add-window JSR2
-	;window-name3 ;app-term #1909 #0080 #0090 ;add-window JSR2
+	;window-name ;app-view #1812 #0023 #0073 ;add-win JSR2
+	;window-name2 ;app-pict #2219 #0064 #0032 ;add-win JSR2
+	;window-name3 ;app-term #1909 #0080 #0090 ;add-win JSR2
 
 	;draw-menu-bg JSR2
 	;draw-menu JSR2
@@ -45,7 +45,7 @@
 	;draw-desktop JSR2
 	;untrap JSR2
 
-	#01 ;sel-window JSR2
+	#01 ;sel-win JSR2
 
 BRK
 
@@ -99,7 +99,7 @@ JMP2r
 	#42 .Mouse/state DEI #00 NEQ ADD .Screen/sprite DEO
 
 	.Mouse/state DEI #00 EQU ,&no-touch JCN
-		.Mouse/x DEI2 .Mouse/y DEI2 ;pick-window JSR2
+		.Mouse/x DEI2 .Mouse/y DEI2 ;pick-win JSR2 ;sel-win JSR2
 		#00 .Mouse/state DEO
 		&no-touch
 
@@ -132,7 +132,9 @@ JMP2r
 
 JMP2r
 
-@add-window ( name* app* h w y* x* -- )
+( window management )
+
+@add-win ( name* app* h w y* x* -- )
 
 	.length LDZ #0a MUL .windows ADD STH
 	STHkr STZ2 INCr INCr
@@ -144,16 +146,18 @@ JMP2r
 
 JMP2r
 
-@pick-window ( x* y* -- id )
+@pick-win ( x* y* -- id )
 
 	,&y STR2 ,&x STR2
 	#00 .length LDZ
 	&loop
-        DUP #01 SUB #0a MUL .windows ADD #00 SWP [ LIT2 &x $2 ] [ LIT2 &y $2 ] ROT2 ;within-win JSR2 ;print/byte JSR2 #0a18 DEO
+        DUP #01 SUB #0a MUL .windows ADD #00 SWP [ LIT2 &x $2 ] [ LIT2 &y $2 ] ROT2 ;within-win JSR2 ,&found JCN
         #01 SUB LTHk ,&loop JCN
     POP2
+    #ff
 
 JMP2r
+	&found NIP #01 SUB JMP2r
 
 @within-win ( x* y* win* -- flag )
 
@@ -167,10 +171,12 @@ JMP2r
 JMP2r
 	&fail POP2 POP2 POP2r #00 JMP2r
 
-@sel-window ( id -- )
+@sel-win ( id -- )
 
-	( get app ) #0a MUL .windows ADD #06 ADD #00 SWP LDA2
-	( get app/name ) LDA2 ;print-str JSR2 #0a18 DEO
+	DUP #ff EQU ,&no-win JCN
+		( get app ) #0a MUL .windows ADD #06 ADD #00 SWP LDA2
+		( get app/name ) LDA2 ;print-str JSR2 #0a18 DEO
+		&no-win
 
 JMP2r
 
