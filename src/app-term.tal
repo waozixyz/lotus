@@ -1,10 +1,17 @@
 @app-term
-	&name :term-name
-	&draw
-( win* -- )
-    POP2
+	:&name
+	:&on-draw
+	:&on-mouse
+	:&on-button
+
+&on-button ( win* -> ) POP2 BRK
+&on-mouse ( win* -> ) POP2 BRK
+
+&on-draw
+
+	POP2
 
 JMP2r
 	&path ". $1
 
-@term-name "<term> $1
+&name "<term> $1

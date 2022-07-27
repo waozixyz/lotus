@@ -153,7 +153,7 @@ JMP2r
 	( file name )
 	#0a ;draw-chr/color STA
 	LDA2 ;draw-str JSR2 POP2
-	STH2r INC2 INC2 JMP2
+	STH2r INC2 INC2 LDA2 JMP2
 
 JMP2r
 
