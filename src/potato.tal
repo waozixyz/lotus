@@ -24,6 +24,9 @@
 
 @cursor
 	&x $2 &y $2
+@length $1
+@windows
+
 
 |0100 ( -> )
 
@@ -31,6 +34,10 @@
 	#500f .System/r DEO2
 	#b70f .System/g DEO2
 	#a70f .System/b DEO2
+
+	;window-name ;app-view #1812 #0023 #0073 ;add-window JSR2
+	;window-name2 ;app-pict #2219 #0064 #0032 ;add-window JSR2
+	;window-name3 ;app-term #1909 #0080 #0090 ;add-window JSR2
 
 	;draw-menu-bg JSR2
 	;draw-menu JSR2
@@ -101,261 +108,6 @@ BRK
 @edit-erase ( -- ) JMP2r
 @toggle-zoom ( -- ) JMP2r
 
-@redraw-all ( -- )
-
-	;draw-menu-bg JSR2
-	;draw-clock JSR2
-
-@draw-desktop ( -- )
-
-	;draw-wallpaper JSR2
-
-	#0e ;draw-chr/color STA
-	#0010 .Screen/x DEO2
-	#0020 .Screen/y DEO2
-	;disk1-txt ;potato-chr ;draw-file JSR2
-	#07 ;draw-chr/color STA
-	#0010 .Screen/x DEO2
-	#0040 .Screen/y DEO2
-	;window-name ;folder-chr ;draw-file JSR2
-
-	;test-win2 ;draw-window JSR2
-	;test-win ;draw-window JSR2
-
-JMP2r
-
-@draw-menu-bg ( -- )
-
-	#0000 DUP2 .Screen/x DEO2 .Screen/y DEO2
-	;menu-chr .Screen/addr DEO2
-	#15 .Screen/auto DEO
-	.Screen/width DEI2 #03 SFT2 NIP #00
-	&l
-		;menu-chr .Screen/addr DEO2
-		#81 .Screen/sprite DEO
-		INC GTHk ,&l JCN
-	POP2
-
-JMP2r
-
-@disk1-txt "Potato $1
-
-
-@draw-window ( win* -- )
-
-	DUP2
-	LDA2k .Screen/x DEO2 INC2 INC2
-	LDA2k .Screen/y DEO2 INC2 INC2
-	LDA2k ;draw-window-decor JSR2 INC2 INC2
-	( draw name )
-	#05 ;draw-chr/color STA
-	LDA2k STH2k LDA2 ;draw-str JSR2 POP2 INC2 INC2
-	( file name )
-	#0a ;draw-chr/color STA
-	LDA2 ;draw-str JSR2 POP2
-	STH2r INC2 INC2 LDA2 JMP2
-
-JMP2r
-
-@draw-window-decor ( w h -- )
-
-	STH2
-	.Screen/x DEI2 .Screen/y DEI2
-	STH2kr ;draw-fill JSR2
-	OVR2 OVR2 .Screen/y DEO2 .Screen/x DEO2
-	STH2kr ;draw-frame JSR2
-	OVR2 OVR2 #0008 ADD2 .Screen/y DEO2 .Screen/x DEO2
-	STH2r POP ;draw-dotted JSR2
-	.Screen/y DEO2 .Screen/x DEO2
-
-JMP2r
-
-@draw-dotted ( w -- )
-
-	#01 .Screen/auto DEO
-	;line-icn .Screen/addr DEO2
-	#00 &l #0a .Screen/sprite DEO INC GTHk ,&l JCN POP2
-
-JMP2r
-
-@draw-fill ( w h -- )
-
-	#01 .Screen/auto DEO
-	;&fill .Screen/addr DEO2
-	SWP ,&x STR
-	#00
-	&h
-		[ LIT &x $1 ] #00
-		&w
-			#03 .Screen/sprite DEO
-			INC GTHk ,&w JCN
-		POP2
-		.Screen/y DEI2k #0008 ADD2 ROT DEO2
-		.Screen/x DEI2k #00 ,&x LDR #30 SFT2 SUB2 ROT DEO2
-		INC GTHk ,&h JCN
-	POP2
-
-JMP2r
-	&fill ffff ffff ffff ffff
-
-@draw-frame ( w h -- )
-
-	,&h STR ,&w STR
-	.Screen/x DEI2  DUP2 #0008 SUB2 .Screen/x DEO2
-	.Screen/y DEI2  #0008 SUB2 DUP2 .Screen/y DEO2
-
-	( ul ) #85 ;win-chr/e #05 ,&single JSR
-	( uu ) [ LIT &w $1 ] #85 ;win-chr/h #01 ,&repeat JSR
-	( ur ) #95 ;win-chr/e #06 ,&single JSR
-	( rr ) [ LIT &h $1 ] #85 ;win-chr/v #02 ,&repeat JSR
-
-	#0008 ADD2 .Screen/y DEO2
-	#0008 SUB2 .Screen/x DEO2
-
-	( ll ) ,&h LDR #95 ;win-chr/v #02 ,&repeat JSR
-	( dl ) #a5 ;win-chr/e #01 ,&single JSR
-	( bb ) ,&w LDR #a5 ;win-chr/h #01 ,&repeat JSR
-	( dr ) #b5 ;win-chr/e #00 ,&single JSR
-
-JMP2r
-	&single ( color addr* auto -- )
-		.Screen/auto DEO
-		.Screen/addr DEO2
-		.Screen/sprite DEO
-	JMP2r
-	&repeat ( times color addr* auto -- )
-		.Screen/auto DEO
-		.Screen/addr DEO2
-		STH
-		#00 &l STHkr .Screen/sprite DEO INC GTHk ,&l JCN POP2
-		POPr
-	JMP2r
-
-@draw-wallpaper ( -- )
-
-	#0018 .Screen/y DEO2
-	#71 .Screen/auto DEO
-	;patt-icn .Screen/addr DEO2
-	.Screen/height DEI2 #06 SFT2 NIP INC #00
-	&h
-		#0008 .Screen/x DEO2
-		.Screen/width DEI2 #03 SFT2 NIP #01 SUB #00
-		&w
-			#03 .Screen/sprite DEO
-			INC GTHk ,&w JCN
-		POP2
-		.Screen/y DEI2k #0040 ADD2 ROT DEO2
-		INC GTHk ,&h JCN
-	POP2
-	#15 .Screen/auto DEO
-
-JMP2r
-
-@draw-file ( name* icon* -- )
-
-	,draw-icon JSR
-	.Screen/x DEI2k #0020 ADD2 ROT DEO2
-	.Screen/y DEI2k #0010 SUB2 ROT DEO2
-	;draw-str JSR2 POP2
-
-JMP2r
-
-@draw-icon ( addr* -- )
-
-	.Screen/addr DEO2
-	#26 .Screen/auto DEO
-	#81 .Screen/sprite DEOk DEOk DEO
-
-JMP2r
-
-@draw-clock ( -- )
-
-	#01 .Screen/auto DEO
-	#0004 .Screen/y DEO2
-	#0a ;draw-chr/color STA
-	.Screen/width DEI2 #0030 SUB2 .Screen/x DEO2
-	.DateTime/hour DEI ,&d JSR
-	LIT ': ;draw-chr JSR2
-	.DateTime/minute DEI ,&d JSR
-
-JMP2r
-	&d DUP #0a DIV ,&c JSR #0a MOD
-	&c #30 ADD ;draw-chr JSR2 JMP2r
-
-@draw-chr ( char -- )
-
-	#20 SUB #00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
-	[ LIT &color 03 ] .Screen/sprite DEO
-
-JMP2r
-
-@get-strw ( str* -- width* )
-
-	;slen JSR2 #30 SFT2
-
-JMP2r
-
-@draw-str-lb ( str* -- )
-
-	.Screen/x DEI2 ,&x STR2
-
-	&w
-		LDAk #0a EQU ,&lb JCN
-		.Screen/x DEI2 [ LIT2 &max $2 ] #0018 SUB2 GTH2 ,&skip JCN
-			LDAk ;draw-chr JSR2
-			&skip
-		INC2 LDAk ,&w JCN
-	POP2
-
-JMP2r
-	&lb
-		[ LIT2 &x $2 ] .Screen/x DEO2
-		.Screen/y DEI2k #0008 ADD2 ROT DEO2
-		INC2 ,&w JMP
-
-@print-str ( str* -- )
-
-	&w
-		LDAk #18 DEO
-		INC2 LDAk ,&w JCN
-	POP2
-
-JMP2r
-
-@read-size ( 00x00* -- w h )
-
-	DUP2 ;sbyte JSR2 #00 EQU ,&cancel JCN
-	INC2k INC2 LDA LIT 'x NEQ ,&cancel JCN
-	DUP2 #0003 ADD2 ;sbyte JSR2 #00 EQU ,&cancel JCN
-	( y ) DUP2 #0003 ADD2 ;sbyte JSR2 STH
-	( x ) ;sbyte JSR2 STHr
-
-JMP2r
-	&cancel POP2 #0000 JMP2r
-
-@draw-image ( name* w h -- )
-
-	POP ,&w STR
-	.Screen/x DEI2 ,&x STR2
-	.File/name DEO2
-	[ LIT2 &length 0008 ] .File/length DEO2
-	;&buf .Screen/addr DEO2
-	#01 .Screen/auto DEO
-	#00
-	&stream
-		;&buf .File/read DEO2
-		[ LIT &color 0e ] .Screen/sprite DEO
-		INC DUP [ LIT &w $1 ] LTH ,&no-line JCN
-			[ LIT2 &x $2 ] .Screen/x DEO2
-			.Screen/y DEI2k #0008 ADD2 ROT DEO2
-			POP #00
-			&no-line
-		.File/success DEI2 ORA ,&stream JCN
-	POP
-
-JMP2r
-	&buf $10
-
 @sbyte ( str* -- byte )
 
 	LDAk ,chex JSR STH
@@ -376,61 +128,24 @@ JMP2r
 
 JMP2r
 
-@test-win
-	( x ) 0073
-	( y ) 0049
-	( w ) 18
-	( h ) 12
-	:app-view
-	:window-name
+@add-window ( name* app* h w y* x* -- )
 
-@test-win2
-	( x ) 0032
-	( y ) 0064
-	( w ) 22
-	( h ) 19
-	:app-pict
-	:window-name2
+	.length LDZ #0a MUL .windows ADD STH
+	STHkr STZ2 INCr INCr
+	STHkr STZ2 INCr INCr
+	STHkr STZ2 INCr INCr
+	STHkr STZ2 INCr INCr
+	STHr STZ2
+	.length LDZk INC SWP STZ
+
+JMP2r
 
 @window-name "FloppyA $1
 @window-name2 "akane20x10.icn $1
+@window-name3 "session0000 $1
 
-@patt-icn
-	8000 0000 0000 0000
-@line-icn
-	00aa 0000 0000 0000
-@cursor-icn
-	0040 6070 787c 7008
-@state-icn
-	0000 183c 3c18 0000
-@folder-chr
-	0000 0000 0700 1f1f 0000 0007 081f 3f3f
-	0000 0000 fd03 ffff 0000 01ff 03ff ffff
-	0000 fe06 fafa fafa 00fe 01f9 fdfd fdfd
-	1f1f 1f1f 1f1f 1f1f 3f3f 3f3f 3f3f 3f3f
-	ffff ffff ffff ffff ffff e7c3 c3e7 ffff
-	fafa fafa fafa fafa fdfd fdfd fdfd fdfd
-	1f1f 0000 0000 0000 3f3f 1f00 0000 0000
-	ffff 0000 0000 0000 ffff ff00 0000 0000
-	faf8 0000 0000 0000 fdfe f800 0000 0000
-@potato-chr
-	0000 0100 0706 0505 0001 0207 0f0f 0f0f
-	0000 ff00 ff00 ffff 00ff 00ff ffff ffff
-	0000 f818 e868 a8a8 00f8 04e4 f4f4 f4f4
-	0505 0505 0505 0607 0f0f 0f0f 0f0f 0f0f
-	ffff ffff ffff 00ff ffff 7eff e7ff ffff
-	a8a8 a8a8 a8a8 68e8 f4f4 f4f4 f4f4 f4f4
-	0007 0507 0100 0000 0f0f 0f0f 0701 0000
-	00ff faff 0000 0000 ffff ffff ff00 0000
-	08e8 20e0 8000 0000 f4f4 f8f0 e080 0000
-@win-chr
-	&e 0000 0000 0000 0001 0000 0000 0000 0103
-	&h 0000 0000 0000 ffff 0000 0000 00ff ffff
-	&v 8080 8080 8080 8080 c0c0 c0c0 c0c0 c0c0
-@menu-chr
-	ffff ffff ffff ffff ffff ffff ffff ffff
-	ffff ffff ffff ff00 ffff ffff ffff ffff
-
+~src/draw.tal
+~src/assets.tal
 ~src/app-view.tal
 ~src/app-term.tal
 ~src/app-pict.tal
