@@ -27,7 +27,6 @@
 @length $1
 @windows
 
-
 |0100 ( -> )
 
 	( theme )
@@ -49,19 +48,16 @@ BRK
 
 @manifest
 
-	&name "Potato $1
-	&date "2022-07-03 $1
-	&menu
-		01 "Potato $1
-			01 'n :file-new "New $1
-		04 "Edit $1
-			01 'c :edit-copy "Copy $1
-			01 'v :edit-paste "Paste $1
-			01 'x :edit-cut "Cut $1
-			00 08 :edit-erase "Erase $1
-		01 "View $1
-			02 00 :toggle-zoom "Zoom $1
-		$1
+	01 "Potato $1
+		01 'n :file-new "New $1
+	04 "Edit $1
+		01 'c :edit-copy "Copy $1
+		01 'v :edit-paste "Paste $1
+		01 'x :edit-cut "Cut $1
+		00 08 :edit-erase "Erase $1
+	01 "View $1
+		02 00 :toggle-zoom "Zoom $1
+	$1
 
 @untrap ( -- )
 

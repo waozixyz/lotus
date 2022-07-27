@@ -109,7 +109,7 @@ BRK
 
 	STH
 	#00 ,&id STR
-	;manifest/menu
+	;draw-menu/manifest LDA2
 	&cat
 		[ LIT &id 00 ] STHkr EQU ,&end JCN
 		;skip-sub JSR2
@@ -149,7 +149,7 @@ JMP2r
 	LIT2r 0000
 	,&target STR
 	#00 ,&id STR
-	;manifest/menu
+	;draw-menu/manifest LDA2
 	&cat
 		[ LIT &id 00 ] [ LIT &target $1 ] EQU ,&end JCN
 		INC2k ;get-strw JSR2 #0008 ADD2 STH2 ADD2r
@@ -169,7 +169,7 @@ JMP2r
 	LIT2r 0000
 	,&target STR2
 	#00 ,&id STR
-	;manifest/menu
+	;draw-menu/manifest LDA2
 	&cat
 		INC2k ;get-strw JSR2 #0008 ADD2 STH2r ADD2
 		DUP2 [ LIT2 &target $2 ] LTH2 ,&continue JCN
@@ -190,7 +190,7 @@ JMP2r
 	ORAk ,&no-null JCN JMP2r &no-null
 	( not null )
 	,&mk STR2
-	;manifest/menu
+	;draw-menu/manifest LDA2
 	&cat
 		LDAk STH INC2 ,skip-str JSR
 		STHr #00
@@ -229,7 +229,7 @@ JMP2r
 	#0010 .Screen/x DEO2
 	#0004 .Screen/y DEO2
 	#00 ,&id STR
-	;manifest/menu
+	[ LIT2 &manifest :manifest ]
 	&cat
 		menu-sel menu-def [ LIT &sel ff ] [ LIT &id $1 ] EQU [ JMP SWP POP ] ;draw-chr/color STA
 		INC2k ;draw-str JSR2 POP2 #20 ;draw-chr JSR2
