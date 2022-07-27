@@ -170,7 +170,7 @@ JMP2r
 	#01 .Screen/auto DEO
 	#0004 .Screen/y DEO2
 	#0a ;draw-chr/color STA
-	.Screen/width DEI2 #0030 SUB2 .Screen/x DEO2
+	.Screen/width DEI2 #0038 SUB2 .Screen/x DEO2
 	.DateTime/hour DEI ,&d JSR
 	LIT ': ;draw-chr JSR2
 	.DateTime/minute DEI ,&d JSR

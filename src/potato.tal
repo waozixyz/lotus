@@ -26,8 +26,7 @@
 	&x $2 &y $2
 @active $1
 @length $1
-@windows
-	( x* y* size* app* name* )
+@windows ( x* y* size* app* name* )
 
 |0100 ( -> )
 
@@ -99,6 +98,11 @@ JMP2r
 	;cursor-icn .Screen/addr DEO2
 	#42 .Mouse/state DEI #00 NEQ ADD .Screen/sprite DEO
 
+	.Mouse/state DEI #00 EQU ,&no-touch JCN
+		.Mouse/x DEI2 .Mouse/y DEI2 ;pick-window JSR2
+		#00 .Mouse/state DEO
+		&no-touch
+
 BRK
 
 @file-new ( -- ) JMP2r
@@ -140,9 +144,30 @@ JMP2r
 
 JMP2r
 
-@sel-window ( id -- )
+@pick-window ( x* y* -- id )
 
-	DUP ;print/byte JSR2 #0a18 DEO
+	,&y STR2 ,&x STR2
+	#00 .length LDZ
+	&loop
+        DUP #01 SUB #0a MUL .windows ADD #00 SWP [ LIT2 &x $2 ] [ LIT2 &y $2 ] ROT2 ;within-win JSR2 ;print/byte JSR2 #0a18 DEO
+        #01 SUB LTHk ,&loop JCN
+    POP2
+
+JMP2r
+
+@within-win ( x* y* win* -- flag )
+
+	STH2
+	( x0 ) OVR2 STH2kr LDA2 LTH2 ,&fail JCN
+	( y0 ) DUP2 STH2kr INC2 INC2 LDA2 LTH2 ,&fail JCN
+	( x1 ) OVR2 STH2kr LDA2k SWP2 #0004 ADD2 LDA #00 SWP #30 SFT2 ADD2 GTH2 ,&fail JCN
+	( y1 ) DUP2 STH2kr INC2 INC2 LDA2k SWP2 #0003 ADD2 LDA #00 SWP #30 SFT2 ADD2 GTH2 ,&fail JCN
+	POP2 POP2 POP2r #01
+
+JMP2r
+	&fail POP2 POP2 POP2r #00 JMP2r
+
+@sel-window ( id -- )
 
 	( get app ) #0a MUL .windows ADD #06 ADD #00 SWP LDA2
 	( get app/name ) LDA2 ;print-str JSR2 #0a18 DEO
