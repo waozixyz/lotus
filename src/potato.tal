@@ -173,10 +173,24 @@ JMP2r
 
 @sel-win ( id -- )
 
-	DUP #ff EQU ,&no-win JCN
-		( get app ) #0a MUL .windows ADD #06 ADD #00 SWP LDA2
-		( get app/name ) LDA2 ;print-str JSR2 #0a18 DEO
-		&no-win
+	DUP #ff EQU ,&unchanged JCN
+	DUP .active LDZ EQU ,&unchanged JCN
+
+	( get app ) DUP #0a MUL .windows ADD #06 ADD #00 SWP LDA2
+	( get app/name ) LDA2 ;print-str JSR2 #0a18 DEO
+
+	.active STZ
+
+JMP2r
+	&unchanged POP JMP2r
+	&buf $a
+
+@get-win ( id -- addr* )
+
+	DUP #ff NEQ ,&exists JCN
+		JMP2r
+		&exists
+	#0a MUL .windows ADD #00 SWP
 
 JMP2r
 
