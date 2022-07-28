@@ -60,8 +60,9 @@ JMP2r
 
 @draw-item ( ptr* -- ptr* )
 
-	LDAk LIT '- EQU ,&draw-folder JCN
+	LDAk LIT '- EQU ;&draw-folder JCN2
 	LDAk LIT '? EQU ;&draw-large JCN2
+	DUP2 #0005 ADD2 LDA LIT '. EQU ;&draw-hidden JCN2
 
 	DUP2 ;&buf #0004 ;mcpy JSR2
 
@@ -98,6 +99,17 @@ JMP2r
 &draw-large ( ptr* -- ptr* )
 
 	;large-chr ;draw-icon JSR2
+	.Screen/y DEI2k #0010 SUB2 ROT DEO2
+	.Screen/x DEI2k #0020 ADD2 ROT DEO2
+	#0d ;draw-chr/color STA
+	#0005 ADD2 DUP2 ;draw-str JSR2 POP2
+	;scap JSR2
+
+JMP2r
+
+&draw-hidden ( ptr* -- ptr* )
+
+	;pict-chr ;draw-icon JSR2
 	.Screen/y DEI2k #0010 SUB2 ROT DEO2
 	.Screen/x DEI2k #0020 ADD2 ROT DEO2
 	#0d ;draw-chr/color STA
