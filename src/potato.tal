@@ -59,9 +59,9 @@ JMP2r
 @untrap ( -- )
 
 	;on-mouse .Mouse/vector DEO2
+	;on-button .Controller/vector DEO2
 
 	( ;on-frame .Screen/vector DEO2
-	;on-button .Controller/vector DEO2
 	 )
 	( release mouse ) #00 .Mouse/state DEO
 
@@ -77,6 +77,16 @@ JMP2r
 	( release mouse ) #00 .Mouse/state DEO
 
 JMP2r
+
+@on-button ( -> )
+
+	.Controller/button DEI2 ;find-modkey JSR2
+	ORAk #00 EQU ,&skip JCN
+		DUP2 JSR2
+		&skip
+	POP2
+
+BRK
 
 @on-mouse ( -> )
 
@@ -175,18 +185,6 @@ JMP2r
 
 ( window management )
 
-@add-win ( name* app* h w y* x* -- )
-
-	.length LDZ #0a MUL .windows ADD STH
-	STHkr STZ2 INCr INCr
-	STHkr STZ2 INCr INCr
-	STHkr STZ2 INCr INCr
-	STHkr STZ2 INCr INCr
-	STHr STZ2
-	.length LDZk INC SWP STZ
-
-JMP2r
-
 @pick-win ( x* y* -- id )
 
 	,&y STR2 ,&x STR2
@@ -211,6 +209,18 @@ JMP2r
 
 JMP2r
 	&fail POP2 POP2 POP2r #00 JMP2r
+
+
+@add-win ( name* app* h w y* x* -- )
+
+	.length LDZ #0a MUL .windows ADD STH
+	STHkr STZ2 INCr INCr
+	STHkr STZ2 INCr INCr
+	STHkr STZ2 INCr INCr
+	STHkr STZ2 INCr INCr
+	STHr STZ2
+	.length LDZk INC SWP STZ
+	.length LDZ #01 SUB 
 
 @sel-win ( id -- )
 
