@@ -14,7 +14,6 @@
 
 @draw-home ( -- )
 
-
 	( load dir )
 	;&path .File/name DEO2
 	#8000 .File/length DEO2
@@ -28,7 +27,9 @@
 	&w
 		#00 STHkr #03 SFT2 #00a0 MUL2 #0010 ADD2 .Screen/x DEO2
 		#00 STHkr #0007 AND2 #0018 MUL2 #0018 ADD2 .Screen/y DEO2
-		;draw-item JSR2
+		DUP2 ;draw-item-icon JSR2
+		DUP2 STHkr ;draw-item-text JSR2
+		;scap JSR2
 		INCr
 		INC2 LDAk ,&w JCN
 	POP2
@@ -39,92 +40,6 @@ JMP2r
 	&init
 		"!--- 20 "Potato $1
 		"@--- 20 "Drive $1
-
-@draw-item ( ptr* -- ptr* )
-
-	LDAk LIT '- EQU ;&draw-folder JCN2
-	LDAk LIT '? EQU ;&draw-large JCN2
-	LDAk LIT '! EQU ;&draw-potato JCN2
-	LDAk LIT '@ EQU ;&draw-disk JCN2
-	DUP2 #0005 ADD2 LDA LIT '. EQU ;&draw-hidden JCN2
-
-	DUP2 ;&buf #0004 ;mcpy JSR2
-
-	;&buf ;shex JSR2 OVR2 #0005 ADD2 ;text-chr ;draw-icon-size JSR2
-
-	;scap JSR2
-
-JMP2r
-	&buf $5
-
-&draw-potato ( ptr* -- ptr* )
-
-	;icon-potato ;draw-icon JSR2
-	.Screen/y DEI2k #0014 SUB2 ROT DEO2
-	.Screen/x DEI2k STH2k #0020 ADD2 ROT DEO2
-	#0b ;draw-chr/color STA
-	;dict/potato ;draw-str JSR2 POP2
-
-	STH2r #0020 ADD2 .Screen/x DEO2
-	.Screen/y DEI2k #0009 ADD2 ROT DEO2
-
-	#02 ;draw-chr/color STA
-	#0000 ;buffer SUB2 ;draw-dec JSR2
-	#20 ;draw-chr JSR2
-	;dict/free ;draw-str JSR2 POP2
-
-	;scap JSR2
-
-JMP2r
-
-&draw-disk ( -- )
-
-	;disk-chr ;draw-icon JSR2
-	.Screen/y DEI2k #0014 SUB2 ROT DEO2
-	.Screen/x DEI2k STH2k #0020 ADD2 ROT DEO2
-	#0b ;draw-chr/color STA
-	;dict/disk ;draw-str JSR2 POP2
-
-	STH2r #0020 ADD2 .Screen/x DEO2
-	.Screen/y DEI2k #0009 ADD2 ROT DEO2
-	#02 ;draw-chr/color STA
-	;dict/empty ;draw-str JSR2 POP2
-	;scap JSR2
-
-JMP2r
-
-&draw-folder ( ptr* -- ptr* )
-
-	;folder-chr ;draw-icon JSR2
-	.Screen/y DEI2k #0010 SUB2 ROT DEO2
-	.Screen/x DEI2k #0020 ADD2 ROT DEO2
-	#0e ;draw-chr/color STA
-	#0005 ADD2 DUP2 ;draw-str JSR2 POP2
-	;scap JSR2
-
-JMP2r
-
-&draw-large ( ptr* -- ptr* )
-
-	;icon-unknown ;draw-icon JSR2
-	.Screen/y DEI2k #0010 SUB2 ROT DEO2
-	.Screen/x DEI2k #0020 ADD2 ROT DEO2
-	#0d ;draw-chr/color STA
-	#0005 ADD2 DUP2 ;draw-str JSR2 POP2
-	;scap JSR2
-
-JMP2r
-
-&draw-hidden ( ptr* -- ptr* )
-
-	;pict-chr ;draw-icon JSR2
-	.Screen/y DEI2k #0010 SUB2 ROT DEO2
-	.Screen/x DEI2k #0020 ADD2 ROT DEO2
-	#0d ;draw-chr/color STA
-	#0005 ADD2 DUP2 ;draw-str JSR2 POP2
-	;scap JSR2
-
-JMP2r
 
 @remove-lb ( addr* -- )
 
@@ -152,6 +67,73 @@ JMP2r
 	;dict/bytes ;draw-str JSR2 POP2
 
 JMP2r
+
+@draw-item-icon ( ptr* -- ptr* )
+
+	LDAk LIT '- EQU ;&folder JCN2
+	LDAk LIT '? EQU ;&large JCN2
+	DUP2 #0005 ADD2 LDA LIT '. EQU ;&hidden JCN2
+	LDAk LIT '! EQU ;&potato JCN2
+	LDAk LIT '@ EQU ;&disk JCN2
+	POP2 ;icons/text ;draw-icon JSR2
+
+JMP2r
+	&folder POP2 ;icons/folder ;draw-icon JSR2 JMP2r
+	&large POP2 ;icons/unknown ;draw-icon JSR2 JMP2r
+	&potato POP2 ;icons/potato ;draw-icon JSR2 JMP2r
+	&disk POP2 ;icons/disk ;draw-icon JSR2 JMP2r
+	&hidden POP2  ;icons/pict ;draw-icon JSR2 JMP2r
+
+@draw-item-text ( ptr* id -- ptr* )
+
+	[ LIT &sel 00 ] EQU #03 MUL #0a ADD ;draw-chr/color STA
+
+	LDAk LIT '- EQU ;&folder JCN2
+	LDAk LIT '? EQU ;&folder JCN2
+
+	LDAk LIT '! EQU ;&potato JCN2
+	LDAk LIT '@ EQU ;&disk JCN2
+
+	.Screen/x DEI2k #0020 ADD2 STH2k ROT DEO2
+	.Screen/y DEI2k #0014 SUB2 ROT DEO2
+
+	#0005 ADD2 ;draw-str JSR2 POP2
+	STH2r .Screen/x DEO2
+	.Screen/y DEI2k #0009 ADD2 ROT DEO2
+
+	#05 ;draw-chr/color STA
+	DUP2 ;&buf #0004 ;mcpy JSR2
+	;&buf ;shex JSR2 ;draw-dec JSR2
+	#20 ;draw-chr JSR2
+	;dict/bytes ;draw-str JSR2 POP2
+
+JMP2r
+	&buf $5
+	&folder
+		.Screen/y DEI2k #0010 SUB2 ROT DEO2
+		.Screen/x DEI2k #0020 ADD2 ROT DEO2
+		#0005 ADD2 ;draw-str JSR2 POP2
+	JMP2r
+	&potato
+		.Screen/x DEI2k #0020 ADD2 STH2k ROT DEO2
+		.Screen/y DEI2k #0014 SUB2 ROT DEO2
+			#0005 ADD2 ;draw-str JSR2 POP2
+		STH2r .Screen/x DEO2
+		.Screen/y DEI2k #0009 ADD2 ROT DEO2
+		#05 ;draw-chr/color STA
+		#0000 ;buffer SUB2 ;draw-dec JSR2
+		#20 ;draw-chr JSR2
+		;dict/free ;draw-str JSR2 POP2
+	JMP2r
+	&disk
+		.Screen/x DEI2k #0020 ADD2 STH2k ROT DEO2
+		.Screen/y DEI2k #0014 SUB2 ROT DEO2
+			#0005 ADD2 ;draw-str JSR2 POP2
+		STH2r .Screen/x DEO2
+		.Screen/y DEI2k #0009 ADD2 ROT DEO2
+		#05 ;draw-chr/color STA
+		;dict/empty ;draw-str JSR2 POP2
+	JMP2r
 
 @edit-copy ( -- ) JMP2r
 @edit-paste ( -- ) JMP2r
