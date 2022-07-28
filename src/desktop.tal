@@ -32,7 +32,7 @@
 	LITr 02
 	;buffer
 	&w
-		#00 STHkr #0008 DIV2 #00a0 MUL2 #0010 ADD2 .Screen/x DEO2
+		#00 STHkr #03 SFT2 #00a0 MUL2 #0010 ADD2 .Screen/x DEO2
 		#00 STHkr #0007 AND2 #0018 MUL2 #0018 ADD2 .Screen/y DEO2
 		;draw-item JSR2
 		INCr
@@ -51,18 +51,7 @@ JMP2r
 
 	DUP2 ;&buf #0004 ;mcpy JSR2
 
-	;text-chr ;draw-icon JSR2
-	.Screen/y DEI2k #0014 SUB2 ROT DEO2
-	.Screen/x DEI2k STH2k #0020 ADD2 ROT DEO2
-
-	#0e ;draw-chr/color STA
-	DUP2 #0005 ADD2 ;draw-str JSR2 POP2
-	STH2r #0020 ADD2 .Screen/x DEO2
-	.Screen/y DEI2k #0009 ADD2 ROT DEO2
-
-	#01 ;draw-chr/color STA
-	;&buf ;shex JSR2 ;draw-dec JSR2
-	;&bytes ;draw-str JSR2 POP2
+	;&buf OVR2 #0005 ADD2 ;text-chr ;draw-icon-size JSR2
 
 	;scap JSR2
 
@@ -111,7 +100,7 @@ JMP2r
 	#0b ;draw-chr/color STA
 	;&name ;draw-str JSR2 POP2
 
-	STH2r #0000 ADD2 .Screen/x DEO2
+	STH2r .Screen/x DEO2
 	.Screen/y DEI2k #0009 ADD2 ROT DEO2
 
 	#02 ;draw-chr/color STA
