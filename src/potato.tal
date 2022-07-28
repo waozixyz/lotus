@@ -169,26 +169,6 @@ BRK
 
 JMP2r
 
-@sbyte ( str* -- byte )
-
-	LDAk ,chex JSR STH
-	INC2 LDA ,chex JSR
-	STHr #40 SFT ADD
-
-JMP2r
-
-@chex ( char -- hex )
-
-	DUP #2f GTH OVR #3a LTH AND ,&number JCN
-	DUP #60 GTH OVR #67 LTH AND ,&lc JCN
-	DUP #40 GTH OVR #47 LTH AND ,&uc JCN
-		POP #00 JMP2r
-	&number #30 SUB JMP2r
-	&uc #37 SUB JMP2r
-	&lc #57 SUB
-
-JMP2r
-
 ( window management )
 
 @add-win ( name* app* h w y* x* -- )
@@ -278,6 +258,40 @@ JMP2r
 	#0a MUL .windows ADD #00 SWP
 
 JMP2r
+
+@sbyte ( str* -- byte )
+
+	LDAk ,chex JSR STH
+	INC2 LDA ,chex JSR
+	STHr #40 SFT ADD
+
+JMP2r
+
+@chex ( char -- hex )
+
+	DUP #2f GTH OVR #3a LTH AND ,&number JCN
+	DUP #60 GTH OVR #67 LTH AND ,&lc JCN
+	DUP #40 GTH OVR #47 LTH AND ,&uc JCN
+		POP #00 JMP2r
+	&number #30 SUB JMP2r
+	&uc #37 SUB JMP2r
+	&lc #57 SUB
+
+JMP2r
+
+@shex ( str* -- val* )
+
+	LIT2r 0000
+	&w
+		LITr 40 SFT2r
+		LITr 00
+		LDAk ,chex JSR STH ADD2r
+		INC2 LDAk ,&w JCN
+	POP2
+	STH2r
+
+JMP2r
+
 
 @window-name "Disk 20 "A $1
 @window-name2 "akane20x10.icn $1

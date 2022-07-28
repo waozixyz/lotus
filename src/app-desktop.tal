@@ -26,6 +26,91 @@ JMP2r
 		02 00 :toggle-zoom "Zoom $1
 	$1
 
+@draw-home ( -- )
+
+
+	( load dir )
+	;&path .File/name DEO2
+	#8000 .File/length DEO2
+	;buffer .File/read DEO2
+
+	;buffer ;remove-lb JSR2
+
+	#0e ;draw-chr/color STA
+
+	LITr 00
+	;buffer
+	&w
+		#00 STHkr #0008 DIV2 #00a0 MUL2 #0010 ADD2 .Screen/x DEO2
+		#00 STHkr #0007 AND2 #0018 MUL2 #0018 ADD2 .Screen/y DEO2
+		;draw-item JSR2
+		INCr
+		INC2 LDAk ,&w JCN
+	POP2
+	POPr
+
+JMP2r
+	&path ". $1
+
+@draw-item ( ptr* -- ptr* )
+
+	LDAk LIT '- EQU ,&draw-folder JCN
+	LDAk LIT '? EQU ;&draw-large JCN2
+
+	DUP2 ;&buf #0004 ;mcpy JSR2
+
+	;text-chr ;draw-icon JSR2
+	.Screen/y DEI2k #0014 SUB2 ROT DEO2
+	.Screen/x DEI2k STH2k #0020 ADD2 ROT DEO2
+
+	#0e ;draw-chr/color STA
+	DUP2 #0005 ADD2 ;draw-str JSR2 POP2
+	STH2r #0020 ADD2 .Screen/x DEO2
+	.Screen/y DEI2k #0009 ADD2 ROT DEO2
+
+	#01 ;draw-chr/color STA
+	;&buf ;shex JSR2 ;draw-dec JSR2
+	;&bytes ;draw-str JSR2 POP2
+
+	;scap JSR2
+
+JMP2r
+	&buf $5
+	&bytes 20 "bytes $1
+
+&draw-folder ( ptr* -- ptr* )
+
+	;folder-chr ;draw-icon JSR2
+	.Screen/y DEI2k #0010 SUB2 ROT DEO2
+	.Screen/x DEI2k #0020 ADD2 ROT DEO2
+	#0e ;draw-chr/color STA
+	#0005 ADD2 DUP2 ;draw-str JSR2 POP2
+	;scap JSR2
+
+JMP2r
+
+&draw-large ( ptr* -- ptr* )
+
+	;large-chr ;draw-icon JSR2
+	.Screen/y DEI2k #0010 SUB2 ROT DEO2
+	.Screen/x DEI2k #0020 ADD2 ROT DEO2
+	#0d ;draw-chr/color STA
+	#0005 ADD2 DUP2 ;draw-str JSR2 POP2
+	;scap JSR2
+
+JMP2r
+
+@remove-lb ( addr* -- )
+
+	&w
+		LDAk #0a NEQ ,&no-lb JCN
+			STH2k #00 STH2r STA
+			&no-lb
+		INC2 LDAk ,&w JCN
+	POP2
+
+JMP2r
+
 @file-new ( -- ) JMP2r
 @edit-copy ( -- ) JMP2r
 @edit-paste ( -- ) JMP2r
