@@ -9,32 +9,32 @@
 
 &on-draw ( win* -- )
 
-	STH2k
-	LDA2k #0008 ADD2 .Screen/x DEO2 INC2 INC2
-	LDA2k #0010 ADD2 .Screen/y DEO2 POP2
-	;size-assets-end ;size-assets-start SUB2 ;font-txt ;icon-unknown ;draw-icon-size JSR2
+	LDA2k #0008 ADD2 ,&x STR2 INC2 INC2
+	LDA2k #0010 ADD2 ,&y STR2 POP2
+	#0400
+	&loop
+		[ LIT2 &x $2 ] .Screen/x DEO2
+		#00 OVR #0018 MUL2 [ LIT2 &y $2 ] ADD2 .Screen/y DEO2
+		#00 OVR #30 SFT2 ;&items ADD2 STH2k
+		LDA2 INC2r INC2r
+		STH2kr LDA2 SUB2 INC2r INC2r
+		STH2kr LDA2 INC2r INC2r
+		STH2r LDA2 ;draw-icon-size JSR2
 
-	STH2kr
-	LDA2k #0008 ADD2 .Screen/x DEO2 INC2 INC2
-	LDA2k #0028 ADD2 .Screen/y DEO2 POP2
-	;size-desktop-end ;size-desktop-start SUB2 ;desktop-txt ;icon-unknown ;draw-icon-size JSR2
-
-	STH2kr
-	LDA2k #0008 ADD2 .Screen/x DEO2 INC2 INC2
-	LDA2k #0040 ADD2 .Screen/y DEO2 POP2
-	;size-apps-end ;size-apps-start SUB2 ;applications-txt ;icon-unknown ;draw-icon-size JSR2
-
-	STH2r
-	LDA2k #0008 ADD2 .Screen/x DEO2 INC2 INC2
-	LDA2k #0058 ADD2 .Screen/y DEO2 POP2
-	;size-system-end ;size-system-start SUB2 ;system-txt ;icon-potato ;draw-icon-size JSR2
+		INC GTHk ,&loop JCN
+	POP2
 
 JMP2r
+	&items
+		:size-assets-end :size-assets-start :font-txt :icon-unknown
+		:size-desktop-end :size-desktop-start :desktop-txt :icon-unknown
+		:size-apps-end :size-apps-start :apps-txt :icon-unknown
+		:size-system-end :size-system-start :system-txt :icon-potato
 
 @font-txt "Font 20 "& 20 "Icons $1
 @desktop-txt "Desktop $1
 @system-txt "System $1
-@applications-txt "Applications $1
+@apps-txt "Applications $1
 
 @view-manifest
 

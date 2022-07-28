@@ -311,7 +311,6 @@ JMP2r
 @window-name3 "session0000 $1
 
 ~src/draw.tal
-
 @size-system-end
 
 @size-assets-start
