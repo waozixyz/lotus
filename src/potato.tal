@@ -38,8 +38,9 @@
 	#b70f .System/g DEO2
 	#a70f .System/b DEO2
 
-		;window-name ;app-view #1812 #0023 #0073 ;add-win JSR2
+	;window-name ;app-view #1812 #0023 #0073 ;add-win JSR2
 	;window-name2 ;app-pict #2219 #0064 #0032 ;add-win JSR2
+	;no-name ;app-potato #1909 #0080 #0090 ;add-win JSR2
 	(
 
 	;window-name3 ;app-term #1909 #0080 #0090 ;add-win JSR2
@@ -124,7 +125,9 @@ BRK
 		;clamp-win JSR2 STH2kr STA2
 	INC2r INC2r
 	#001b .Mouse/y DEI2 [ LIT2 &y $2 ] SUB2 STH2kr LDA2 ADD2
-		;clamp-win JSR2 STH2r STA2
+		;clamp-win JSR2
+		.Screen/height DEI2 #000a SUB2 LTH2k JMP SWP2 POP2
+		STH2r STA2
 
 	( update )
 	.Mouse/x DEI2 .Mouse/y DEI2
@@ -235,6 +238,14 @@ JMP2r
 
 JMP2r
 
+@close-win ( -- )
+
+	.length LDZk #01 SUB SWP STZ
+	;sel-desktop JSR2
+	;draw-desktop JSR2
+
+JMP2r
+
 @mswp ( len* a* b* -- )
 
 	,&b STR2 ,&a STR2
@@ -292,7 +303,7 @@ JMP2r
 
 JMP2r
 
-
+@no-name $1
 @window-name "Disk 20 "A $1
 @window-name2 "akane20x10.icn $1
 @window-name3 "session0000 $1
@@ -303,6 +314,7 @@ JMP2r
 ~src/app-view.tal
 ~src/app-term.tal
 ~src/app-pict.tal
+~src/app-potato.tal
 ~src/manifest.tal
 ~src/font.tal
 

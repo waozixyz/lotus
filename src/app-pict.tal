@@ -22,7 +22,7 @@ JMP2r
 @pict-manifest
 
 	01 "Picture $1
-		01 'n :file-new "Close $1
+		01 'n :close-win "Close $1
 	04 "Edit $1
 		01 'c :edit-copy "Copy $1
 		01 'v :edit-paste "Paste $1
