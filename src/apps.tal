@@ -9,7 +9,7 @@
 	DUP2
 	LDA2k #0008 ADD2 .Screen/x DEO2 INC2 INC2
 	LDA2k #0010 ADD2 .Screen/y DEO2 POP2
-	#40 #0000 #0000 ;buffer SUB2 #0100 SUB2 SUB2 #0400 DIV2 NIP ;draw-bar JSR2
+	#40 #0000 DUP2 ;buffer SUB2 #0100 SUB2 SUB2 #0400 DIV2 NIP ;draw-bar JSR2
 
 	DUP2
 	LDA2k #0008 ADD2 .Screen/x DEO2 POP2
@@ -18,8 +18,13 @@
 	LIT '/ ;draw-chr JSR2
 	;&full ;draw-str JSR2 POP2
 
+	DUP2
+	LDA2k .Screen/x DEO2 POP2
+	.Screen/y DEI2k #000c ADD2 ROT DEO2
+	#16 ;draw-dotted JSR2
+
 	LDA2k #0008 ADD2 ,&x STR2 INC2 INC2
-	LDA2k #0028 ADD2 ,&y STR2 POP2
+	LDA2k #0030 ADD2 ,&y STR2 POP2
 	#0400
 	&loop
 		[ LIT2 &x $2 ] .Screen/x DEO2
@@ -34,8 +39,8 @@
 
 JMP2r
 	&items
-		:size-assets-end :size-assets-start :font-txt :icon-unknown
-		:size-desktop-end :size-desktop-start :desktop-txt :icon-unknown
+		:size-assets-end :size-assets-start :font-txt :icons/fonts
+		:size-desktop-end :size-desktop-start :desktop-txt :icons/desktop
 		:size-apps-end :size-apps-start :apps-txt :icon-unknown
 		:size-system-end :size-system-start :system-txt :icon-potato
 	&full "65536 20 "bytes $1
@@ -50,7 +55,7 @@ JMP2r
 
 @open-disk ( -- )
 
-	;no-name ;app-disk #1812 #0023 #0073 ;add-win JSR2
+	;no-name ;app-disk #1613 #0023 #0073 ;add-win JSR2
 	;draw-desktop JSR2
 
 JMP2r
