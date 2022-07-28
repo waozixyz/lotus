@@ -6,6 +6,16 @@
 	0040 6070 787c 7008
 @state-icn
 	0000 183c 3c18 0000
+@disk-chr
+	0000 0000 0003 000f 0000 0000 0304 0f1f
+	0000 0000 00ff 00ff 0000 0000 ff00 ffff
+	0000 0000 00fc 0cf4 0000 0000 fc02 f2fa
+	0f0f 0f0c 0f0c 0b0c 1f1f 1f1f 1f1f 1f1f
+	ffff ffff ff00 ff01 ffff ffff ffff ffff
+	f4f4 f434 f434 d434 fafa fafa fafa fafa
+	0f0f 0f00 0000 0000 1f1f 1f0f 0000 0000
+	fafe ff00 0000 0000 ffff ffff 0000 0000
+	f4f0 f000 0000 0000 fafc f8f0 0000 0000
 @text-chr
 	0000 0000 0707 0707 0000 0007 0f0f 0f0f
 	0000 0000 ffff ffff 0000 00ff ffff ffff

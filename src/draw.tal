@@ -138,7 +138,7 @@ JMP2r
 		#0008 .Screen/x DEO2
 		.Screen/width DEI2 #03 SFT2 NIP #01 SUB #00
 		&w
-			#03 .Screen/sprite DEO
+			#01 .Screen/sprite DEO
 			INC GTHk ,&w JCN
 		POP2
 		.Screen/y DEI2k #0040 ADD2 ROT DEO2
