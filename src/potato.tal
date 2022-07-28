@@ -101,10 +101,8 @@ JMP2r
 		;get-win JSR2
 		INC2 INC2 LDA2 .Mouse/y DEI2 SWP2 SUB2
 		#000a GTH2 ,&no-bar JCN
-			.length LDZ #01 SUB .drag STZ
+			;set-drag JSR2
 			#01 .Mouse/state DEO
-			.Mouse/x DEI2 .Mouse/y DEI2
-				;on-drag/y STA2 ;on-drag/x STA2
 			&no-bar
 		&no-touch
 
@@ -156,14 +154,20 @@ BRK
 
 @on-drag-start ( -> )
 
-	.Mouse/x DEI2 .Mouse/y DEI2
-		OVR2 OVR2 ;pick-win JSR2 DUP #ff EQU ,&no-win JCN
-		;sel-win JSR2
-		.length LDZ #01 SUB .drag STZ
-		;on-drag/y STA2 ;on-drag/x STA2
+	.Mouse/x DEI2 .Mouse/y DEI2 ;pick-win JSR2 DUP #ff EQU ,&no-win JCN
+		;sel-win JSR2 ;set-drag JSR2
 
 BRK
-	&no-win POP2 POP2 BRK
+	&no-win BRK
+
+
+@set-drag ( -- )
+
+	.length LDZ #01 SUB .drag STZ
+	.Mouse/x DEI2 ;on-drag/x STA2
+	.Mouse/y DEI2 ;on-drag/y STA2
+
+JMP2r
 
 @sbyte ( str* -- byte )
 

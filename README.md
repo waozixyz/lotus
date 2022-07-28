@@ -20,6 +20,10 @@ You must have a Varvara emulator.
 uxnemu bin/potato.rom
 ```
 
+## TODO
+
+- Change icon on alt mod for drag.
+
 ## Support
 
 - [theme](https://wiki.xxiivv.com/site/theme.html)
