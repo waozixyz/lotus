@@ -24,6 +24,8 @@
 
 |0000
 
+@size-system-start
+
 @cursor
 	&x $2 &y $2
 @drag
@@ -33,6 +35,7 @@
 
 |0100 ( -> )
 
+
 	( theme )
 	#500f .System/r DEO2
 	#b70f .System/g DEO2
@@ -41,8 +44,8 @@
 	;no-name ;app-view #1812 #0023 #0073 ;add-win JSR2
 	;window-name2 ;app-pict #2219 #0064 #0032 ;add-win JSR2
 	;no-name ;app-potato #1909 #0080 #0090 ;add-win JSR2
-	(
 
+	(
 	;window-name3 ;app-term #1909 #0080 #0090 ;add-win JSR2
 	)
 
@@ -55,7 +58,6 @@
 
 BRK
 
-@size-system-start
 
 @untrap ( -- )
 
@@ -311,6 +313,7 @@ JMP2r
 @window-name3 "session0000 $1
 
 ~src/draw.tal
+~src/manifest.tal
 @size-system-end
 
 @size-assets-start
@@ -327,7 +330,6 @@ JMP2r
 	~src/app-term.tal
 	~src/app-pict.tal
 	~src/app-potato.tal
-	~src/manifest.tal
 @size-apps-end
 
 @buffer

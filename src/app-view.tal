@@ -9,8 +9,20 @@
 
 &on-draw ( win* -- )
 
+	DUP2
+	LDA2k #0008 ADD2 .Screen/x DEO2 INC2 INC2
+	LDA2k #0010 ADD2 .Screen/y DEO2 POP2
+	#40 #0000 #0000 ;buffer SUB2 SUB2 #0400 DIV2 NIP ;draw-bar JSR2
+
+	DUP2
+	LDA2k #0008 ADD2 .Screen/x DEO2 POP2
+	.Screen/y DEI2k #000c ADD2 ROT DEO2
+	;buffer ;draw-dec JSR2
+	LIT '/ ;draw-chr JSR2
+	;&full ;draw-str JSR2 POP2
+
 	LDA2k #0008 ADD2 ,&x STR2 INC2 INC2
-	LDA2k #0010 ADD2 ,&y STR2 POP2
+	LDA2k #0028 ADD2 ,&y STR2 POP2
 	#0400
 	&loop
 		[ LIT2 &x $2 ] .Screen/x DEO2
@@ -20,7 +32,6 @@
 		STH2kr LDA2 SUB2 INC2r INC2r
 		STH2kr LDA2 INC2r INC2r
 		STH2r LDA2 ;draw-icon-size JSR2
-
 		INC GTHk ,&loop JCN
 	POP2
 
@@ -30,11 +41,14 @@ JMP2r
 		:size-desktop-end :size-desktop-start :desktop-txt :icon-unknown
 		:size-apps-end :size-apps-start :apps-txt :icon-unknown
 		:size-system-end :size-system-start :system-txt :icon-potato
+	&free 20 "Free $1
+	&full "65536 20 "bytes $1
 
 @font-txt "Font 20 "& 20 "Icons $1
 @desktop-txt "Desktop $1
 @system-txt "System $1
 @apps-txt "Applications $1
+
 
 @view-manifest
 

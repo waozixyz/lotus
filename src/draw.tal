@@ -165,6 +165,22 @@ JMP2r
 
 JMP2r
 
+@draw-bar ( den num -- )
+
+	STH
+	#00 .Screen/auto DEO
+	#00
+	&loop
+		DUP STHkr LTH STH
+		;vert-icn ;check-icn STHr JMP SWP2 POP2 .Screen/addr DEO2
+		.Screen/x DEI2k INC2 INC2 ROT DEO2
+		#0a .Screen/sprite DEO
+		INC GTHk ,&loop JCN
+	POP2
+	POPr
+
+JMP2r
+
 @draw-clock ( -- )
 
 	#01 .Screen/auto DEO
@@ -264,6 +280,7 @@ JMP2r
 
 @draw-dec ( short* -- )
 
+	#01 .Screen/auto DEO
 	#00 ,&z STR
 	#2710 ,&parse JSR
 	#03e8 ,&parse JSR

@@ -3,6 +3,10 @@
 	8000 0000 0000 0000
 @line-icn
 	00aa 0000 0000 0000
+@check-icn
+	aa55 aa55 aa55 aa55
+@vert-icn
+	c0c0 c0c0 c0c0 c0c0
 @cursor-icn
 	0040 6070 787c 7008
 @state-icn
