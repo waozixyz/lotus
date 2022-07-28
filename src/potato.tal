@@ -210,7 +210,6 @@ JMP2r
 JMP2r
 	&fail POP2 POP2 POP2r #00 JMP2r
 
-
 @add-win ( name* app* h w y* x* -- )
 
 	.length LDZ #0a MUL .windows ADD STH
@@ -315,9 +314,6 @@ JMP2r
 JMP2r
 
 @no-name $1
-@window-name "Disk 20 "A $1
-@window-name2 "akane20x10.icn $1
-@window-name3 "session0000 $1
 
 ~src/draw.tal
 ~src/manifest.tal
@@ -325,18 +321,14 @@ JMP2r
 
 @size-assets-start
 	~src/assets.tal
-	~src/font.tal
 @size-assets-end
 
 @size-desktop-start
-	~src/app-desktop.tal
+	~src/desktop.tal
 @size-desktop-end
 
 @size-apps-start
-	~src/app-disk.tal
-	~src/app-term.tal
-	~src/app-pict.tal
-	~src/app-potato.tal
+	~src/apps.tal
 @size-apps-end
 
 @buffer

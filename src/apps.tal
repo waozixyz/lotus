@@ -1,0 +1,167 @@
+@app-disk
+	:disk-manifest
+	:&on-draw
+	:&on-mouse
+	:&on-button
+
+&on-draw ( win* -- )
+
+	DUP2
+	LDA2k #0008 ADD2 .Screen/x DEO2 INC2 INC2
+	LDA2k #0010 ADD2 .Screen/y DEO2 POP2
+	#40 #0000 #0000 ;buffer SUB2 #0100 SUB2 SUB2 #0400 DIV2 NIP ;draw-bar JSR2
+
+	DUP2
+	LDA2k #0008 ADD2 .Screen/x DEO2 POP2
+	.Screen/y DEI2k #000c ADD2 ROT DEO2
+	;buffer ;draw-dec JSR2
+	LIT '/ ;draw-chr JSR2
+	;&full ;draw-str JSR2 POP2
+
+	LDA2k #0008 ADD2 ,&x STR2 INC2 INC2
+	LDA2k #0028 ADD2 ,&y STR2 POP2
+	#0400
+	&loop
+		[ LIT2 &x $2 ] .Screen/x DEO2
+		#00 OVR #0018 MUL2 [ LIT2 &y $2 ] ADD2 .Screen/y DEO2
+		#00 OVR #30 SFT2 ;&items ADD2 STH2k
+		LDA2 INC2r INC2r
+		STH2kr LDA2 SUB2 INC2r INC2r
+		STH2kr LDA2 INC2r INC2r
+		STH2r LDA2 ;draw-icon-size JSR2
+		INC GTHk ,&loop JCN
+	POP2
+
+JMP2r
+	&items
+		:size-assets-end :size-assets-start :font-txt :icon-unknown
+		:size-desktop-end :size-desktop-start :desktop-txt :icon-unknown
+		:size-apps-end :size-apps-start :apps-txt :icon-unknown
+		:size-system-end :size-system-start :system-txt :icon-potato
+	&free 20 "Free $1
+	&full "65536 20 "bytes $1
+
+&on-button ( win* -> ) POP2 BRK
+&on-mouse ( win* -> ) POP2 BRK
+
+@font-txt "Font 20 "& 20 "Icons $1
+@desktop-txt "Desktop $1
+@system-txt "System $1
+@apps-txt "Applications $1
+
+@open-disk ( -- )
+
+	;no-name ;app-disk #1812 #0023 #0073 ;add-win JSR2
+	;draw-desktop JSR2
+
+JMP2r
+
+@disk-manifest
+
+	01 "Disk $1
+		02 'w :close-win "Close $1
+	02 "Settings $1
+		02 00 :toggle-zoom "Decimal $1
+		02 00 :toggle-zoom "Hexadecimal $1
+	$1
+
+
+( ------------------------------------------------------------- )
+
+@app-pict
+	:pict-manifest
+	:&on-draw
+	:&on-mouse
+	:&on-button
+
+&on-button ( win* -> ) POP2 BRK
+&on-mouse ( win* -> ) POP2 BRK
+
+&on-draw ( win* -- )
+
+	( set pos )
+	LDA2k #0008 ADD2 .Screen/x DEO2
+	INC2 INC2 LDA2 #0010 ADD2 .Screen/y DEO2
+
+	;&target DUP2 ;scap JSR2 #0009 SUB2 ;read-size JSR2 ;draw-image JSR2
+
+JMP2r
+
+	&target "etc/akane20x10.icn $1
+
+@pict-manifest
+
+	01 "Picture $1
+		01 'n :close-win "Close $1
+	04 "Edit $1
+		01 'c :edit-copy "Copy $1
+		01 'v :edit-paste "Paste $1
+		01 'x :edit-cut "Cut $1
+		00 08 :edit-erase "Erase $1
+	01 "View $1
+		02 00 :toggle-zoom "Zoom $1
+	$1
+
+
+( ------------------------------------------------------------- )
+
+@app-potato
+	:potato-manifest
+	:&on-draw
+	:&on-mouse
+	:&on-button
+
+&on-button ( win* -> ) POP2 BRK
+&on-mouse ( win* -> ) POP2 BRK
+
+&on-draw ( win* -- )
+
+	LDA2k #0008 ADD2 .Screen/x DEO2
+	INC2 INC2 LDA2 #0010 ADD2 .Screen/y DEO2
+    ;&prompt ;draw-str JSR2 POP2
+
+JMP2r
+	&path ". $1
+	&prompt "~> 20 "LIST $1
+
+@potato-manifest
+
+	01 "Potato $1
+		01 'n :close-win "Close $1
+	$1
+
+( ------------------------------------------------------------- )
+
+@app-term
+	:term-manifest
+	:&on-draw
+	:&on-mouse
+	:&on-button
+
+&on-button ( win* -> ) POP2 BRK
+&on-mouse ( win* -> ) POP2 BRK
+
+&on-draw ( win* -- )
+
+	LDA2k #0008 ADD2 .Screen/x DEO2
+	INC2 INC2 LDA2 #0010 ADD2 .Screen/y DEO2
+    ;&prompt ;draw-str JSR2 POP2
+
+JMP2r
+	&path ". $1
+	&prompt "~> 20 "LIST $1
+
+@term-manifest
+
+	01 "Terminal $1
+		01 'n :close-win "Close $1
+	04 "Edit $1
+		01 'c :edit-copy "Copy $1
+		01 'v :edit-paste "Paste $1
+		01 'x :edit-cut "Cut $1
+		00 08 :edit-erase "Erase $1
+	01 "View $1
+		02 00 :toggle-zoom "Zoom $1
+	01 "Assembler $1
+		02 00 :toggle-zoom "Run $1
+	$1
