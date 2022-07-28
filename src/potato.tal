@@ -39,9 +39,9 @@
 	#a70f .System/b DEO2
 
 		;window-name ;app-view #1812 #0023 #0073 ;add-win JSR2
+	;window-name2 ;app-pict #2219 #0064 #0032 ;add-win JSR2
 	(
 
-	;window-name2 ;app-pict #2219 #0064 #0032 ;add-win JSR2
 	;window-name3 ;app-term #1909 #0080 #0090 ;add-win JSR2
 	)
 
@@ -94,8 +94,18 @@ JMP2r
 	.Mouse/state DEI .Controller/button DEI #0102 EQU2 ;on-drag-start JCN2
 
 	.Mouse/state DEI #00 EQU ,&no-touch JCN
-		.Mouse/x DEI2 .Mouse/y DEI2 ;pick-win JSR2 ;sel-win JSR2
+		.Mouse/x DEI2 .Mouse/y DEI2 ;pick-win JSR2
+		DUP ;sel-win JSR2
 		#00 .Mouse/state DEO
+		( TODO: cleanup )
+		;get-win JSR2
+		INC2 INC2 LDA2 .Mouse/y DEI2 SWP2 SUB2
+		#000a GTH2 ,&no-bar JCN
+			.length LDZ #01 SUB .drag STZ
+			#01 .Mouse/state DEO
+			.Mouse/x DEI2 .Mouse/y DEI2
+				;on-drag/y STA2 ;on-drag/x STA2
+			&no-bar
 		&no-touch
 
 BRK
