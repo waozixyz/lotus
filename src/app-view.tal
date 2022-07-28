@@ -9,24 +9,36 @@
 
 &on-draw ( win* -- )
 
+	STH2k
 	LDA2k #0008 ADD2 .Screen/x DEO2 INC2 INC2
-	LDA2k #0010 ADD2 .Screen/y DEO2 INC2 INC2
-	LDA #00 SWP #30 SFT2 .Screen/x DEI2 ADD2 ;draw-str-lb/max STA2
+	LDA2k #0010 ADD2 .Screen/y DEO2 POP2
+	;size-assets-end ;size-assets-start SUB2 ;font-txt ;icon-unknown ;draw-icon-size JSR2
 
-	#01 .Screen/auto DEO
+	STH2kr
+	LDA2k #0008 ADD2 .Screen/x DEO2 INC2 INC2
+	LDA2k #0028 ADD2 .Screen/y DEO2 POP2
+	;size-desktop-end ;size-desktop-start SUB2 ;desktop-txt ;icon-unknown ;draw-icon-size JSR2
 
-	;&path .File/name DEO2
-	#8000 .File/length DEO2
-	;buffer .File/read DEO2
+	STH2kr
+	LDA2k #0008 ADD2 .Screen/x DEO2 INC2 INC2
+	LDA2k #0040 ADD2 .Screen/y DEO2 POP2
+	;size-apps-end ;size-apps-start SUB2 ;applications-txt ;icon-unknown ;draw-icon-size JSR2
 
-	;buffer ;draw-str-lb JSR2
+	STH2r
+	LDA2k #0008 ADD2 .Screen/x DEO2 INC2 INC2
+	LDA2k #0058 ADD2 .Screen/y DEO2 POP2
+	;size-system-end ;size-system-start SUB2 ;system-txt ;icon-potato ;draw-icon-size JSR2
 
 JMP2r
-	&path ". $1
+
+@font-txt "Font 20 "& 20 "Icons $1
+@desktop-txt "Desktop $1
+@system-txt "System $1
+@applications-txt "Applications $1
 
 @view-manifest
 
-	01 "Finder $1
+	01 "Disk $1
 		01 'n :close-win "Close $1
 	01 "Settings $1
 		02 00 :toggle-zoom "Zoom $1

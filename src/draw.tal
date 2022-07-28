@@ -161,7 +161,7 @@ JMP2r
 
 	.Screen/addr DEO2
 	#26 .Screen/auto DEO
-	#81 .Screen/sprite DEOk DEOk DEO
+	#85 .Screen/sprite DEOk DEOk DEO
 
 JMP2r
 

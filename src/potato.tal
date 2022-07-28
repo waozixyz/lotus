@@ -38,7 +38,7 @@
 	#b70f .System/g DEO2
 	#a70f .System/b DEO2
 
-	;window-name ;app-view #1812 #0023 #0073 ;add-win JSR2
+	;no-name ;app-view #1812 #0023 #0073 ;add-win JSR2
 	;window-name2 ;app-pict #2219 #0064 #0032 ;add-win JSR2
 	;no-name ;app-potato #1909 #0080 #0090 ;add-win JSR2
 	(
@@ -54,6 +54,8 @@
 	;untrap JSR2
 
 BRK
+
+@size-system-start
 
 @untrap ( -- )
 
@@ -309,13 +311,24 @@ JMP2r
 @window-name3 "session0000 $1
 
 ~src/draw.tal
-~src/assets.tal
-~src/app-desktop.tal
-~src/app-view.tal
-~src/app-term.tal
-~src/app-pict.tal
-~src/app-potato.tal
-~src/manifest.tal
-~src/font.tal
+
+@size-system-end
+
+@size-assets-start
+	~src/assets.tal
+	~src/font.tal
+@size-assets-end
+
+@size-desktop-start
+	~src/app-desktop.tal
+@size-desktop-end
+
+@size-apps-start
+	~src/app-view.tal
+	~src/app-term.tal
+	~src/app-pict.tal
+	~src/app-potato.tal
+	~src/manifest.tal
+@size-apps-end
 
 @buffer
