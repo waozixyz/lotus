@@ -38,7 +38,6 @@ JMP2r
 		:size-desktop-end :size-desktop-start :desktop-txt :icon-unknown
 		:size-apps-end :size-apps-start :apps-txt :icon-unknown
 		:size-system-end :size-system-start :system-txt :icon-potato
-	&free 20 "Free $1
 	&full "65536 20 "bytes $1
 
 &on-button ( win* -> ) POP2 BRK

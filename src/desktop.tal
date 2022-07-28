@@ -1,18 +1,3 @@
-@app-desktop
-	:manifest
-	:&on-draw
-	:&on-mouse
-	:&on-button
-
-&on-button ( win* -> ) POP2 BRK
-&on-mouse ( win* -> ) POP2 BRK
-
-&on-draw ( win* -- )
-
-	POP2
-
-JMP2r
-
 @manifest
 
 	02 "Potato $1
@@ -35,7 +20,6 @@ JMP2r
 	;buffer .File/read DEO2
 
 	;buffer ;remove-lb JSR2
-
 
 	#0010 .Screen/x DEO2
 	#0018 .Screen/y DEO2
@@ -166,20 +150,6 @@ JMP2r
 
 JMP2r
 
-@draw-icon-str ( sub* name* icon* -- )
-
-	;draw-icon JSR2
-	.Screen/y DEI2k #0014 SUB2 ROT DEO2
-	.Screen/x DEI2k STH2k #0020 ADD2 ROT DEO2
-	[ LIT &c1 0a ] ;draw-chr/color STA
-	;draw-str JSR2 POP2
-	STH2r #0020 ADD2 .Screen/x DEO2
-	.Screen/y DEI2k #0009 ADD2 ROT DEO2
-	[ LIT &c2 05 ] ;draw-chr/color STA
-	;draw-str JSR2 POP2
-
-JMP2r
-
 @draw-icon-size ( size* name* icon* -- )
 
 	;draw-icon JSR2
@@ -196,7 +166,6 @@ JMP2r
 JMP2r
 	&bytes 20 "bytes $1
 
-@file-new ( -- ) JMP2r
 @edit-copy ( -- ) JMP2r
 @edit-paste ( -- ) JMP2r
 @edit-cut ( -- ) JMP2r

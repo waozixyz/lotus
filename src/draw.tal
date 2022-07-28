@@ -6,9 +6,7 @@
 
 	;draw-wallpaper JSR2
 	;draw-home JSR2
-
-@draw-windows ( -- )
-
+	( draw windows )
 	.length LDZ DUP #00 EQU ,&empty JCN #00
 	&loop
 		DUP ;get-win JSR2 ;draw-win JSR2
@@ -32,8 +30,6 @@ JMP2r
 	;draw-clock JSR2
 
 JMP2r
-
-@disk1-txt "Potato $1
 
 @draw-win ( win* -- )
 
@@ -148,15 +144,6 @@ JMP2r
 
 JMP2r
 
-@draw-file ( name* icon* -- )
-
-	,draw-icon JSR
-	.Screen/x DEI2k #0020 ADD2 ROT DEO2
-	.Screen/y DEI2k #0010 SUB2 ROT DEO2
-	;draw-str JSR2 POP2
-
-JMP2r
-
 @draw-icon ( addr* -- )
 
 	.Screen/addr DEO2
@@ -207,24 +194,6 @@ JMP2r
 	;slen JSR2 #30 SFT2
 
 JMP2r
-
-@draw-str-lb ( str* -- )
-
-	.Screen/x DEI2 ,&x STR2
-
-	&w
-		LDAk #0a EQU ,&lb JCN
-		.Screen/x DEI2 [ LIT2 &max $2 ] #0018 SUB2 GTH2 ,&skip JCN
-			LDAk ;draw-chr JSR2
-			&skip
-		INC2 LDAk ,&w JCN
-	POP2
-
-JMP2r
-	&lb
-		[ LIT2 &x $2 ] .Screen/x DEO2
-		.Screen/y DEI2k #0008 ADD2 ROT DEO2
-		INC2 ,&w JMP
 
 @print-str ( str* -- )
 
