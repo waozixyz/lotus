@@ -41,14 +41,6 @@
 	#b70f .System/g DEO2
 	#a70f .System/b DEO2
 
-	;no-name ;app-view #1812 #0023 #0073 ;add-win JSR2
-	;window-name2 ;app-pict #2219 #0064 #0032 ;add-win JSR2
-	;no-name ;app-potato #1909 #0080 #0090 ;add-win JSR2
-
-	(
-	;window-name3 ;app-term #1909 #0080 #0090 ;add-win JSR2
-	)
-
 	#ff .drag STZ
 
 	;draw-menu-bg JSR2
@@ -58,6 +50,11 @@
 
 BRK
 
+@exit ( -- )
+
+	#010f DEO
+
+JMP2r
 
 @untrap ( -- )
 
@@ -326,7 +323,7 @@ JMP2r
 @size-desktop-end
 
 @size-apps-start
-	~src/app-view.tal
+	~src/app-disk.tal
 	~src/app-term.tal
 	~src/app-pict.tal
 	~src/app-potato.tal
