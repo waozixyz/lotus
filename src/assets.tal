@@ -1,4 +1,17 @@
 
+@dict
+	&potato "Potato $1
+	&disk "Disk $1
+	&empty "Empty $1
+	&free "Free $1
+	&bytes "Bytes $1
+	&dotw
+		"Sun $1 "Mon $1 "Tue $1 "Wed $1
+		"Thu $1 "Fri $1 "Sat $1
+	&months
+		"Jan $1 "Feb $1 "Mar $1 "Apr $1 "May $1 "Jun $1
+		"Jul $1 "Aug $1 "Sep $1 "Oct $1 "Nov $1 "Dec $1
+
 @patt-icn
 	8000 0000 0000 0000
 @line-icn

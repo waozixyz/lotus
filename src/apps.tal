@@ -72,6 +72,34 @@ JMP2r
 
 ( ------------------------------------------------------------- )
 
+@app-text
+	:text-manifest
+	:&on-draw
+	:&on-mouse
+	:&on-button
+
+&on-button ( win* -> ) POP2 BRK
+&on-mouse ( win* -> ) POP2 BRK
+
+&on-draw ( win* -- )
+
+JMP2r
+
+@text-manifest
+
+	01 "Text $1
+		01 'n :close-win "Close $1
+	04 "Edit $1
+		01 'c :edit-copy "Copy $1
+		01 'v :edit-paste "Paste $1
+		01 'x :edit-cut "Cut $1
+		00 08 :edit-erase "Erase $1
+	01 "View $1
+		02 00 :toggle-zoom "Zoom $1
+	$1
+
+( ------------------------------------------------------------- )
+
 @app-pict
 	:pict-manifest
 	:&on-draw
@@ -105,7 +133,6 @@ JMP2r
 	01 "View $1
 		02 00 :toggle-zoom "Zoom $1
 	$1
-
 
 ( ------------------------------------------------------------- )
 

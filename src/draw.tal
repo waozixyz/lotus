@@ -47,7 +47,7 @@ JMP2r
 	( file name )
 	#0a ;draw-chr/color STA
 	LDA2 ;draw-str JSR2 POP2
-	STH2r #0002 ADD2 LDA2 JMP2
+	STH2r INC2 INC2 LDA2 JMP2
 
 JMP2r
 
@@ -159,7 +159,7 @@ JMP2r
 	#00
 	&loop
 		DUP STHkr LTH STH
-		;vert-icn ;check-icn STHr JMP SWP2 POP2 .Screen/addr DEO2
+		;vert-icn ;check-icn STHr [ JMP SWP2 POP2 ] .Screen/addr DEO2
 		.Screen/x DEI2k INC2 INC2 ROT DEO2
 		#0a .Screen/sprite DEO
 		INC GTHk ,&loop JCN
@@ -175,12 +175,12 @@ JMP2r
 	#0a ;draw-chr/color STA
 	.Screen/width DEI2 #0090 SUB2 .Screen/x DEO2
 
-	#00 .DateTime/dotw DEI #20 SFT ;week-txt ADD2 ;draw-str JSR2 POP2
+	#00 .DateTime/dotw DEI #20 SFT ;dict/dotw ADD2 ;draw-str JSR2 POP2
 	LIT ', ;draw-chr JSR2
 	#20 ;draw-chr JSR2
 	#00 .DateTime/month DEI ;draw-dec JSR2
 	#20 ;draw-chr JSR2
-	#00 .DateTime/month DEI #20 SFT ;month-txt ADD2 ;draw-str JSR2 POP2
+	#00 .DateTime/month DEI #20 SFT ;dict/months ADD2 ;draw-str JSR2 POP2
 	#20 ;draw-chr JSR2
 	.DateTime/hour DEI ,&d JSR
 	LIT ': ;draw-chr JSR2
@@ -189,14 +189,6 @@ JMP2r
 JMP2r
 	&d DUP #0a DIV ,&c JSR #0a MOD
 	&c #30 ADD ;draw-chr JSR2 JMP2r
-
-@week-txt
-	"Sun $1 "Mon $1 "Tue $1 "Wed $1 "Thu $1 "Fri $1
-	"Sat $1
-
-@month-txt
-	"Jan $1 "Feb $1 "Mar $1 "Apr $1 "May $1 "Jun $1
-	"Jul $1 "Aug $1 "Sep $1 "Oct $1 "Nov $1 "Dec $1
 
 @draw-chr ( char -- )
 

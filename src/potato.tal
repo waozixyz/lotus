@@ -212,8 +212,8 @@ JMP2r
 
 @add-win ( name* app* h w y* x* -- )
 
-	.length LDZ #0a MUL .windows ADD STH
-	STHkr STZ2 INCr INCr
+	.length LDZ #0a MUL .windows ADD STHk
+	STZ2 INCr INCr
 	STHkr STZ2 INCr INCr
 	STHkr STZ2 INCr INCr
 	STHkr STZ2 INCr INCr

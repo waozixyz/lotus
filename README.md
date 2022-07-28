@@ -23,8 +23,20 @@ uxnemu bin/potato.rom
 ## TODO
 
 - Change icon on alt mod for drag.
+- Wallpaper application.
+- Audio player.
+- Image viewer.
+- Theme editor.
+- Clock application.
+- Terminal.
+- Piano.
+- Documentation.
+- Basic text editor?
 
 ## Support
 
 - [theme](https://wiki.xxiivv.com/site/theme.html)
 - [snarf](https://wiki.xxiivv.com/site/snarf.html)
+
+
+
