@@ -253,11 +253,25 @@ JMP2r
 JMP2r
 	&unchanged POP JMP2r
 
+@sel-last-win ( -- )
+
+	.length LDZ #01 SUB ,sel-win JSR
+
+JMP2r
+
 @sel-desktop ( ff -- )
 
 	;manifest ;draw-menu/manifest STA2
 	;draw-menu-bg JSR2
 	;draw-menu JSR2
+
+JMP2r
+
+@return-home ( -- )
+
+	;buf/loc #0040 ;mclr JSR2
+	LIT '. ;buf/loc STA
+	#00 ;sel JSR2
 
 JMP2r
 
@@ -279,7 +293,8 @@ JMP2r
 
 @expand-win ( -- )
 
-	( TODO )
+	#001d ;get-active-win JSR2 INC2 INC2 STA2
+	;draw-desktop JSR2
 
 JMP2r
 

@@ -57,6 +57,7 @@ Since this is designed to be used principally on a handheld devices without a wi
     - Rename file
     - Copy file
     - Delete file
+- Tiny memory pixel editor
 
 ## Support
 
