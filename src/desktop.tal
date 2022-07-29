@@ -1,7 +1,8 @@
 @manifest
 
-	02 "Potato $1
-		01 '1 :open-disk "Disk 20 "Util. $1
+	03 "Potato $1
+		01 '1 :open-look "Look 20 "Util. $1
+		01 '2 :open-disk "Disk 20 "Util. $1
 		01 'q :exit "Exit $1
 	03 "Open $1
 		01 'd :open-as-data "As 20 "Data $1
@@ -208,6 +209,13 @@ JMP2r
 @open-disk ( -- )
 
 	;no-name ;app-disk #1613 #0023 #0073 ;add-win JSR2
+	;center-win JSR2
+
+JMP2r
+
+@open-look ( -- )
+
+	;no-name ;app-look #1613 #0023 #0073 ;add-win JSR2
 	;center-win JSR2
 
 JMP2r

@@ -132,18 +132,22 @@ JMP2r
 
 @draw-wallpaper ( -- )
 
-	#0018 .Screen/y DEO2
-	#71 .Screen/auto DEO
+	#0010 .Screen/y DEO2
+	#01 .Screen/auto DEO
 	;patt-icn .Screen/addr DEO2
-	.Screen/height DEI2 #06 SFT2 NIP INC #00
+	.Screen/height DEI2 #03 SFT2 NIP INC #00
 	&h
-		#0008 .Screen/x DEO2
-		.Screen/width DEI2 #03 SFT2 NIP #01 SUB #00
+		STHk
+		#0000 .Screen/x DEO2
+		.Screen/width DEI2 #03 SFT2 NIP #00
 		&w
-			#03 .Screen/sprite DEO
+			DUP #01 AND #40 SFT
+			STHkr #01 AND #50 SFT ORA
+			#03 ORA .Screen/sprite DEO
 			INC GTHk ,&w JCN
 		POP2
-		.Screen/y DEI2k #0040 ADD2 ROT DEO2
+		POPr
+		.Screen/y DEI2k #0008 ADD2 ROT DEO2
 		INC GTHk ,&h JCN
 	POP2
 	#15 .Screen/auto DEO

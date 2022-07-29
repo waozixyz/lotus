@@ -60,6 +60,54 @@ JMP2r
 
 ( ------------------------------------------------------------- )
 
+@look-manifest
+
+	03 "Look $1
+		12 00 :expand-win "Expand $1
+		22 00 :tab-win "Tab $1
+		42 00 :close-win "Close $1
+	02 "Settings $1
+		02 00 :toggle-zoom "Decimal $1 ( TODO )
+		02 00 :toggle-zoom "Hexadecimal $1 ( TODO )
+	$1
+
+@app-look
+	:look-manifest
+	:&on-draw
+	:&on-mouse
+	:&on-button
+
+&on-draw ( win* -- )
+
+	POP2
+	;draw-editor JSR2
+
+JMP2r
+
+&on-button ( win* -> ) POP2 BRK
+&on-mouse ( win* -> ) POP2 BRK
+
+@draw-editor ( -- )
+
+	.Screen/x DEI2 ,&x STR2
+	.Screen/y DEI2 ,&y STR2
+	;bigpixel-icn .Screen/addr DEO2
+	#4000
+	&v
+		#00 OVR #07 AND #30 SFT2 [ LIT2 &x $2 ] ADD2 .Screen/x DEO2
+		#00 OVR #33 SFT2 [ LIT2 &y $2 ] ADD2 .Screen/y DEO2
+		#00 OVR #03 SFT2 ;patt-icn ADD2 LDA
+		OVR #07 AND #07 SWP SUB SFT #01 AND #10 SFT
+		#0c ADD .Screen/sprite DEO
+
+
+		INC GTHk ,&v JCN
+	POP2
+
+JMP2r
+
+( ------------------------------------------------------------- )
+
 @text-manifest
 
 	03 "Text $1
