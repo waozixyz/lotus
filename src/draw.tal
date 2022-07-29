@@ -168,28 +168,6 @@ JMP2r
 
 JMP2r
 
-@draw-clock ( -- )
-
-	#01 .Screen/auto DEO
-	#0004 .Screen/y DEO2
-	#0a ;draw-chr/color STA
-	.Screen/width DEI2 #0090 SUB2 .Screen/x DEO2
-
-	#00 .DateTime/dotw DEI #20 SFT ;dict/dotw ADD2 ;draw-str JSR2 POP2
-	LIT ', ;draw-chr JSR2
-	#20 ;draw-chr JSR2
-	#00 .DateTime/month DEI ;draw-dec JSR2
-	#20 ;draw-chr JSR2
-	#00 .DateTime/month DEI #20 SFT ;dict/months ADD2 ;draw-str JSR2 POP2
-	#20 ;draw-chr JSR2
-	.DateTime/hour DEI ,&d JSR
-	LIT ': ;draw-chr JSR2
-	.DateTime/minute DEI ,&d JSR
-
-JMP2r
-	&d DUP #0a DIV ,&c JSR #0a MOD
-	&c #30 ADD ;draw-chr JSR2 JMP2r
-
 @draw-chr ( char -- )
 
 	#20 SUB #00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2

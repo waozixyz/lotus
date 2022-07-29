@@ -69,6 +69,38 @@ JMP2r
 		02 00 :toggle-zoom "Hexadecimal $1
 	$1
 
+( ------------------------------------------------------------- )
+
+@update-clock ( -- )
+
+	[ LIT &last ff ] .DateTime/minute DEI NEQ ,&continue JCN
+		JMP2r
+		&continue
+	#1234 ;print JSR2 #0a18 DEO
+
+@draw-clock ( -- )
+
+	#01 .Screen/auto DEO
+	#0004 .Screen/y DEO2
+	#0c ;draw-chr/color STA
+	.Screen/width DEI2 #0098 SUB2 .Screen/x DEO2
+
+	#00 .DateTime/dotw DEI #20 SFT ;dict/dotw ADD2 ;draw-str JSR2 POP2
+	LIT ', ;draw-chr JSR2
+	#20 ;draw-chr JSR2
+	#00 .DateTime/day DEI ;draw-dec JSR2
+	#20 ;draw-chr JSR2
+	#00 .DateTime/month DEI #20 SFT ;dict/months ADD2 ;draw-str JSR2 POP2
+	#20 ;draw-chr JSR2
+	.DateTime/hour DEI ,&d JSR
+	LIT ': ;draw-chr JSR2
+	.DateTime/minute DEI
+		DUP ;update-clock/last STA
+		,&d JSR
+
+JMP2r
+	&d DUP #0a DIV ,&c JSR #0a MOD
+	&c #30 ADD ;draw-chr JSR2 JMP2r
 
 ( ------------------------------------------------------------- )
 

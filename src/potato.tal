@@ -35,7 +35,6 @@
 
 |0100 ( -> )
 
-
 	( theme )
 	#500f .System/r DEO2
 	#b70f .System/g DEO2
@@ -60,9 +59,7 @@ JMP2r
 
 	;on-mouse .Mouse/vector DEO2
 	;on-button .Controller/vector DEO2
-
-	( ;on-frame .Screen/vector DEO2
-	 )
+	;on-frame .Screen/vector DEO2
 	( release mouse ) #00 .Mouse/state DEO
 
 JMP2r
@@ -77,6 +74,12 @@ JMP2r
 	( release mouse ) #00 .Mouse/state DEO
 
 JMP2r
+
+@on-frame ( -> )
+
+	;update-clock JSR2
+
+BRK
 
 @on-button ( -> )
 
