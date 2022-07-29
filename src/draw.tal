@@ -41,12 +41,12 @@ JMP2r
 	#05 ;draw-chr/color STA
 	#20 ;draw-chr JSR2
 	( app/manifest ) LDA2k STH2k
-	( app/manifest/name ) LDA2 INC2 ;draw-str JSR2 POP2
+	( app/manifest/name ) LDA2 INC2 ;draw-text JSR2
 	#20 ;draw-chr JSR2
 	INC2 INC2
 	( file name )
 	#0a ;draw-chr/color STA
-	LDA2 ;draw-str JSR2 POP2
+	LDA2 ;draw-text JSR2
 	STH2r INC2 INC2 LDA2 JMP2
 
 JMP2r
@@ -260,6 +260,12 @@ JMP2r
 
 	#20 SUB #00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
 	[ LIT &color 03 ] .Screen/sprite DEO
+
+JMP2r
+
+@draw-text ( str* -- )
+
+	;draw-str JSR2 POP2
 
 JMP2r
 

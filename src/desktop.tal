@@ -109,13 +109,13 @@ JMP2r
 	.Screen/y DEI2k #0014 SUB2 ROT DEO2
 	.Screen/x DEI2k STH2k #0020 ADD2 ROT DEO2
 	[ LIT &c1 0a ] ;draw-chr/color STA
-	;draw-str JSR2 POP2
+	;draw-text JSR2
 	STH2r #0020 ADD2 .Screen/x DEO2
 	.Screen/y DEI2k #0009 ADD2 ROT DEO2
 	[ LIT &c2 05 ] ;draw-chr/color STA
 	;draw-dec JSR2
 	#20 ;draw-chr JSR2
-	;dict/bytes ;draw-str JSR2 POP2
+	;dict/bytes ;draw-text JSR2
 
 JMP2r
 
@@ -148,7 +148,7 @@ JMP2r
 	.Screen/x DEI2k #0020 ADD2 STH2k ROT DEO2
 	.Screen/y DEI2k #0014 SUB2 ROT DEO2
 
-	#0005 ADD2 ;draw-str JSR2 POP2
+	#0005 ADD2 ;draw-text JSR2
 	STH2r .Screen/x DEO2
 	.Screen/y DEI2k #0009 ADD2 ROT DEO2
 
@@ -156,34 +156,34 @@ JMP2r
 	DUP2 ;&buf #0004 ;mcpy JSR2
 	;&buf ;shex JSR2 ;draw-dec JSR2
 	#20 ;draw-chr JSR2
-	;dict/bytes ;draw-str JSR2 POP2
+	;dict/bytes ;draw-text JSR2
 
 JMP2r
 	&buf $5
 	&folder
 		.Screen/y DEI2k #0010 SUB2 ROT DEO2
 		.Screen/x DEI2k #0020 ADD2 ROT DEO2
-		#0005 ADD2 ;draw-str JSR2 POP2
+		#0005 ADD2 ;draw-text JSR2
 	JMP2r
 	&potato
 		.Screen/x DEI2k #0020 ADD2 STH2k ROT DEO2
 		.Screen/y DEI2k #0014 SUB2 ROT DEO2
-			#0005 ADD2 ;draw-str JSR2 POP2
+			#0005 ADD2 ;draw-text JSR2
 		STH2r .Screen/x DEO2
 		.Screen/y DEI2k #0009 ADD2 ROT DEO2
 		#01 ;draw-chr/color STA
 		#0000 ;buf/app SUB2 ;draw-dec JSR2
 		#20 ;draw-chr JSR2
-		;dict/free ;draw-str JSR2 POP2
+		;dict/free ;draw-text JSR2
 	JMP2r
 	&disk
 		.Screen/x DEI2k #0020 ADD2 STH2k ROT DEO2
 		.Screen/y DEI2k #0014 SUB2 ROT DEO2
-			#0005 ADD2 ;draw-str JSR2 POP2
+			#0005 ADD2 ;draw-text JSR2
 		STH2r .Screen/x DEO2
 		.Screen/y DEI2k #0009 ADD2 ROT DEO2
 		#01 ;draw-chr/color STA
-		;dict/empty ;draw-str JSR2 POP2
+		;dict/empty ;draw-text JSR2
 	JMP2r
 
 @edit-copy ( -- ) JMP2r

@@ -1,8 +1,8 @@
 @disk-manifest
 
 	02 "Disk $1
-		12 00 :close-win "Close $1
 		22 00 :tab-win "Tab $1
+		12 00 :close-win "Close $1
 	02 "Settings $1
 		02 00 :toggle-zoom "Decimal $1
 		02 00 :toggle-zoom "Hexadecimal $1
@@ -26,9 +26,9 @@
 	.Screen/y DEI2k #000c ADD2 ROT DEO2
 	;buf/dir ;draw-dec JSR2
 	LIT '/ ;draw-chr JSR2
-	;&full ;draw-str JSR2 POP2
+	;&full ;draw-text JSR2
 	#20 ;draw-chr JSR2
-	;dict/bytes ;draw-str JSR2 POP2
+	;dict/bytes ;draw-text JSR2
 
 	DUP2
 	LDA2k .Screen/x DEO2 POP2
@@ -77,8 +77,8 @@ JMP2r
 @text-manifest
 
 	02 "Text $1
-		12 00 :close-win "Close $1
 		22 00 :tab-win "Tab $1
+		12 00 :close-win "Close $1
 	04 "Edit $1
 		01 'c :edit-copy "Copy $1
 		01 'v :edit-paste "Paste $1
@@ -167,7 +167,7 @@ JMP2r
 
 	LDA2k #0008 ADD2 .Screen/x DEO2
 	INC2 INC2 LDA2 #0010 ADD2 .Screen/y DEO2
-    ;&prompt ;draw-str JSR2 POP2
+    ;&prompt ;draw-text JSR2
 
 JMP2r
 	&path ". $1
@@ -194,7 +194,7 @@ JMP2r
 
 	LDA2k #0008 ADD2 .Screen/x DEO2
 	INC2 INC2 LDA2 #0010 ADD2 .Screen/y DEO2
-    ;&prompt ;draw-str JSR2 POP2
+    ;&prompt ;draw-text JSR2
 
 JMP2r
 	&path ". $1
@@ -230,12 +230,12 @@ JMP2r
 	#0c ;draw-chr/color STA
 	.Screen/width DEI2 #0098 SUB2 .Screen/x DEO2
 
-	#00 .DateTime/dotw DEI #20 SFT ;dict/dotw ADD2 ;draw-str JSR2 POP2
+	#00 .DateTime/dotw DEI #20 SFT ;dict/dotw ADD2 ;draw-text JSR2
 	LIT ', ;draw-chr JSR2
 	#20 ;draw-chr JSR2
 	#00 .DateTime/day DEI ;draw-dec JSR2
 	#20 ;draw-chr JSR2
-	#00 .DateTime/month DEI #20 SFT ;dict/months ADD2 ;draw-str JSR2 POP2
+	#00 .DateTime/month DEI #20 SFT ;dict/months ADD2 ;draw-text JSR2
 	#20 ;draw-chr JSR2
 	.DateTime/hour DEI ,&d JSR
 	LIT ': ;draw-chr JSR2
