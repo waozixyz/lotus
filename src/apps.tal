@@ -63,13 +63,6 @@ JMP2r
 @system-txt "System $1
 @apps-txt "Applications $1
 
-@open-disk ( -- )
-
-	;no-name ;app-disk #1613 #0023 #0073 ;add-win JSR2
-	;draw-desktop JSR2
-
-JMP2r
-
 ( ------------------------------------------------------------- )
 
 @text-manifest

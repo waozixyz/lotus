@@ -7,11 +7,6 @@
 		01 'd :open-as-data "As 20 "Data $1
 		01 't :open-as-text "As 20 "Text $1
 		01 'p :open-as-pict "As 20 "Pict $1
-	04 "Edit $1
-		01 'c :edit-copy "Copy $1
-		01 'v :edit-paste "Paste $1
-		01 'x :edit-cut "Cut $1
-		00 08 :edit-erase "Erase $1
 	04 "Select $1
 		10 00 :sel-up "Up $1
 		20 00 :sel-down "Down $1
@@ -53,12 +48,6 @@ JMP2r
 
 	;draw-item-text/sel STA
 	;draw-desktop JSR2
-
-JMP2r
-
-@go-file ( -- )
-
-	;draw-item-text/sel LDA ;get-file JSR2 ;open-file JSR2
 
 JMP2r
 
@@ -215,3 +204,10 @@ JMP2r
 @edit-cut ( -- ) JMP2r
 @edit-erase ( -- ) JMP2r
 @toggle-zoom ( -- ) JMP2r
+
+@open-disk ( -- )
+
+	;no-name ;app-disk #1613 #0023 #0073 ;add-win JSR2
+	;center-win JSR2
+
+JMP2r

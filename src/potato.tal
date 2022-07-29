@@ -262,19 +262,25 @@ JMP2r
 JMP2r
 	&valid #01 SUB ,sel-win JSR JMP2r
 
-@sel-desktop ( ff -- )
-
-	;manifest ;draw-menu/manifest STA2
-	;draw-menu-bg JSR2
-	;draw-menu JSR2
-
-JMP2r
-
 @go-home ( -- )
 
 	;buf/loc #0040 ;mclr JSR2
 	LIT '. ;buf/loc STA
 	#00 ;sel JSR2
+
+JMP2r
+
+@go-file ( -- )
+
+	;draw-item-text/sel LDA ;get-file JSR2 ;open-file JSR2
+
+JMP2r
+
+@sel-desktop ( ff -- )
+
+	;manifest ;draw-menu/manifest STA2
+	;draw-menu-bg JSR2
+	;draw-menu JSR2
 
 JMP2r
 
@@ -297,6 +303,18 @@ JMP2r
 @expand-win ( -- )
 
 	#001d ;get-active-win JSR2 INC2 INC2 STA2
+	;draw-desktop JSR2
+
+JMP2r
+
+@center-win ( -- )
+
+	;get-active-win JSR2
+	STH2k
+	( /w ) #0004 ADD2
+	( -x ) LDAk #00 SWP #31 SFT2 .Screen/width DEI2 #01 SFT2 SWP2 SUB2 STH2kr STA2
+	( /h ) INC2 INC2r INC2r
+	( -y ) LDA #00 SWP #31 SFT2 .Screen/height DEI2 #01 SFT2 SWP2 SUB2 STH2r STA2
 	;draw-desktop JSR2
 
 JMP2r
