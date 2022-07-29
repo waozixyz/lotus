@@ -52,7 +52,7 @@ JMP2r
 
 	( on-draw )
 	,&x LDR2 #0008 ADD2 .Screen/x DEO2
-	,&y LDR2 #0010 ADD2 .Screen/y DEO2
+	,&y LDR2 #0012 ADD2 .Screen/y DEO2
 	STH2r INC2 INC2 LDA2 JMP2
 
 JMP2r
@@ -65,7 +65,7 @@ JMP2r
 	OVR2 OVR2 .Screen/y DEO2 .Screen/x DEO2
 	#85 ;draw-frame/color STA
 	STH2kr ;frame1-chr ;draw-frame JSR2
-	OVR2 OVR2 #0008 ADD2 .Screen/y DEO2 .Screen/x DEO2
+	OVR2 OVR2 #000a ADD2 .Screen/y DEO2 .Screen/x DEO2
 	STH2r POP ;draw-dotted JSR2
 	.Screen/y DEO2 .Screen/x DEO2
 
@@ -268,7 +268,7 @@ JMP2r
 	LITr 00
 	&while
 		[ LIT2 &x $2 ] .Screen/x DEO2
-		#02 #0e [ LIT &t $1 ] STHkr EQU JMP SWP POP ;draw-chr/color STA
+		#02 #0e [ LIT &t $1 ] STHkr EQU POP? ;draw-chr/color STA
 		;draw-line JSR2
 		INCr
 		INC2 LDAk ,&while JCN
