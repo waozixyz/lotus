@@ -37,6 +37,8 @@
 @size-system-start
 
 @cursor &x $2 &y $2
+@anchor &x $2 &y $2
+
 @drag $1
 @length $1
 @windows
@@ -291,9 +293,18 @@ JMP2r
 @open-file ( file* -- )
 
 	LDAk LIT '- EQU ,open-folder JCN
+	LDAk LIT '! EQU ;open-potato JCN2
 	DUP2 ;scap JSR2 #0004 SUB2 ;dict/icn-ext ;scmp JSR2 ,open-icn JCN
 
 	;get-path JSR2 ;app-text #3023 #001d #0034 ;add-win JSR2
+
+JMP2r
+
+@open-potato ( file* -- )
+
+	;buf/loc #0040 ;mclr JSR2
+	LIT '. ;buf/loc STA
+	#00 ;sel JSR2
 
 JMP2r
 

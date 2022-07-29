@@ -174,6 +174,28 @@ JMP2r
 
 JMP2r
 
+@draw-scrollbar ( h -- )
+
+	#01 SUB
+	#06 .Screen/auto DEO
+	;arrow-icn .Screen/addr DEO2
+	#0e .Screen/sprite DEO
+	#02 .Screen/auto DEO
+	#00
+	&l
+		#0e .Screen/sprite DEO
+		INC GTHk ,&l JCN
+	POP
+	#01 .Screen/auto DEO
+	;arrow-icn .Screen/addr DEO2
+	#2e .Screen/sprite DEO
+
+	( recover y )
+	INC #00 SWP #30 SFT2 STH2
+	.Screen/y DEI2k STH2r SUB2 ROT DEO2
+
+JMP2r
+
 @get-strw ( str* -- width* )
 
 	;slen JSR2 #30 SFT2
@@ -210,6 +232,20 @@ JMP2r
 
 	LDA2k #0008 ADD2 .Screen/x DEO2 INC2 INC2
 	LDA2k #0012 ADD2 .Screen/y DEO2
+
+JMP2r
+
+@put-anchor ( -- )
+
+	.Screen/x DEI2 .anchor/x STZ2
+	.Screen/y DEI2 .anchor/y STZ2
+
+JMP2r
+
+@get-anchor ( -- )
+
+	.anchor/x LDZ2 .Screen/x DEO2
+	.anchor/y LDZ2 .Screen/y DEO2
 
 JMP2r
 
@@ -280,8 +316,12 @@ JMP2r
 
 @draw-textarea ( str* w h -- )
 
+	.Screen/x DEI2k #0008 SUB2 ROT DEO2
+	#20 ;draw-scrollbar JSR2
+	.Screen/x DEI2k #0008 ADD2 ROT DEO2
+
 	#00 SWP #30 SFT2 .Screen/y DEI2 ADD2 ,&y-bound STR2
-	#00 SWP #30 SFT2 .Screen/x DEI2 ADD2 ,&x-bound STR2
+	#01 SUB #00 SWP #30 SFT2 .Screen/x DEI2 ADD2 ,&x-bound STR2
 	.Screen/x DEI2 ,&x STR2
 
 	LDAk #00 EQU ,&end JCN
