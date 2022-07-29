@@ -182,7 +182,6 @@ BRK
 BRK
 	&no-win BRK
 
-
 @set-drag ( -- )
 
 	.length LDZ #01 SUB .drag STZ
@@ -264,6 +263,23 @@ JMP2r
 
 JMP2r
 
+@get-win ( id -- addr* )
+
+	DUP #ff NEQ ,&exists JCN
+		JMP2r
+		&exists
+	#0a MUL .windows ADD #00 SWP
+
+JMP2r
+
+@open-file ( file* -- )
+
+	#0005 ADD2 ;app-text #3020 #0020 #0020 ;add-win JSR2
+
+JMP2r
+
+( helpers )
+
 @mswp ( len* a* b* -- )
 
 	,&b STR2 ,&a STR2
@@ -276,15 +292,6 @@ JMP2r
 		STHr ROT ROT STA
 		INC2 GTH2k ,&l JCN
 	POP2 POP2
-
-JMP2r
-
-@get-win ( id -- addr* )
-
-	DUP #ff NEQ ,&exists JCN
-		JMP2r
-		&exists
-	#0a MUL .windows ADD #00 SWP
 
 JMP2r
 
@@ -321,6 +328,17 @@ JMP2r
 
 JMP2r
 
+@remove-lb ( addr* -- )
+
+	&w
+		LDAk #0a NEQ ,&no-lb JCN
+			STH2k #00 STH2r STA
+			&no-lb
+		INC2 LDAk ,&w JCN
+	POP2
+
+JMP2r
+
 @no-name $1
 
 ~src/draw.tal
@@ -339,4 +357,6 @@ JMP2r
 	~src/apps.tal
 @size-apps-end
 
-@buffer
+@buf
+	&dir $400
+	&app
