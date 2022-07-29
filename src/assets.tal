@@ -2,6 +2,10 @@
 	&empty "Empty $1
 	&free "Free $1
 	&bytes "Bytes $1
+	&fontsicons "Font 20 "& 20 "Icons $1
+	&desktop "Desktop $1
+	&system "System $1
+	&applications "Applications $1
 	&dotw
 		"Sun $1 "Mon $1 "Tue $1 "Wed $1
 		"Thu $1 "Fri $1 "Sat $1

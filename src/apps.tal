@@ -49,19 +49,14 @@
 
 JMP2r
 	&items
-		:size-assets-end :size-assets-start :font-txt :icons/fonts
-		:size-desktop-end :size-desktop-start :desktop-txt :icons/desktop
-		:size-apps-end :size-apps-start :apps-txt :icons/unknown
-		:size-system-end :size-system-start :system-txt :icons/potato
+		:size-assets-end :size-assets-start :dict/fontsicons :icons/fonts
+		:size-desktop-end :size-desktop-start :dict/desktop :icons/desktop
+		:size-apps-end :size-apps-start :dict/applications :icons/unknown
+		:size-system-end :size-system-start :dict/system :icons/potato
 	&full "65536 $1
 
 &on-button ( win* -> ) POP2 BRK
 &on-mouse ( win* -> ) POP2 BRK
-
-@font-txt "Font 20 "& 20 "Icons $1
-@desktop-txt "Desktop $1
-@system-txt "System $1
-@apps-txt "Applications $1
 
 ( ------------------------------------------------------------- )
 
