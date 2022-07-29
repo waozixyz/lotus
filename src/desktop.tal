@@ -13,7 +13,7 @@
 		20 00 :sel-down "Down $1
 		40 00 :sel-left "Left $1
 		80 00 :sel-right "Right $1
-		22 00 :sel-open "Open $1
+		82 00 :sel-open "Open $1
 	01 "View $1
 		02 00 :toggle-zoom "Zoom $1
 	$1

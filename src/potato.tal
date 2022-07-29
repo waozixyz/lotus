@@ -288,9 +288,13 @@ JMP2r
 
 @open-file ( file* -- )
 
+	LDAk LIT '- EQU ,&folder JCN
+
 	#0005 ADD2 ;app-text #3020 #0020 #0020 ;add-win JSR2
 
 JMP2r
+	&folder
+		#0005 ADD2 ;app-folder #1a10 #0030 #0028 ;add-win JSR2 JMP2r
 
 ( helpers )
 

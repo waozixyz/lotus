@@ -115,6 +115,69 @@ JMP2r
 
 ( ------------------------------------------------------------- )
 
+@folder-manifest
+
+	02 "Folder $1
+		22 00 :tab-win "Tab $1
+		12 00 :close-win "Close $1
+	03 "Select $1
+		10 00 :folder-sel-up "Up $1
+		20 00 :folder-sel-down "Down $1
+		82 00 :folder-sel-open "Open $1
+	$1
+
+@app-folder
+	:folder-manifest
+	:&on-draw
+	:&on-mouse
+	:&on-button
+
+&on-button ( win* -> ) POP2 BRK
+&on-mouse ( win* -> ) POP2 BRK
+
+&on-draw ( win* -- )
+
+	( get path )
+	DUP2
+	#0008 ADD2 LDA2 .File/name DEO2
+	#0000 ;buf/app SUB2 .File/length DEO2
+	;buf/app .File/read DEO2
+	( cap )
+	#00 .File/success DEI2 ;buf/app ADD2 STA
+	;buf/app [ LIT &sel 00 ] ;draw-list JSR2
+	POP2
+
+JMP2r
+
+@folder-sel-up ( -- )
+
+	;app-folder/sel LDA #01 SUB ;folder-sel JSR2
+
+JMP2r
+
+@folder-sel-down ( -- )
+
+	;app-folder/sel LDA INC ;folder-sel JSR2
+
+JMP2r
+
+@folder-sel ( id -- )
+
+	;app-folder/sel STA
+	;get-active-win JSR2
+		DUP2 ;set-anchor-body JSR2 POP2
+	;app-folder/on-draw JSR2
+
+JMP2r
+
+@folder-sel-open ( -- )
+
+	;close-win JSR2
+
+JMP2r
+
+( ------------------------------------------------------------- )
+
 @app-pict
 	:pict-manifest
 	:&on-draw
@@ -138,8 +201,9 @@ JMP2r
 
 @pict-manifest
 
-	01 "Picture $1
-		01 'n :close-win "Close $1
+	02 "Picture $1
+		22 00 :tab-win "Tab $1
+		12 00 :close-win "Close $1
 	04 "Edit $1
 		01 'c :edit-copy "Copy $1
 		01 'v :edit-paste "Paste $1
