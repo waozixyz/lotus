@@ -77,7 +77,7 @@ JMP2r
 @draw-home ( -- )
 
 	( load dir )
-	;&path .File/name DEO2
+	;buf/loc .File/name DEO2
 	#0400 .File/length DEO2
 	;buf/dir #0017 ADD2 .File/read DEO2
 
@@ -98,7 +98,6 @@ JMP2r
 	POPr
 
 JMP2r
-	&path ". $1
 	&init
 		"!--- 20 "Potato $1
 		"@--- 20 "Drive $1
