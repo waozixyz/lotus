@@ -194,9 +194,14 @@ JMP2r
 @draw-drag ( win* color -- )
 
 	;draw-frame/color STA
-	LDA2k .Screen/x DEO2
-	INC2 INC2 LDA2k .Screen/y DEO2
+	,set-anchor JSR
 	INC2 INC2 LDA2 ;frame2-chr ;draw-frame JSR2
+
+JMP2r
+
+@set-anchor ( win* -- win/size* )
+
+	LDA2k .Screen/x DEO2 INC2 INC2 LDA2k .Screen/y DEO2
 
 JMP2r
 
@@ -272,7 +277,7 @@ JMP2r
 
 @draw-chr ( char -- )
 
-	#20 SUB #00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
+	#00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
 	[ LIT &color 03 ] .Screen/sprite DEO
 
 JMP2r
