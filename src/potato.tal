@@ -253,11 +253,14 @@ JMP2r
 JMP2r
 	&unchanged POP JMP2r
 
-@sel-last-win ( -- )
+@go-active ( -- )
 
-	.length LDZ #01 SUB ,sel-win JSR
+	.length LDZ
+	DUP ,&valid JCN
+	POP
 
 JMP2r
+	&valid #01 SUB ,sel-win JSR JMP2r
 
 @sel-desktop ( ff -- )
 
@@ -267,7 +270,7 @@ JMP2r
 
 JMP2r
 
-@return-home ( -- )
+@go-home ( -- )
 
 	;buf/loc #0040 ;mclr JSR2
 	LIT '. ;buf/loc STA

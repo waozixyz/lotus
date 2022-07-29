@@ -12,14 +12,15 @@
 		01 'v :edit-paste "Paste $1
 		01 'x :edit-cut "Cut $1
 		00 08 :edit-erase "Erase $1
-	07 "Select $1
+	04 "Select $1
 		10 00 :sel-up "Up $1
 		20 00 :sel-down "Down $1
 		40 00 :sel-left "Left $1
 		80 00 :sel-right "Right $1
-		12 00 :sel-last-win "Window $1
-		42 00 :return-home "Home $1
-		82 00 :sel-open "Open $1
+	03 "Go $1
+		12 00 :go-active "Active $1
+		42 00 :go-home "Home $1
+		82 00 :go-file "Open $1
 	$1
 
 @sel-up ( -- )
@@ -55,7 +56,7 @@ JMP2r
 
 JMP2r
 
-@sel-open ( -- )
+@go-file ( -- )
 
 	;draw-item-text/sel LDA ;get-file JSR2 ;open-file JSR2
 
