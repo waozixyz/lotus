@@ -21,6 +21,8 @@
 %MOD2 { DIV2k MUL2 SUB2 }
 %LTS2 { #8000 STH2k ADD2 SWP2 STH2r ADD2 GTH2 }
 %GTS2 { #8000 STH2k ADD2 SWP2 STH2r ADD2 LTH2 }
+%POP? { JMP SWP POP }
+%POP2? { JMP SWP2 POP2 }
 
 ( debugger )
 
@@ -147,7 +149,7 @@ BRK
 	INC2r INC2r
 	#001b .Mouse/y DEI2 [ LIT2 &y $2 ] SUB2 STH2kr LDA2 ADD2
 		;clamp-win JSR2
-		.Screen/height DEI2 #000a SUB2 LTH2k JMP SWP2 POP2
+		.Screen/height DEI2 #000a SUB2 LTH2k POP2?
 		STH2r STA2
 
 	( update )

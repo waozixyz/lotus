@@ -165,7 +165,7 @@ JMP2r
 	#00
 	&loop
 		DUP STHkr LTH STH
-		;vert-icn ;check-icn STHr [ JMP SWP2 POP2 ] .Screen/addr DEO2
+		;vert-icn ;check-icn STHr POP2? .Screen/addr DEO2
 		.Screen/x DEI2k INC2 INC2 ROT DEO2
 		#0a .Screen/sprite DEO
 		INC GTHk ,&loop JCN
@@ -224,13 +224,15 @@ JMP2r
 	#00
 	&stream
 		;&buf .File/read DEO2
+		.File/success DEI2 #0000 EQU2 ,&end JCN
 		[ LIT &color 0e ] .Screen/sprite DEO
 		INC DUP [ LIT &w $1 ] LTH ,&no-line JCN
 			[ LIT2 &x $2 ] .Screen/x DEO2
 			;draw-lb JSR2
 			POP #00
 			&no-line
-		.File/success DEI2 ORA ,&stream JCN
+		 ,&stream JMP
+	&end
 	POP
 
 JMP2r

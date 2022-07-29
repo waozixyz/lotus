@@ -178,6 +178,15 @@ JMP2r
 
 ( ------------------------------------------------------------- )
 
+@pict-manifest
+
+	02 "Picture $1
+		22 00 :tab-win "Tab $1
+		12 00 :close-win "Close $1
+	01 "View $1
+		01 'i :app-pict-invert "Invert $1
+	$1
+
 @app-pict
 	:pict-manifest
 	:&on-draw
@@ -193,21 +202,15 @@ JMP2r
 
 JMP2r
 
-	&target "etc/akane20x10.icn $1
+@app-pict-invert ( -- )
 
-@pict-manifest
+	#0e #0b ;draw-image/color LDA #0e NEQ POP? ;draw-image/color STA
 
-	02 "Picture $1
-		22 00 :tab-win "Tab $1
-		12 00 :close-win "Close $1
-	04 "Edit $1
-		01 'c :edit-copy "Copy $1
-		01 'v :edit-paste "Paste $1
-		01 'x :edit-cut "Cut $1
-		00 08 :edit-erase "Erase $1
-	01 "View $1
-		02 00 :toggle-zoom "Zoom $1
-	$1
+	;get-active-win JSR2
+		DUP2 ;set-anchor-body JSR2 POP2
+	;app-pict/on-draw JSR2
+
+JMP2r
 
 ( ------------------------------------------------------------- )
 
