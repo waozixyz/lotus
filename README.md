@@ -24,27 +24,41 @@ uxnemu bin/potato.rom
 
 Since this is designed to be used principally on a handheld devices without a window manager, the controls are aimed at d-pad centric. The pattern here is using the B button to handle all window operations, and leave the A button to the applications.
 
-- `B+Up`, close a window
-- `B+Down`, open a window
-- `B+Down Down`, tab a window
+- `B+Up`, expand a window
+- `B+Down`, tab a window
+- `B+Right`, open a window
+- `B+Left`, close a window
 
 ## TODO
 
 - Change icon on alt mod for drag.
-- Wallpaper application.
 - Audio player.
-- Image viewer.
-- Theme editor.
-- Clock application.
 - Terminal.
 - Piano.
 - Documentation.
 - Basic text editor?
+    - Scrollbar
+- Image viewer
+    - chr view
+    - palette chooser
+    - Select next image
+    - Select prev image
+- Clock widget
+- Wallpaper application
+    - Select image
+    - Paint Pattern
+- Theme selector
+    - Save patt after theme
+- Error modal/application
+- Throw error when trying to open a folder as pict/text/data
+- Mouse picking on desktop
+- Hex editor
+- Desktop
+    - Rename file
+    - Copy file
+    - Delete file
 
 ## Support
 
 - [theme](https://wiki.xxiivv.com/site/theme.html)
 - [snarf](https://wiki.xxiivv.com/site/snarf.html)
-
-
-

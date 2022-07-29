@@ -1,8 +1,9 @@
 @disk-manifest
 
-	02 "Disk $1
+	03 "Disk $1
+		12 00 :expand-win "Expand $1
 		22 00 :tab-win "Tab $1
-		12 00 :close-win "Close $1
+		42 00 :close-win "Close $1
 	02 "Settings $1
 		02 00 :toggle-zoom "Decimal $1 ( TODO )
 		02 00 :toggle-zoom "Hexadecimal $1 ( TODO )
@@ -73,9 +74,10 @@ JMP2r
 
 @text-manifest
 
-	02 "Text $1
+	03 "Text $1
+		12 00 :expand-win "Expand $1
 		22 00 :tab-win "Tab $1
-		12 00 :close-win "Close $1
+		42 00 :close-win "Close $1
 	04 "Edit $1
 		01 'c :edit-copy "Copy $1
 		01 'v :edit-paste "Paste $1
@@ -117,9 +119,10 @@ JMP2r
 
 @pict-manifest
 
-	02 "Picture $1
+	03 "Picture $1
+		12 00 :expand-win "Expand $1
 		22 00 :tab-win "Tab $1
-		12 00 :close-win "Close $1
+		42 00 :close-win "Close $1
 	01 "View $1
 		01 'i :app-pict-invert "Invert $1
 	$1

@@ -277,6 +277,12 @@ JMP2r
 
 JMP2r
 
+@expand-win ( -- )
+
+	( TODO )
+
+JMP2r
+
 @get-active-win ( -- addr* )
 
 	.length LDZ #01 SUB
