@@ -85,7 +85,7 @@ JMP2r
 			[ LIT &color 03 ] .Screen/sprite DEO
 			INC GTHk ,&w JCN
 		POP2
-		.Screen/y DEI2k #0008 ADD2 ROT DEO2
+		;draw-lb JSR2
 		.Screen/x DEI2k #00 ,&x LDR #30 SFT2 SUB2 ROT DEO2
 		INC GTHk ,&h JCN
 	POP2
@@ -168,25 +168,9 @@ JMP2r
 
 JMP2r
 
-@draw-chr ( char -- )
-
-	#20 SUB #00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
-	[ LIT &color 03 ] .Screen/sprite DEO
-
-JMP2r
-
 @get-strw ( str* -- width* )
 
 	;slen JSR2 #30 SFT2
-
-JMP2r
-
-@print-str ( str* -- )
-
-	&w
-		LDAk #18 DEO
-		INC2 LDAk ,&w JCN
-	POP2
 
 JMP2r
 
@@ -224,7 +208,7 @@ JMP2r
 		[ LIT &color 0e ] .Screen/sprite DEO
 		INC DUP [ LIT &w $1 ] LTH ,&no-line JCN
 			[ LIT2 &x $2 ] .Screen/x DEO2
-			.Screen/y DEI2k #0008 ADD2 ROT DEO2
+			;draw-lb JSR2
 			POP #00
 			&no-line
 		.File/success DEI2 ORA ,&stream JCN
@@ -252,3 +236,35 @@ JMP2r
 	&parse
 		DIV2k DUP ,&emit JSR MUL2 SUB2
 	JMP2r
+
+@draw-textarea ( str* -- )
+
+	.Screen/x DEI2 ,&x STR2
+	LDAk #00 EQU ,&skip JCN
+	#01 .Screen/auto DEO
+	&while
+		LDAk #0a NEQ ,&no-lb JCN
+			[ LIT2 &x $2 ] .Screen/x DEO2
+			;draw-lb JSR2
+			,&resume JMP
+			&no-lb
+		LDAk ;draw-chr JSR2
+		&resume
+		INC2 LDAk ,&while JCN
+	&skip
+	POP2
+
+JMP2r
+
+@draw-chr ( char -- )
+
+	#20 SUB #00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
+	[ LIT &color 03 ] .Screen/sprite DEO
+
+JMP2r
+
+@draw-lb ( -- )
+
+	.Screen/y DEI2k #0008 ADD2 ROT DEO2
+
+JMP2r

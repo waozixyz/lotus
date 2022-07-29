@@ -22,6 +22,8 @@
 %LTS2 { #8000 STH2k ADD2 SWP2 STH2r ADD2 GTH2 }
 %GTS2 { #8000 STH2k ADD2 SWP2 STH2r ADD2 LTH2 }
 
+( debugger )
+
 %BUG { ;print/byte JSR2 #0a18 DEO }
 %BUG2 { ;print JSR2 #0a18 DEO }
 %BUGk { DUP ;print/byte JSR2 #0a18 DEO }
@@ -334,6 +336,15 @@ JMP2r
 		LDAk #0a NEQ ,&no-lb JCN
 			STH2k #00 STH2r STA
 			&no-lb
+		INC2 LDAk ,&w JCN
+	POP2
+
+JMP2r
+
+@print-str ( str* -- )
+
+	&w
+		LDAk #18 DEO
 		INC2 LDAk ,&w JCN
 	POP2
 
