@@ -290,7 +290,7 @@ JMP2r
 
 	LDAk LIT '- EQU ,open-folder JCN
 
-	#0005 ADD2 ;app-text #3020 #0020 #0020 ;add-win JSR2
+	,open-ext-icn JSR
 
 JMP2r
 
@@ -298,6 +298,16 @@ JMP2r
 
 	#0005 ADD2 ;buf/loc ;scpy JSR2
 	#00 ;sel JSR2
+
+JMP2r
+
+@open-ext-icn ( file* -- )
+
+	;buf/tmp #0040 ;mclr JSR2
+	;buf/loc ;buf/tmp ;scat JSR2
+	LIT '/ ;buf/tmp ;sput JSR2
+	#0005 ADD2 ;buf/tmp ;scat JSR2
+	;buf/tmp ;app-pict #3020 #0020 #0020 ;add-win JSR2
 
 JMP2r
 
@@ -391,5 +401,7 @@ JMP2r
 
 @buf
 	&loc '. $3f
+	&tmp $40
 	&dir $400
 	&app
+
