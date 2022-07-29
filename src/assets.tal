@@ -8,6 +8,7 @@
 	&months
 		"Jan $1 "Feb $1 "Mar $1 "Apr $1 "May $1 "Jun $1
 		"Jul $1 "Aug $1 "Sep $1 "Oct $1 "Nov $1 "Dec $1
+	&icn-ext ".icn $1
 
 @patt-icn
 	8000 0000 0000 0000
@@ -92,9 +93,9 @@
 	ffff 0000 0000 0000 ffff ff00 0000 0000
 	f8f8 0000 0000 0000 fcfc f800 0000 0000
 	&potato
-	0000 0103 0706 0505 0001 0204 0f0f 0f0f
-	0000 ffff ff00 ffff 00ff 0000 ffff ffff
-	0000 f0e8 f878 b8b8 00f8 0404 e4e4 e4e4
+	0000 0001 0307 0605 0000 0102 040f 0f0f
+	0000 00ff ffff 00ff 0000 ff00 00ff ffff
+	0000 00f0 e8f8 78b8 0000 f804 04e4 e4e4
 	0505 0505 0505 0607 0f0f 0f0f 0f0f 0f0f
 	ffff 7eff e7ff 00ff ffff ffff ffff ffff
 	b8b8 b8b8 b8b8 78f8 e4e4 e4e4 e4e4 e4e4

@@ -291,8 +291,9 @@ JMP2r
 @open-file ( file* -- )
 
 	LDAk LIT '- EQU ,open-folder JCN
+	DUP2 ;scap JSR2 #0004 SUB2 ;dict/icn-ext ;scmp JSR2 ,open-icn JCN
 
-	,open-ext-icn JSR
+	;get-path JSR2 ;app-text #3023 #001d #0034 ;add-win JSR2
 
 JMP2r
 
@@ -303,7 +304,7 @@ JMP2r
 
 JMP2r
 
-@open-ext-icn ( file* -- )
+@open-icn ( file* -- )
 
 	;buf/tmp #0040 ;mclr JSR2
 	;buf/loc ;buf/tmp ;scat JSR2
@@ -319,6 +320,16 @@ JMP2r
 		&has-size
 	INC INC
 	;buf/tmp ;app-pict ROT2 #0020 #0020 ;add-win JSR2
+
+JMP2r
+
+@get-path ( file* -- abs* )
+
+	;buf/tmp #0040 ;mclr JSR2
+	;buf/loc ;buf/tmp ;scat JSR2
+	LIT '/ ;buf/tmp ;sput JSR2
+	#0005 ADD2 ;buf/tmp ;scat JSR2
+	;buf/tmp
 
 JMP2r
 
@@ -388,6 +399,8 @@ JMP2r
 	POP2
 
 JMP2r
+
+@scmp ( a* b* -- f ) STH2 &l LDAk LDAkr STHr ANDk #00 EQU ,&e JCN NEQk ,&e JCN POP2 INC2 INC2r ,&l JMP &e NIP2 POP2r EQU JMP2r
 
 @print-str ( str* -- )
 
