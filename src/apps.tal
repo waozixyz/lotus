@@ -1,7 +1,8 @@
 @disk-manifest
 
-	01 "Disk $1
+	02 "Disk $1
 		12 00 :close-win "Close $1
+		22 00 :tab-win "Tab $1
 	02 "Settings $1
 		02 00 :toggle-zoom "Decimal $1
 		02 00 :toggle-zoom "Hexadecimal $1
@@ -75,8 +76,9 @@ JMP2r
 
 @text-manifest
 
-	01 "Text $1
+	02 "Text $1
 		12 00 :close-win "Close $1
+		22 00 :tab-win "Tab $1
 	04 "Edit $1
 		01 'c :edit-copy "Copy $1
 		01 'v :edit-paste "Paste $1

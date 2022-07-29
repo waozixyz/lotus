@@ -235,12 +235,12 @@ JMP2r
 	DUP #ff EQU ;sel-desktop JCN2
 	DUP .length LDZ GTH ,&unchanged JCN
 
-	;get-win JSR2 #000a SWP2 .length LDZ #01 SUB ;get-win JSR2 ;mswp JSR2
+	;get-win JSR2 #000a SWP2 ;get-active-win JSR2 ;mswp JSR2
 
 	;draw-desktop JSR2
 
 	( draw menu )
-	.length LDZ #01 SUB ;get-win JSR2 #0006 ADD2 LDA2
+	;get-active-win JSR2 #0006 ADD2 LDA2
 	( get manifest )
 	LDA2 ;draw-menu/manifest STA2
 	;draw-menu-bg JSR2
@@ -264,6 +264,18 @@ JMP2r
 	;draw-desktop JSR2
 
 JMP2r
+
+@tab-win ( -- )
+
+	.Screen/height DEI2 #0009 SUB2 ;get-active-win JSR2 INC2 INC2 STA2
+	;sel-desktop JSR2
+	;draw-desktop JSR2
+
+JMP2r
+
+@get-active-win ( -- addr* )
+
+	.length LDZ #01 SUB
 
 @get-win ( id -- addr* )
 

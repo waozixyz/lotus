@@ -26,6 +26,7 @@ Since this is designed to be used principally on a handheld devices without a wi
 
 - `B+Up`, close a window
 - `B+Down`, open a window
+- `B+Down Down`, tab a window
 
 ## TODO
 
