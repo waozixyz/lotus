@@ -308,8 +308,23 @@ JMP2r
 	;buf/tmp #0040 ;mclr JSR2
 	;buf/loc ;buf/tmp ;scat JSR2
 	LIT '/ ;buf/tmp ;sput JSR2
-	#0005 ADD2 ;buf/tmp ;scat JSR2
-	;buf/tmp ;app-pict #3020 #0020 #0020 ;add-win JSR2
+	#0005 ADD2
+	DUP2 ;buf/tmp ;scat JSR2
+
+	( read size from path )
+	;read-pict-size JSR2
+	DUP2 #0000 NEQ2 ,&has-size JCN
+		( default size )
+		POP2 #2010
+		&has-size
+	INC
+	;buf/tmp ;app-pict ROT2 #0020 #0020 ;add-win JSR2
+
+JMP2r
+
+@read-pict-size ( filename* -- size* )
+
+	;scap JSR2 #0009 SUB2 ;read-size JSR2
 
 JMP2r
 
