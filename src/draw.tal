@@ -33,9 +33,11 @@ JMP2r
 
 @draw-win ( win* -- )
 
-	DUP2
-	LDA2k .Screen/x DEO2 INC2 INC2
-	LDA2k .Screen/y DEO2 INC2 INC2
+	( get anchor )
+	LDA2k ,&x STR2 [ LIT2 &x $2 ] .Screen/x DEO2
+	INC2k INC2 LDA2 ,&y STR2 [ LIT2 &y $2 ] .Screen/y DEO2
+
+	DUP2 #0004 ADD2
 	LDA2k ;draw-win-decor JSR2 INC2 INC2
 	( draw name )
 	#05 ;draw-chr/color STA
@@ -47,6 +49,10 @@ JMP2r
 	( file name )
 	#0a ;draw-chr/color STA
 	LDA2 ;draw-text JSR2
+
+	( on-draw )
+	,&x LDR2 #0008 ADD2 .Screen/x DEO2
+	,&y LDR2 #0010 ADD2 .Screen/y DEO2
 	STH2r INC2 INC2 LDA2 JMP2
 
 JMP2r
@@ -237,21 +243,29 @@ JMP2r
 		DIV2k DUP ,&emit JSR MUL2 SUB2
 	JMP2r
 
-@draw-textarea ( str* -- )
+@draw-textarea ( str* w h -- )
 
+	#00 SWP #30 SFT2 .Screen/y DEI2 ADD2 ,&y-bound STR2
+	#00 SWP #30 SFT2 .Screen/x DEI2 ADD2 ,&x-bound STR2
 	.Screen/x DEI2 ,&x STR2
-	LDAk #00 EQU ,&skip JCN
+
+	LDAk #00 EQU ,&end JCN
 	#01 .Screen/auto DEO
 	&while
+		( lb )
 		LDAk #0a NEQ ,&no-lb JCN
 			[ LIT2 &x $2 ] .Screen/x DEO2
 			;draw-lb JSR2
 			,&resume JMP
 			&no-lb
-		LDAk ;draw-chr JSR2
+		( x )
+		.Screen/x DEI2 [ LIT2 &x-bound $2 ] GTH2 ,&ok-x JCN
+			LDAk ;draw-chr JSR2
+			&ok-x
+		.Screen/y DEI2 [ LIT2 &y-bound $2 ] GTH2 ,&end JCN
 		&resume
 		INC2 LDAk ,&while JCN
-	&skip
+	&end
 	POP2
 
 JMP2r
