@@ -294,9 +294,9 @@ JMP2r
 
 	LDAk LIT '- EQU ,open-folder JCN
 	LDAk LIT '! EQU ;open-potato JCN2
-	DUP2 ;scap JSR2 #0004 SUB2 ;dict/icn-ext ;scmp JSR2 ,open-icn JCN
+	DUP2 ;scap JSR2 #0004 SUB2 ;dict/icn-ext ;scmp JSR2 ,open-pict JCN
 
-	;get-path JSR2 ;app-text #3023 #001d #0034 ;add-win JSR2
+	;get-path JSR2 ;open-text JSR2
 
 JMP2r
 
@@ -315,22 +315,24 @@ JMP2r
 
 JMP2r
 
-@open-icn ( file* -- )
+@open-text ( file* -- )
 
-	;buf/tmp #0040 ;mclr JSR2
-	;buf/loc ;buf/tmp ;scat JSR2
-	LIT '/ ;buf/tmp ;sput JSR2
-	#0005 ADD2
-	DUP2 ;buf/tmp ;scat JSR2
+	;app-text #3023 #001d #0034 ;add-win JSR2
 
+JMP2r
+
+@open-pict ( file* -- )
+
+	;get-path JSR2
+	DUP2
 	( read size from path )
 	;read-pict-size JSR2
 	ORAk ,&has-size JCN
 		( default size )
 		POP2 #2010
 		&has-size
-	INC INC
-	;buf/tmp ;app-pict ROT2 #0020 #0020 ;add-win JSR2
+	INC INC STH2
+	;app-pict STH2r #0020 #0020 ;add-win JSR2
 
 JMP2r
 
@@ -445,4 +447,3 @@ JMP2r
 	&tmp $40
 	&dir $400
 	&app
-
