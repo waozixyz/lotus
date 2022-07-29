@@ -101,6 +101,8 @@ JMP2r
 	#0008 ADD2 LDA2 .File/name DEO2
 	#0000 ;buf/app SUB2 .File/length DEO2
 	;buf/app .File/read DEO2
+	( cap )
+	#00 .File/success DEI2 ;buf/app ADD2 STA
 
 	DUP2 #0004 ADD2 LDA2
 		#05 SUB SWP #02 SUB SWP
