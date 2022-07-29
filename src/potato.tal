@@ -317,7 +317,7 @@ JMP2r
 		( default size )
 		POP2 #2010
 		&has-size
-	INC
+	INC INC
 	;buf/tmp ;app-pict ROT2 #0020 #0020 ;add-win JSR2
 
 JMP2r
