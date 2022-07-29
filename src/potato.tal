@@ -22,16 +22,21 @@
 %LTS2 { #8000 STH2k ADD2 SWP2 STH2r ADD2 GTH2 }
 %GTS2 { #8000 STH2k ADD2 SWP2 STH2r ADD2 LTH2 }
 
+%BUG { ;print/byte JSR2 #0a18 DEO }
+%BUG2 { ;print JSR2 #0a18 DEO }
+%BUGk { DUP ;print/byte JSR2 #0a18 DEO }
+%BUG2k { DUP2 ;print JSR2 #0a18 DEO }
+%ECHO { ;print-str JSR2 #0a18 DEO }
+
 |0000
 
 @size-system-start
 
-@cursor
-	&x $2 &y $2
-@drag
-	&id $1
+@cursor &x $2 &y $2
+@drag $1
 @length $1
-@windows ( x* y* size* app* name* )
+@windows
+	( x* y* size* app* name* )
 
 |0100 ( -> )
 

@@ -63,7 +63,7 @@ JMP2r
 @disk-manifest
 
 	01 "Disk $1
-		02 'w :close-win "Close $1
+		12 00 :close-win "Close $1
 	02 "Settings $1
 		02 00 :toggle-zoom "Decimal $1
 		02 00 :toggle-zoom "Hexadecimal $1
@@ -76,7 +76,6 @@ JMP2r
 	[ LIT &last ff ] .DateTime/minute DEI NEQ ,&continue JCN
 		JMP2r
 		&continue
-	#1234 ;print JSR2 #0a18 DEO
 
 @draw-clock ( -- )
 

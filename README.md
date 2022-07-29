@@ -20,6 +20,13 @@ You must have a Varvara emulator.
 uxnemu bin/potato.rom
 ```
 
+## Manual
+
+Since this is designed to be used principally on a handheld devices without a window manager, the controls are aimed at d-pad centric. The pattern here is using the B button to handle all window operations, and leave the A button to the applications.
+
+- `B+Up`, close a window
+- `B+Down`, open a window
+
 ## TODO
 
 - Change icon on alt mod for drag.
