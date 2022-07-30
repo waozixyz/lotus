@@ -6,17 +6,20 @@
 	&desktop "Desktop $1
 	&system "System $1
 	&applications "Applications $1
+	&red "Red $1
+	&green "Green $1
+	&blue "Blue $1
+	&icn-ext ".icn $1
+	&chr-ext ".chr $1
+	&pcm-ext ".pcm $1
+	&snarf-ext ".snarf $1
+	&theme-ext ".theme $1
 	&dotw
 		"Sun $1 "Mon $1 "Tue $1 "Wed $1
 		"Thu $1 "Fri $1 "Sat $1
 	&months
 		"Jan $1 "Feb $1 "Mar $1 "Apr $1 "May $1 "Jun $1
 		"Jul $1 "Aug $1 "Sep $1 "Oct $1 "Nov $1 "Dec $1
-	&icn-ext ".icn $1
-	&chr-ext ".chr $1
-	&pcm-ext ".pcm $1
-	&snarf-ext ".snarf $1
-	&theme-ext ".theme $1
 
 ( icn )
 
@@ -98,11 +101,11 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
 @arrow-icns
 	&h 0010 307c 7c30 1000
 	&v 0018 3c7e 1818 0000
+@check-icn
+	aa55 aa55 aa55 aa55
 @slider-icns
 	f0f0 f0f0 f0f0 f000
 	50a0 50a0 50a0 5000
-@check-icn
-	aa55 aa55 aa55 aa55
 @swatch-icns
 	&line
 	7f80 8080 8080 7f00

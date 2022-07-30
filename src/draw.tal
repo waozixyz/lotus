@@ -150,11 +150,19 @@ JMP2r
 	;swatch-icns/line .Screen/addr DEO2
 	#0e .Screen/sprite DEOk DEO
 
+	.Screen/x DEI2k #0040 SUB2 ROT DEO2
+	.Screen/y DEI2k #0010 ADD2 ROT DEO2
+
 JMP2r
 
-@draw-slider ( value -- )
+@draw-slider ( value name* -- )
 
 	( TODO: Add name and write value )
+
+	.Screen/x DEI2 SWP2
+	;draw-text JSR2
+	.Screen/x DEO2
+	;draw-lb JSR2
 
 	#00 .Screen/auto DEO
 	STH
@@ -166,6 +174,9 @@ JMP2r
 		INC GTHk ,&loop JCN
 	POP2
 	POPr
+
+	.Screen/x DEI2k #0040 SUB2 ROT DEO2
+	.Screen/y DEI2k #0010 ADD2 ROT DEO2
 
 JMP2r
 
@@ -247,7 +258,7 @@ JMP2r
 			;draw-lb JSR2
 			POP #00
 			&no-line
-		 ,&stream JMP
+		,&stream JMP
 	&end
 	POP
 
@@ -360,10 +371,10 @@ JMP2r
 
 @draw-byte ( byte -- )
 
-	 DUP #04 SFT ,draw-hex JSR
+	DUP #04 SFT ,draw-hex JSR
 
 @draw-hex ( char -- )
 
-	 #0f AND DUP #09 GTH #07 MUL ADD #30 ADD ;draw-chr JSR2
+	#0f AND DUP #09 GTH #07 MUL ADD #30 ADD ;draw-chr JSR2
 
 JMP2r

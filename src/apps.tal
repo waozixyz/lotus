@@ -76,35 +76,61 @@ JMP2r
 
 &on-mouse ( x* y* win* -> )
 
-	POP2 POP2 POP2
+	.Mouse/state DEI ,&on-click JCN
+		POP2 POP2 POP2 BRK
+		&on-click
+	DUP2 ,&win STR2
+	;rel-mouse JSR2 POP2
+	#03 SFT2 NIP ROT ROT #02 SFT2 NIP SWP
+
+	OVR #0f GTH ,&skip JCN
+	DUP #01 NEQ ,&no-r JCN
+		OVR .System/r STHk ,&set-color JSR STHr ,&set-nibble JSR
+		&no-r
+	DUP #04 NEQ ,&no-g JCN
+		OVR .System/g STHk ,&set-color JSR STHr ,&set-nibble JSR
+		&no-g
+	DUP #07 NEQ ,&no-b JCN
+		OVR .System/b STHk ,&set-color JSR STHr ,&set-nibble JSR
+		&no-b
+	DUP #09 NEQ ,&no-swatch JCN
+		OVR #02 SFT BUGk .cursor/color STZ
+		[ LIT2 &win $2 ] ;draw-win JSR2
+		,&release JMP
+		&no-swatch
+		&skip
+	POP2
 
 BRK
+	&release #00 .Mouse/state DEO POP2 BRK
+	&set-nibble ( -- )
+		.cursor/color LDZ #01 SFT ADD DEO
+	JMP2r
+	&set-color ( value color -- )
+		SWP ,&v STR
+		.cursor/color LDZ STHk #01 SFT ADD DEI
+		STHr #01 AND STHk
+		#0f SWP [ #60 SFT SFT ] AND
+		STHr #00 EQU
+		[ LIT &v $1 ]
+		SWP [ #60 SFT SFT ] ADD
+	JMP2r
 
 &on-draw ( win* -- )
 
 	POP2
-
-	.Screen/x DEI2 .Screen/y DEI2
-
-	[ .System/r ,&get-color JSR ] ;draw-slider JSR2
-
-	OVR2 .Screen/x DEO2
-	#0010 ADD2 DUP2 .Screen/y DEO2
-
-	 [ .System/g ,&get-color JSR ] ;draw-slider JSR2
-
-	OVR2 .Screen/x DEO2
-	#0010 ADD2 DUP2 .Screen/y DEO2
-
-	 [ .System/b ,&get-color JSR ] ;draw-slider JSR2
-
-	OVR2 .Screen/x DEO2
-	#0010 ADD2 DUP2 .Screen/y DEO2
-
-	POP2 POP2
-
+	[ .System/r ,&get-color JSR ] ;dict/red
+		;draw-slider JSR2
+	[ .System/g ,&get-color JSR ] ;dict/green
+		;draw-slider JSR2
+	[ .System/b ,&get-color JSR ] ;dict/blue
+		;draw-slider JSR2
 	( swatches )
 	;draw-swatches JSR2
+
+	.System/r ,&get-color JSR ;draw-hex JSR2
+	.System/g ,&get-color JSR ;draw-hex JSR2
+	.System/b ,&get-color JSR ;draw-hex JSR2
 
 JMP2r
 
@@ -164,9 +190,6 @@ JMP2r
 
 	( swatches )
 	;draw-swatches JSR2
-
-	,&x LDR2 .Screen/x DEO2
-	.Screen/y DEI2k #0010 ADD2 ROT DEO2
 
 	( addr )
 	#01 .Screen/auto DEO
