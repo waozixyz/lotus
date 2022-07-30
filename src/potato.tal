@@ -301,7 +301,7 @@ JMP2r
 
 @tab-win ( -- )
 
-	.Screen/height DEI2 #000b SUB2 ;get-active-win JSR2 INC2 INC2 STA2
+	.Screen/height DEI2 #000a SUB2 ;get-active-win JSR2 INC2 INC2 STA2
 	;sel-desktop JSR2
 	;draw-desktop JSR2
 

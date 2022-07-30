@@ -182,7 +182,7 @@ JMP2r
 
 	#01 SUB
 	#06 .Screen/auto DEO
-	;arrow-icn .Screen/addr DEO2
+	;arrow-icns/v .Screen/addr DEO2
 	#0e .Screen/sprite DEO
 	#02 .Screen/auto DEO
 	#00
@@ -191,7 +191,7 @@ JMP2r
 		INC GTHk ,&l JCN
 	POP
 	#01 .Screen/auto DEO
-	;arrow-icn .Screen/addr DEO2
+	;arrow-icns/v .Screen/addr DEO2
 	#2e .Screen/sprite DEO
 
 	( recover y )
@@ -374,5 +374,19 @@ JMP2r
 @draw-lb ( -- )
 
 	.Screen/y DEI2k #0008 ADD2 ROT DEO2
+
+JMP2r
+
+@draw-short ( short* -- )
+
+	SWP ,draw-byte JSR
+
+@draw-byte ( byte -- )
+
+	 DUP #04 SFT ,draw-hex JSR
+
+@draw-hex ( char -- )
+
+	 #0f AND DUP #09 GTH #07 MUL ADD #30 ADD ;draw-chr JSR2
 
 JMP2r
