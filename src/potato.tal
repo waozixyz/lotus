@@ -213,7 +213,7 @@ JMP2r
 
 ( window management )
 
-@pick-win ( x* y* -- id )
+@pick-win ( x* y* -- <id> )
 
 	,&y STR2 ,&x STR2
 	#00 .length LDZ

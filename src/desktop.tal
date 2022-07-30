@@ -26,12 +26,11 @@
 
 @file-create ( -- )
 
-	;&new-name .File/name DEO2
+	;&new-name
+		DUP2 .File/name DEO2
 	#0001 .File/length DEO2
 	;&buf .File/write DEO2
-	;draw-desktop JSR2
-
-	( TODO: select new file )
+		;find-name JSR2 ;sel JSR2
 
 JMP2r
 	&new-name "NEWFILE $1
@@ -106,7 +105,7 @@ JMP2r
 
 JMP2r
 
-@get-file ( id -- file* )
+@get-file ( id -- <file*> )
 
 	STH
 	LITr 00
@@ -122,6 +121,23 @@ JMP2r
 
 JMP2r
 	&found POP2r JMP2r
+
+@find-name ( name* -- <id> )
+
+	,&t STR2
+	LITr 00
+	;buf/dir
+	&w
+		#0005 ADD2 DUP2 [ LIT2 &t $2 ] ;scmp JSR2 ,&found JCN
+		;scap JSR2
+		INCr
+		INC2 LDAk ,&w JCN
+	POP2
+	POPr
+	#ff
+
+JMP2r
+	&found POP2 STHr JMP2r
 
 @draw-home ( -- )
 

@@ -163,7 +163,7 @@ JMP2r
 
 JMP2r
 
-@get-xcat ( x* -- cat )
+@get-xcat ( x* -- <cat> )
 
 	#0010 SUB2
 	LIT2r 0000
