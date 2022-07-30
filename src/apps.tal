@@ -99,9 +99,37 @@ JMP2r
 		#00 OVR #03 SFT2 ;patt-icn ADD2 LDA
 		OVR #07 AND #07 SWP SUB SFT #01 AND #10 SFT
 		#0c ADD .Screen/sprite DEO
-
-
 		INC GTHk ,&v JCN
+	POP2
+
+	.Screen/x DEI2k #0040 SUB2 ROT DEO2
+	.Screen/y DEI2k #0010 ADD2 ROT DEO2
+
+	( swatches )
+	#05 .Screen/auto DEO
+	;swatch-icns/fill .Screen/addr DEO2
+	#0c .Screen/sprite DEOk DEO
+	;swatch-icns/fill .Screen/addr DEO2
+	#0d .Screen/sprite DEOk DEO
+	;swatch-icns/fill .Screen/addr DEO2
+	#0e .Screen/sprite DEOk DEO
+	;swatch-icns/line .Screen/addr DEO2
+	#0e .Screen/sprite DEOk DEO
+
+	.Screen/x DEI2k #0040 SUB2 ROT DEO2
+	.Screen/y DEI2k #0010 ADD2 ROT DEO2
+
+	#01 .Screen/auto DEO
+
+JMP2r
+
+@draw-slider ( -- )
+
+	;bigpixel-icn .Screen/addr DEO2
+	#0800
+	&l
+		#01 .Screen/sprite DEO
+		INC GTHk ,&l JCN
 	POP2
 
 JMP2r

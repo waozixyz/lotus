@@ -58,6 +58,8 @@
 	;draw-desktop JSR2
 	;untrap JSR2
 
+	;open-look JSR2
+
 BRK
 
 @exit ( -- )

@@ -28,6 +28,13 @@
 	0000 183c 7e18 1800
 @check-icn
 	aa55 aa55 aa55 aa55
+@swatch-icns
+	&line
+	7f80 8080 8080 7f00
+	fc02 0202 0202 fc00
+	&fill
+	7fff ffff ffff 7f00
+	fcfe fefe fefe fc00
 
 @icons
 	&fonts

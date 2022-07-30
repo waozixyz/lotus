@@ -90,7 +90,7 @@ JMP2r
 
 @open-as-data ( -- )
 
-	#1234 BUG2
+	( TODO: create hex editor )
 
 JMP2r
 
@@ -251,7 +251,7 @@ JMP2r
 
 @open-look ( -- )
 
-	;no-name ;app-look #1613 #0023 #0073 ;add-win JSR2
+	;no-name ;app-look #0a0d #0023 #0073 ;add-win JSR2
 	;center-win JSR2
 
 JMP2r
