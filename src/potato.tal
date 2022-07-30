@@ -51,6 +51,10 @@
 	#b70f .System/g DEO2
 	#a70f .System/b DEO2
 
+	( size )
+	#0200 .Screen/width DEO2
+	#0200 .Screen/height DEO2
+
 	#ff .drag STZ
 
 	;draw-menu-bg JSR2

@@ -57,13 +57,13 @@ JMP2r
 
 ( ------------------------------------------------------------- )
 
-@tile4-manifest
+@tile-manifest
 
-	03 "Tile4 $1
+	03 "Tile $1
 		12 00 :expand-win "Expand $1
 		22 00 :tab-win "Tab $1
 		42 00 :close-win "Close $1
-	03 "Tile $1
+	03 "Edit $1
 		00 08 :clear-patt "Clear $1
 		40 00 :prev-tile "Prev $1
 		80 00 :next-tile "Next $1
@@ -72,10 +72,13 @@ JMP2r
 		00 '2 :select-color2 "Color1 $1
 		00 '3 :select-color3 "Color2 $1
 		00 '4 :select-color4 "Color3 $1
+	02 "Mode $1
+		00 00 :mode-chr "2-bit $1
+		00 00 :mode-icn "1-bit $1
 	$1
 
-@app-tile4
-	:tile4-manifest
+@app-tile
+	:tile-manifest
 	:&on-draw
 	:&on-mouse
 	:&on-button
@@ -161,6 +164,9 @@ BRK
 @select-color2 ( -- ) #01 ;paint-patt/color STA JMP2r
 @select-color3 ( -- ) #02 ;paint-patt/color STA JMP2r
 @select-color4 ( -- ) #03 ;paint-patt/color STA JMP2r
+
+@mode-chr ( -- ) ( TODO ) JMP2r
+@mode-icn ( -- ) ( TODO ) JMP2r
 
 @prev-tile ( -- )
 

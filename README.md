@@ -46,7 +46,6 @@ Since this is designed to be used principally on a handheld devices without a wi
 - Clock widget
 - Wallpaper application
     - Select image
-    - Paint Pattern
 - Theme selector
     - Save patt after theme
 - Error modal/application
@@ -57,7 +56,8 @@ Since this is designed to be used principally on a handheld devices without a wi
     - Rename file
     - Copy file
     - Delete file
-- Tiny memory pixel editor
+- Tile
+    - Support ICN/CHR mode switching
 
 ## Support
 
