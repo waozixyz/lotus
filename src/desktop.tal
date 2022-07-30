@@ -4,6 +4,11 @@
 		01 '1 :open-look "Look 20 "Util. $1
 		01 '2 :open-disk "Disk 20 "Util. $1
 		01 'q :exit "Exit $1
+	04 "File $1
+		01 'n :file-create "Create $1
+		01 'r :file-rename "Rename $1
+		01 'd :file-clone "Clone $1
+		01 08 :file-delete "Delete $1
 	03 "Open $1
 		01 'd :open-as-data "As 20 "Data $1
 		01 't :open-as-text "As 20 "Text $1
@@ -18,6 +23,37 @@
 		42 00 :go-home "Home $1
 		82 00 :go-file "Open $1
 	$1
+
+@file-create ( -- )
+
+	;&new-name .File/name DEO2
+	#0001 .File/length DEO2
+	;&buf .File/write DEO2
+	;draw-desktop JSR2
+
+	( TODO: select new file )
+
+JMP2r
+	&new-name "NEWFILE $1
+	&buf 00
+
+@file-rename ( -- )
+
+
+JMP2r
+
+@file-clone ( -- )
+
+
+JMP2r
+
+@file-delete ( -- )
+
+	;draw-item-text/sel LDA ;get-file JSR2 ;get-path JSR2 .File/name DEO2
+	#01 .File/delete DEO
+	;draw-desktop JSR2
+
+JMP2r
 
 @sel-up ( -- )
 
