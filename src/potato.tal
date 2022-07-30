@@ -121,11 +121,6 @@ BRK
 	.drag LDZ #ff NEQ ;on-drag JCN2
 	.Mouse/state DEI .Controller/button DEI #0102 EQU2 ;on-drag-start JCN2
 
-	( send mouse to active win )
-	.Mouse/x DEI2 .Mouse/y DEI2 ;get-active-win JSR2
-		ROT2k ROT2 ROT2 ;within-win JSR2 ,&send JCN
-	POP2 POP2 POP2
-
 	( pick window )
 	.Mouse/state DEI #00 EQU ,&no-touch JCN
 		.Mouse/x DEI2 .Mouse/y DEI2 ;pick-win JSR2
@@ -139,6 +134,11 @@ BRK
 			#01 .Mouse/state DEO
 			&no-bar
 		&no-touch
+
+	( send mouse to active win )
+	.Mouse/x DEI2 .Mouse/y DEI2 ;get-active-win JSR2
+		ROT2k ROT2 ROT2 ;within-win JSR2 ,&send JCN
+	POP2 POP2 POP2
 
 BRK
 	&send ;get-active-app JSR2 #0004 ADD2 LDA2 JMP2
