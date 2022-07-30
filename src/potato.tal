@@ -124,9 +124,9 @@ BRK
 	.Mouse/state DEI .Controller/button DEI #0102 EQU2 ;on-drag-start JCN2
 
 	( pick window )
-	.Mouse/state DEI #00 EQU ,&no-touch JCN
+	.Mouse/state DEI #00 EQU ,&no-touch-win JCN
 		.Mouse/x DEI2 .Mouse/y DEI2 ;pick-win JSR2
-		DUP #ff EQU ,&no-win JCN
+		DUP #ff EQU ,touch-desktop JCN
 		DUP ;sel-win JSR2
 		( pick dragbar )
 		;get-win JSR2
@@ -134,18 +134,28 @@ BRK
 		#000a GTH2 ,&no-bar JCN
 			;set-drag JSR2
 			&no-bar
-		&no-touch
+		&no-touch-win
 
 	( send mouse to active win )
 	.Mouse/x DEI2 .Mouse/y DEI2 ;get-active-win JSR2
 		DUP2 #ffff EQU2 ,&skip JCN
 		ROT2k ROT2 ROT2 ;within-win JSR2 ,&send JCN
 	&skip
+
 	POP2 POP2 POP2
 
 BRK
-	&no-win POP ;sel-desktop JSR2 #00 .Mouse/state DEO BRK
 	&send ;get-active-app JSR2 #0004 ADD2 LDA2 JMP2
+
+@touch-desktop ( -> )
+
+	.Mouse/x DEI2 .Mouse/y DEI2 ;pick-icon JSR2 ;sel JSR2
+
+	POP
+	;sel-desktop JSR2
+	#00 .Mouse/state DEO
+
+BRK
 
 ( drag )
 
@@ -210,6 +220,15 @@ BRK
 JMP2r
 
 ( window management )
+
+@pick-icon ( x* y* -- <id> )
+
+	( y ) #0018 SUB2 #0018 DIV2 NIP
+	ROT ROT
+	( x ) #0010 SUB2 #00a0 DIV2 NIP
+	;get-rows JSR2 MUL ADD
+
+JMP2r
 
 @pick-win ( x* y* -- <id> )
 

@@ -59,6 +59,7 @@ Since this is designed to be used principally on a handheld devices without a wi
 - Tile
     - Support ICN/CHR mode switching
 - Screensaver?
+- Don't open Tile twice
 
 ## Support
 

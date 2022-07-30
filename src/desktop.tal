@@ -173,7 +173,7 @@ JMP2r
 		DUP2 .File/read DEO2
 		;remove-lb JSR2
 
-	.Screen/height DEI2 #05 SFT2 NIP STH
+	;get-rows JSR2 STH
 	LITr 00
 	;buf/dir
 	&w
@@ -290,5 +290,11 @@ JMP2r
 	;patt-chr ;paint-patt/addr STA2
 	;no-name ;app-tile #0a0f #0023 #0073 ;add-win JSR2
 	;center-win JSR2
+
+JMP2r
+
+@get-rows ( -- rows )
+
+	.Screen/height DEI2 #0018 SUB2 #0018 DIV2 NIP
 
 JMP2r
