@@ -62,8 +62,6 @@
 	;draw-desktop JSR2
 	;untrap JSR2
 
-	;open-look JSR2
-
 BRK
 
 @exit ( -- )
@@ -386,7 +384,7 @@ JMP2r
 
 @open-pict ( file* -- )
 
-	;get-path JSR2
+	#0005 ADD2
 	DUP2
 	( read size from path )
 	;read-pict-size JSR2
@@ -404,7 +402,7 @@ JMP2r
 	;buf/tmp #0040 ;mclr JSR2
 	;buf/loc ;buf/tmp ;scat JSR2
 	LIT '/ ;buf/tmp ;sput JSR2
-	#0005 ADD2 ;buf/tmp ;scat JSR2
+	;buf/tmp ;scat JSR2
 	;buf/tmp
 
 JMP2r
