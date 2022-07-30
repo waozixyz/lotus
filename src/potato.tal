@@ -389,7 +389,7 @@ JMP2r
 		POP2 #2010
 		&has-size
 	INC INC STH2
-	;app-pict STH2r #0020 #0020 ;add-win JSR2
+	;app-pict STH2r #0020 DUP2 ;add-win JSR2
 
 JMP2r
 
@@ -459,16 +459,16 @@ JMP2r
 
 JMP2r
 
-@get-chr ( pixel -- color )
+@get-chr ( addr* pixel -- color )
 
 	STH DUP2 STHkr ,get-icn JSR
-	ROT ROT #0008 ADD2 STHr ,get-icn JSR #10 SFT ORA
+	ROT ROT #0008 ADD2 STHr ,get-icn JSR DUP ADD ORA
 
 JMP2r
 
 @get-icn ( addr* pixel -- color )
 
-	( y ) STHk #00 SWP #03 SFT2 SWP2 ADD2 LDA
+	( y ) STHk #00 SWP #03 SFT2 ADD2 LDA
 	( x ) STHr #07 AND #07 SWP SUB SFT #01 AND
 
 JMP2r

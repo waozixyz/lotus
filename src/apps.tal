@@ -91,12 +91,12 @@ JMP2r
 	&v
 		#00 OVR #07 AND #30 SFT2 [ LIT2 &x $2 ] ADD2 .Screen/x DEO2
 		#00 OVR #33 SFT2 [ LIT2 &y $2 ] ADD2 .Screen/y DEO2
-		DUP ;paint-patt/addr LDA2 ROT  ;get-chr JSR2
+		DUP ;paint-patt/addr LDA2 ROT ;get-chr JSR2
 		#8c ADD .Screen/sprite DEO
 		INC GTHk ,&v JCN
 	POP2
 
-	.Screen/x DEI2k #0040 SUB2 ROT DEO2
+	,&x LDR2 .Screen/x DEO2
 	.Screen/y DEI2k #0010 ADD2 ROT DEO2
 
 	( swatches )
@@ -110,7 +110,7 @@ JMP2r
 	;swatch-icns/line .Screen/addr DEO2
 	#0e .Screen/sprite DEOk DEO
 
-	.Screen/x DEI2k #0040 SUB2 ROT DEO2
+	,&x LDR2 .Screen/x DEO2
 	.Screen/y DEI2k #0010 ADD2 ROT DEO2
 
 	( addr )
@@ -122,8 +122,6 @@ JMP2r
 	#0f .Screen/sprite DEO
 	;arrow-icns/h .Screen/addr DEO2
 	#1a .Screen/sprite DEO
-
-	#01 .Screen/auto DEO
 
 JMP2r
 
@@ -141,26 +139,23 @@ JMP2r
 		;paint-patt JSR2 BRK
 		&no-paint
 	DUP #09 NEQ ,&no-swatch JCN
-		POP #01 SFT ;paint-patt/color STA
+		OVR #01 SFT ;paint-patt/color STA
 		#ffff ;paint-patt/last STA2
-		#00 .Mouse/state DEO BRK
+		,&release JMP
 		&no-swatch
 	DUP2 #000b NEQ2 ,&no-l JCN
 		;prev-tile JSR2
-		#00 .Mouse/state DEO
-		POP2
-		BRK
+		,&release JMP
 		&no-l
 	DUP2 #070b NEQ2 ,&no-r JCN
 		;next-tile JSR2
-		#00 .Mouse/state DEO
-		POP2
-		BRK
+		,&release JMP
 		&no-r
 	&skip
 	POP2
 
 BRK
+	&release #00 .Mouse/state DEO POP2 BRK
 
 @select-color1 ( -- ) #00 ;paint-patt/color STA JMP2r
 @select-color2 ( -- ) #01 ;paint-patt/color STA JMP2r
@@ -169,22 +164,23 @@ BRK
 
 @prev-tile ( -- )
 
-	;paint-patt/addr LDA2 #0010 SUB2 ;paint-patt/addr STA2
-	;draw-desktop JSR2
+	;paint-patt/addr LDA2 #0010 SUB2 ,sel-tile JSR
 
 JMP2r
 
 @next-tile ( -- )
 
-	;paint-patt/addr LDA2 #0010 ADD2 ;paint-patt/addr STA2
-	;draw-desktop JSR2
+	;paint-patt/addr LDA2 #0010 ADD2
+
+@sel-tile ( addr* -- )
+
+	;paint-patt/addr STA2 ;draw-desktop JSR2
 
 JMP2r
 
 @clear-patt ( -- )
 
-	;paint-patt/addr LDA2 #0010 ;mclr JSR2
-	;draw-desktop JSR2
+	;paint-patt/addr LDA2 #0010 ;mclr JSR2 ;draw-desktop JSR2
 
 JMP2r
 
