@@ -152,6 +152,23 @@ JMP2r
 
 JMP2r
 
+@draw-slider ( value -- )
+
+	( TODO: Add name and write value )
+
+	#00 .Screen/auto DEO
+	STH
+	#1000
+	&loop
+		#00 OVR STHkr GTH #30 SFT ;slider-icns ADD2 .Screen/addr DEO2
+		#0a .Screen/sprite DEO
+		.Screen/x DEI2k #0004 ADD2 ROT DEO2
+		INC GTHk ,&loop JCN
+	POP2
+	POPr
+
+JMP2r
+
 @draw-progbar ( den num -- )
 
 	STH
@@ -317,6 +334,7 @@ JMP2r
 
 @draw-text ( str* -- )
 
+	#01 .Screen/auto DEO
 	;draw-str JSR2 POP2
 
 JMP2r

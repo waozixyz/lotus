@@ -98,6 +98,9 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
 @arrow-icns
 	&h 0010 307c 7c30 1000
 	&v 0018 3c7e 1818 0000
+@slider-icns
+	f0f0 f0f0 f0f0 f000
+	50a0 50a0 50a0 5000
 @check-icn
 	aa55 aa55 aa55 aa55
 @swatch-icns

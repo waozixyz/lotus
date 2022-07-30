@@ -84,10 +84,33 @@ BRK
 
 	POP2
 
-	( sliders )
+	.Screen/x DEI2 .Screen/y DEI2
+
+	[ .System/r ,&get-color JSR ] ;draw-slider JSR2
+
+	OVR2 .Screen/x DEO2
+	#0010 ADD2 DUP2 .Screen/y DEO2
+
+	 [ .System/g ,&get-color JSR ] ;draw-slider JSR2
+
+	OVR2 .Screen/x DEO2
+	#0010 ADD2 DUP2 .Screen/y DEO2
+
+	 [ .System/b ,&get-color JSR ] ;draw-slider JSR2
+
+	OVR2 .Screen/x DEO2
+	#0010 ADD2 DUP2 .Screen/y DEO2
+
+	POP2 POP2
 
 	( swatches )
 	;draw-swatches JSR2
+
+JMP2r
+
+&get-color
+
+	.cursor/color LDZ STHk #01 SFT ADD DEI #01 STHr #01 AND SUB #20 SFT SFT #0f AND
 
 JMP2r
 
