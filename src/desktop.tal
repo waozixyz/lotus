@@ -68,13 +68,13 @@ JMP2r
 
 @sel-left ( -- )
 
-	( TODO )
+	;draw-item-text/sel LDA ;get-rows JSR2 SUB ;sel JSR2
 
 JMP2r
 
 @sel-right ( -- )
 
-	( TODO )
+	;draw-item-text/sel LDA ;get-rows JSR2 ADD ;sel JSR2
 
 JMP2r
 

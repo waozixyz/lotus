@@ -372,6 +372,7 @@ JMP2r
 
 @open-file ( file* -- )
 
+	DUP2 #ffff EQU2 ,&no-file JCN
 	LDAk LIT '- EQU ,open-folder JCN
 	LDAk LIT '! EQU ;open-potato JCN2
 	DUP2 ;scap JSR2 #0004 SUB2 ;dict/icn-ext ;scmp JSR2 ,open-pict JCN
@@ -379,6 +380,7 @@ JMP2r
 	;open-text JSR2
 
 JMP2r
+	&no-file POP2 JMP2r
 
 @open-potato ( file* -- )
 
