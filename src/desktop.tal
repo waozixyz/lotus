@@ -137,6 +137,32 @@ JMP2r
 JMP2r
 	&found POP2 STHr JMP2r
 
+@draw-wallpaper ( -- )
+
+	( cache size )
+	.Screen/width DEI2 #03 SFT2 NIP ,&x STR
+	.Screen/height DEI2 #03 SFT2 NIP INC ,&y STR
+	( draw )
+	#0010 .Screen/y DEO2
+	#01 .Screen/auto DEO
+	;patt-chr .Screen/addr DEO2
+	[ LIT &y $1 ] #00
+	&h
+		STHk
+		#0000 .Screen/x DEO2
+		[ LIT &x $1 ] #00
+		&w
+			DUP #01 AND #40 SFT STHkr #01 AND #50 SFT ORA #81 ORA
+				.Screen/sprite DEO
+			INC GTHk ,&w JCN
+		POP2
+		POPr
+		.Screen/y DEI2k #0008 ADD2 ROT DEO2
+		INC GTHk ,&h JCN
+	POP2
+
+JMP2r
+
 @draw-home ( -- )
 
 	( load dir )
@@ -147,23 +173,21 @@ JMP2r
 		DUP2 .File/read DEO2
 		;remove-lb JSR2
 
+	.Screen/height DEI2 #05 SFT2 NIP STH
 	LITr 00
 	;buf/dir
 	&w
-		#00 STHkr #03 SFT2 #00a0 MUL2 #0010 ADD2 .Screen/x DEO2
-		#00 STHkr #0007 AND2 #0018 MUL2 #0018 ADD2 .Screen/y DEO2
+		#00 STHk2r SWP DIV #00a0 MUL2 #0010 ADD2 .Screen/x DEO2
+		#00 STHk2r SWP MOD #0018 MUL2 #0018 ADD2 .Screen/y DEO2
 		DUP2 ;draw-item-icon JSR2
 		DUP2 STHkr ;draw-item-text JSR2
 		;scap JSR2
 		INCr
 		INC2 LDAk ,&w JCN
 	POP2
-	POPr
+	POP2r
 
 JMP2r
-	&init
-		"!--- 20 "Potato $1
-		"@--- 20 "Drive $1
 
 @draw-icon-size ( size* name* icon* -- )
 

@@ -130,30 +130,6 @@ JMP2r
 		[ LIT &color 85 ] SWP ORA .Screen/sprite DEO
 	JMP2r
 
-@draw-wallpaper ( -- )
-
-	#0010 .Screen/y DEO2
-	#01 .Screen/auto DEO
-	;patt-chr .Screen/addr DEO2
-	.Screen/height DEI2 #03 SFT2 NIP INC #00
-	&h
-		STHk
-		#0000 .Screen/x DEO2
-		.Screen/width DEI2 #03 SFT2 NIP #00
-		&w
-			DUP #01 AND #40 SFT
-			STHkr #01 AND #50 SFT ORA
-			#81 ORA .Screen/sprite DEO
-			INC GTHk ,&w JCN
-		POP2
-		POPr
-		.Screen/y DEI2k #0008 ADD2 ROT DEO2
-		INC GTHk ,&h JCN
-	POP2
-	#15 .Screen/auto DEO
-
-JMP2r
-
 @draw-icon ( addr* -- )
 
 	.Screen/addr DEO2
