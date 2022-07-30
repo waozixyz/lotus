@@ -37,9 +37,7 @@
 @size-system-start
 
 @cursor
-	&x $2 &y $2
-@anchor
-	&x $2 &y $2
+	&x $2 &y $2 &color $1
 @drag $1
 @length $1
 @windows
@@ -62,6 +60,8 @@
 	;draw-menu JSR2
 	;draw-desktop JSR2
 	;untrap JSR2
+
+	;open-theme JSR2
 
 BRK
 
@@ -314,7 +314,7 @@ JMP2r
 
 @open-disk ( -- )
 
-	;no-name ;app-disk #1613 #0023 #0073 ;add-win JSR2
+	;no-name ;app-disk #1613 #0000 DUP2 ;add-win JSR2
 	;center-win JSR2
 
 JMP2r
@@ -322,7 +322,14 @@ JMP2r
 @open-wallpaper ( -- )
 
 	;patt-chr ;paint-patt/addr STA2
-	;no-name ;app-tile #0a0f #0023 #0073 ;add-win JSR2
+	;no-name ;app-tile #0a0f #0000 DUP2 ;add-win JSR2
+	;center-win JSR2
+
+JMP2r
+
+@open-theme ( -- )
+
+	;no-name ;app-color #0a0f #0000 DUP2 ;add-win JSR2
 	;center-win JSR2
 
 JMP2r
@@ -342,7 +349,6 @@ JMP2r
 	;scap JSR2 #0009 SUB2 ;read-size JSR2
 
 JMP2r
-
 
 @file-create ( -- )
 

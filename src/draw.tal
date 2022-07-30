@@ -138,6 +138,20 @@ JMP2r
 
 JMP2r
 
+@draw-swatches ( -- )
+
+	#05 .Screen/auto DEO
+	;swatch-icns/fill .Screen/addr DEO2
+	#0c .Screen/sprite DEOk DEO
+	;swatch-icns/fill .Screen/addr DEO2
+	#0d .Screen/sprite DEOk DEO
+	;swatch-icns/fill .Screen/addr DEO2
+	#0e .Screen/sprite DEOk DEO
+	;swatch-icns/line .Screen/addr DEO2
+	#0e .Screen/sprite DEOk DEO
+
+JMP2r
+
 @draw-progbar ( den num -- )
 
 	STH
@@ -195,20 +209,6 @@ JMP2r
 
 	LDA2k #0008 ADD2 .Screen/x DEO2 INC2 INC2
 	LDA2k #0012 ADD2 .Screen/y DEO2
-
-JMP2r
-
-@put-anchor ( -- )
-
-	.Screen/x DEI2 .anchor/x STZ2
-	.Screen/y DEI2 .anchor/y STZ2
-
-JMP2r
-
-@get-anchor ( -- )
-
-	.anchor/x LDZ2 .Screen/x DEO2
-	.anchor/y LDZ2 .Screen/y DEO2
 
 JMP2r
 

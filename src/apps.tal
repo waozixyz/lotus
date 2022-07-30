@@ -13,7 +13,6 @@
 	:disk-manifest
 	:&on-draw
 	:void-mouse
-	:void-button
 
 &on-draw ( win* -- )
 
@@ -57,6 +56,43 @@ JMP2r
 
 ( ------------------------------------------------------------- )
 
+@color-manifest
+
+	03 "Color $1
+		12 00 :expand-win "Expand $1
+		22 00 :tab-win "Tab $1
+		42 00 :close-win "Close $1
+	04 "Select $1
+		00 '1 :select-color1 "Background $1
+		00 '2 :select-color2 "Color1 $1
+		00 '3 :select-color3 "Color2 $1
+		00 '4 :select-color4 "Color3 $1
+	$1
+
+@app-color
+	:color-manifest
+	:&on-draw
+	:&on-mouse
+
+&on-mouse ( x* y* win* -> )
+
+	POP2 POP2 POP2
+
+BRK
+
+&on-draw ( win* -- )
+
+	POP2
+
+	( sliders )
+
+	( swatches )
+	;draw-swatches JSR2
+
+JMP2r
+
+( ------------------------------------------------------------- )
+
 @tile-manifest
 
 	03 "Tile $1
@@ -83,7 +119,6 @@ JMP2r
 	:tile-manifest
 	:&on-draw
 	:&on-mouse
-	:&on-button
 
 &on-draw ( win* -- )
 
@@ -105,15 +140,7 @@ JMP2r
 	.Screen/y DEI2k #0010 ADD2 ROT DEO2
 
 	( swatches )
-	#05 .Screen/auto DEO
-	;swatch-icns/fill .Screen/addr DEO2
-	#0c .Screen/sprite DEOk DEO
-	;swatch-icns/fill .Screen/addr DEO2
-	#0d .Screen/sprite DEOk DEO
-	;swatch-icns/fill .Screen/addr DEO2
-	#0e .Screen/sprite DEOk DEO
-	;swatch-icns/line .Screen/addr DEO2
-	#0e .Screen/sprite DEOk DEO
+	;draw-swatches JSR2
 
 	,&x LDR2 .Screen/x DEO2
 	.Screen/y DEI2k #0010 ADD2 ROT DEO2
@@ -130,8 +157,6 @@ JMP2r
 
 JMP2r
 
-&on-button ( win* -> ) POP2 BRK
-
 &on-mouse ( x* y* win* -> )
 
 	.Mouse/state DEI ,&on-click JCN
@@ -144,7 +169,7 @@ JMP2r
 		;paint-patt JSR2 BRK
 		&no-paint
 	DUP #09 NEQ ,&no-swatch JCN
-		OVR #01 SFT ;paint-patt/color STA
+		OVR #01 SFT .cursor/color STZ
 		#ffff ;paint-patt/last STA2
 		,&release JMP
 		&no-swatch
@@ -162,10 +187,10 @@ JMP2r
 BRK
 	&release #00 .Mouse/state DEO POP2 BRK
 
-@select-color1 ( -- ) #00 ;paint-patt/color STA JMP2r
-@select-color2 ( -- ) #01 ;paint-patt/color STA JMP2r
-@select-color3 ( -- ) #02 ;paint-patt/color STA JMP2r
-@select-color4 ( -- ) #03 ;paint-patt/color STA JMP2r
+@select-color1 ( -- ) #00 .cursor/color STZ JMP2r
+@select-color2 ( -- ) #01 .cursor/color STZ JMP2r
+@select-color3 ( -- ) #02 .cursor/color STZ JMP2r
+@select-color4 ( -- ) #03 .cursor/color STZ JMP2r
 
 @mode-chr ( -- ) ( TODO ) JMP2r
 @mode-icn ( -- ) ( TODO ) JMP2r
@@ -221,8 +246,8 @@ JMP2r
 	ROT #00 SWP
 	SWP2
 	OVR2 OVR2
-	( ch1 ) [ LIT &color 01 ] #00 ,toggle-pixel JSR
-	( ch2 ) #0008 ADD2 ,&color LDR #01 ,toggle-pixel JSR
+	( ch1 ) .cursor/color LDZ #00 ,toggle-pixel JSR
+	( ch2 ) #0008 ADD2 .cursor/color LDZ #01 ,toggle-pixel JSR
 	;draw-desktop JSR2
 
 JMP2r
@@ -264,7 +289,6 @@ JMP2r
 	:text-manifest
 	:&on-draw
 	:void-mouse
-	:void-button
 
 &on-draw ( win* -- )
 
@@ -301,7 +325,6 @@ JMP2r
 	:pict-manifest
 	:&on-draw
 	:void-mouse
-	:void-button
 
 &on-draw ( win* -- )
 
@@ -360,7 +383,6 @@ JMP2r
 ( defaults )
 
 @void-mouse ( x* y* win* -- ) POP2 POP2 POP2 BRK
-@void-button ( button key win* -- ) POP2 POP2 BRK
 
 @edit-copy ( -- ) JMP2r
 @edit-paste ( -- ) JMP2r
