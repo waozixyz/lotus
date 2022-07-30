@@ -17,7 +17,7 @@
 
 &on-draw ( win* -- )
 
-	#40 #0000 DUP2 ;buf/dir SUB2 #0100 SUB2 SUB2 #0400 DIV2 NIP ;draw-bar JSR2
+	#40 #0000 DUP2 ;buf/dir SUB2 #0100 SUB2 SUB2 #0400 DIV2 NIP ;draw-progbar JSR2
 
 	DUP2
 	LDA2k #0008 ADD2 .Screen/x DEO2 POP2
@@ -362,3 +362,8 @@ JMP2r
 @void-mouse ( x* y* win* -- ) POP2 POP2 POP2 BRK
 @void-button ( button key win* -- ) POP2 POP2 BRK
 
+@edit-copy ( -- ) JMP2r
+@edit-paste ( -- ) JMP2r
+@edit-cut ( -- ) JMP2r
+@edit-erase ( -- ) JMP2r
+@toggle-zoom ( -- ) JMP2r

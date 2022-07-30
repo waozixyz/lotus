@@ -30,15 +30,16 @@
 %BUG2 { ;print JSR2 #0a18 DEO }
 %BUGk { DUP ;print/byte JSR2 #0a18 DEO }
 %BUG2k { DUP2 ;print JSR2 #0a18 DEO }
-%ECHO { ;print-str JSR2 #0a18 DEO }
+%ECHO { ;pstr JSR2 #0a18 DEO }
 
 |0000
 
 @size-system-start
 
-@cursor &x $2 &y $2
-@anchor &x $2 &y $2
-
+@cursor
+	&x $2 &y $2
+@anchor
+	&x $2 &y $2
 @drag $1
 @length $1
 @windows
@@ -153,7 +154,7 @@ BRK
 
 	.Mouse/state DEI #01 GTH ,&launch JCN
 
-	;sel JSR2
+	;sel-icon JSR2
 
 	POP
 	;sel-desktop JSR2
@@ -228,189 +229,52 @@ BRK
 
 JMP2r
 
-( window management )
+@set-dir ( path* -- )
 
-@pick-icon ( x* y* -- <id> )
-
-	( y ) #0018 SUB2 #0018 DIV2 NIP
-	ROT ROT
-	( x ) #0010 SUB2 #00a0 DIV2 NIP
-	;get-rows JSR2 MUL ADD
+	( test to see if windows will crash )
+	#0005 ADD2 ;buf/loc ;scpy JSR2
 
 JMP2r
 
-@pick-win ( x* y* -- <id> )
-
-	,&y STR2 ,&x STR2
-	#00 .length LDZ
-	&loop
-        DUP #01 SUB #0a MUL .windows ADD #00 SWP [ LIT2 &x $2 ] [ LIT2 &y $2 ] ROT2 ;within-win JSR2 ,&found JCN
-        #01 SUB LTHk ,&loop JCN
-    POP2
-    #ff
-
-JMP2r
-	&found NIP #01 SUB JMP2r
-
-@within-win ( x* y* win* -- flag )
-
-	STH2
-	( x0 ) OVR2 STH2kr LDA2 LTS2 ,&fail JCN
-	( y0 ) DUP2 STH2kr INC2 INC2 LDA2 LTS2 ,&fail JCN
-	( x1 ) OVR2 STH2kr LDA2k SWP2 #0004 ADD2 LDA #00 SWP #30 SFT2 ADD2 GTS2 ,&fail JCN
-	( y1 ) DUP2 STH2kr INC2 INC2 LDA2k SWP2 #0003 ADD2 LDA #00 SWP #30 SFT2 ADD2 GTS2 ,&fail JCN
-	POP2 POP2 POP2r #01
-
-JMP2r
-	&fail POP2 POP2 POP2r #00 JMP2r
-
-@add-win ( name* app* h w y* x* -- )
-
-	.length LDZ #0a MUL .windows ADD STHk
-	STZ2 INCr INCr
-	STHkr STZ2 INCr INCr
-	STHkr STZ2 INCr INCr
-	STHkr STZ2 INCr INCr
-	STHr STZ2
-	.length LDZk INC SWP STZ
-	.length LDZ #01 SUB 
-
-@sel-win ( id -- )
-
-	DUP #ff EQU ;sel-desktop JCN2
-	DUP .length LDZ GTH ,&unchanged JCN
-
-	;get-win JSR2 #000a SWP2 ;get-active-win JSR2 ;mswp JSR2
-
-	;draw-desktop JSR2
-
-	( draw menu )
-	;get-active-win JSR2 #0006 ADD2 LDA2
-	( get manifest )
-	LDA2 ;draw-menu/manifest STA2
-	;draw-menu-bg JSR2
-	;draw-menu JSR2
-
-JMP2r
-	&unchanged POP JMP2r
-
-@go-active ( -- )
-
-	.length LDZ
-	DUP ,&valid JCN
-	POP
-
-JMP2r
-	&valid #01 SUB ,sel-win JSR JMP2r
-
-@go-home ( -- )
-
-	;buf/loc #0040 ;mclr JSR2
-	LIT '. ;buf/loc STA
-	#00 ;sel JSR2
-
-JMP2r
-
-@go-file ( -- )
-
-	;draw-item-text/sel LDA ;get-file JSR2 ;open-file JSR2
-
-JMP2r
-
-@sel-desktop ( -- )
-
-	;manifest ;draw-menu/manifest LDA2 EQU2 ,&skip JCN
-		;manifest ;draw-menu/manifest STA2
-		;draw-menu-bg JSR2
-		;draw-menu JSR2
-		&skip
-
-JMP2r
-
-@close-win ( -- )
-
-	.length LDZk #01 SUB SWP STZ
-	;sel-desktop JSR2
-	;draw-desktop JSR2
-
-JMP2r
-
-@tab-win ( -- )
-
-	.Screen/height DEI2 #000a SUB2 ;get-active-win JSR2 INC2 INC2 STA2
-	;sel-desktop JSR2
-	;draw-desktop JSR2
-
-JMP2r
-
-@expand-win ( -- )
-
-	#0018 ;get-active-win JSR2 INC2 INC2 STA2
-	;draw-desktop JSR2
-
-JMP2r
-
-@center-win ( -- )
-
-	;get-active-win JSR2
-	STH2k
-	( /w ) #0004 ADD2
-	( -x ) LDAk #00 SWP #31 SFT2 .Screen/width DEI2 #01 SFT2 SWP2 SUB2 STH2kr STA2
-	( /h ) INC2 INC2r INC2r
-	( -y ) LDA #00 SWP #31 SFT2 .Screen/height DEI2 #01 SFT2 SWP2 SUB2 STH2r STA2
-	;draw-desktop JSR2
-
-JMP2r
-
-@get-active-app ( -- addr* )
-
-	;get-active-win JSR2 #0006 ADD2 LDA2
-
-JMP2r
-
-@get-active-win ( -- addr* )
-
-	.length LDZ #01 SUB
-
-@get-win ( id -- addr* )
-
-	DUP #ff NEQ ,&exists JCN
-		POP #ffff JMP2r
-		&exists
-	#0a MUL .windows ADD #00 SWP
-
-JMP2r
+( open a file )
 
 @open-file ( file* -- )
 
 	DUP2 #ffff EQU2 ,&no-file JCN
 	LDAk LIT '- EQU ,open-folder JCN
-	LDAk LIT '! EQU ;open-potato JCN2
 	DUP2 ;scap JSR2 #0004 SUB2 ;dict/icn-ext ;scmp JSR2 ,open-pict JCN
-
+	DUP2 ;scap JSR2 #0004 SUB2 ;dict/chr-ext ;scmp JSR2 ,open-pict JCN
+	DUP2 ;scap JSR2 #0004 SUB2 ;dict/pcm-ext ;scmp JSR2 ,open-play JCN
+	DUP2 #0005 ADD2 ;is-binary JSR2 ,open-hexa JCN
 	;open-text JSR2
 
 JMP2r
 	&no-file POP2 JMP2r
 
-@open-potato ( file* -- )
+@open-folder ( file* -- )
 
-	;buf/loc #0040 ;mclr JSR2
-	LIT '. ;buf/loc STA
-	#00 ;sel JSR2
+	;set-dir JSR2
+	#00 ;sel-icon JSR2
 
 JMP2r
 
-@open-folder ( file* -- )
+@open-hexa ( file* -- )
 
-	#0005 ADD2 ;buf/loc ;scpy JSR2
-	#00 ;sel JSR2
+	( TODO )
+	BUG2
 
 JMP2r
 
 @open-text ( file* -- )
 
 	#0005 ADD2 ;app-text #3023 #001d #0034 ;add-win JSR2
+
+JMP2r
+
+@open-play ( file* -- )
+
+	( TODO )
+	BUG2
 
 JMP2r
 
@@ -426,6 +290,40 @@ JMP2r
 		&has-size
 	INC INC STH2
 	;app-pict STH2r #0020 DUP2 ;add-win JSR2
+
+JMP2r
+
+@open-as-data ( -- )
+
+	( TODO: create hex editor )
+
+JMP2r
+
+@open-as-text ( -- )
+
+	;draw-item-text/sel LDA ;get-file JSR2 ;open-text JSR2
+
+JMP2r
+
+@open-as-pict ( -- )
+
+	;draw-item-text/sel LDA ;get-file JSR2 ;open-pict JSR2
+	;center-win JSR2
+
+JMP2r
+
+@open-disk ( -- )
+
+	;no-name ;app-disk #1613 #0023 #0073 ;add-win JSR2
+	;center-win JSR2
+
+JMP2r
+
+@open-wallpaper ( -- )
+
+	;patt-chr ;paint-patt/addr STA2
+	;no-name ;app-tile #0a0f #0023 #0073 ;add-win JSR2
+	;center-win JSR2
 
 JMP2r
 
@@ -445,6 +343,55 @@ JMP2r
 
 JMP2r
 
+
+@file-create ( -- )
+
+	;&new-name
+		DUP2 ;get-path JSR2 .File/name DEO2
+	#0001 .File/length DEO2
+	;&buf .File/write DEO2
+		;find-name JSR2 ;sel-icon JSR2
+
+JMP2r
+	&new-name "NEWFILE $1
+	&buf 00
+
+@file-rename ( -- )
+
+	( TODO )
+
+JMP2r
+
+@file-clone ( -- )
+
+	( TODO )
+
+JMP2r
+
+@file-delete ( -- )
+
+	;draw-item-text/sel LDA ;get-file JSR2 ;get-path JSR2 .File/name DEO2
+	#01 .File/delete DEO
+	;draw-desktop JSR2
+
+JMP2r
+
+@is-binary ( file* -- flag )
+
+	DUP2 ECHO
+	.File/name DEO2
+	#0001 .File/length DEO2
+	&s
+		;&buf .File/read DEO2
+		[ LIT &buf $1 ] #7e GTH ,&true JCN
+		.File/success DEI2 #0000 EQU2 ,&end JCN
+		,&s JMP
+	&end
+	#00
+
+JMP2r
+	&true #01 JMP2r
+
 ( helpers )
 
 @mswp ( len* a* b* -- )
@@ -462,23 +409,19 @@ JMP2r
 
 JMP2r
 
-@sbyte ( str* -- byte )
+@read-size ( 00x00* -- w h )
 
-	LDAk ,chex JSR STH
-	INC2 LDA ,chex JSR
-	STHr #40 SFT ADD
+	DUP2 ,sbyte JSR ,&w STR
+	INC2 INC2 LDAk LIT 'x NEQ ,&cancel JCN
+	INC2 ,sbyte JSR [ LIT &w $1 ] SWP
 
 JMP2r
+	&cancel POP2 #0000 JMP2r
 
-@chex ( char -- hex )
+@sbyte ( str* -- byte )
 
-	DUP #2f GTH OVR #3a LTH AND ,&number JCN
-	DUP #60 GTH OVR #67 LTH AND ,&lc JCN
-	DUP #40 GTH OVR #47 LTH AND ,&uc JCN
-		POP #00 JMP2r
-	&number #30 SUB JMP2r
-	&uc #37 SUB JMP2r
-	&lc #57 SUB
+	LDAk ,chex JSR #40 SFT STH
+	INC2 LDA ,chex JSR STHr ADD
 
 JMP2r
 
@@ -492,6 +435,18 @@ JMP2r
 		INC2 LDAk ,&w JCN
 	POP2
 	STH2r
+
+JMP2r
+
+@chex ( char -- hex )
+
+	DUP #2f GTH OVR #3a LTH AND ,&number JCN
+	DUP #60 GTH OVR #67 LTH AND ,&lc JCN
+	DUP #40 GTH OVR #47 LTH AND ,&uc JCN
+		POP #00 JMP2r
+	&number #30 SUB JMP2r
+	&uc #37 SUB JMP2r
+	&lc #57 SUB
 
 JMP2r
 
@@ -520,6 +475,12 @@ JMP2r
 
 JMP2r
 
+@get-strw ( str* -- width* )
+
+	;slen JSR2 #30 SFT2
+
+JMP2r
+
 @rel-mouse ( x* y* win* -- x* y* win* )
 
 	STH2k
@@ -532,15 +493,7 @@ JMP2r
 JMP2r
 
 @scmp ( a* b* -- f ) STH2 &l LDAk LDAkr STHr ANDk #00 EQU ,&e JCN NEQk ,&e JCN POP2 INC2 INC2r ,&l JMP &e NIP2 POP2r EQU JMP2r
-
-@print-str ( str* -- )
-
-	&w
-		LDAk #18 DEO
-		INC2 LDAk ,&w JCN
-	POP2
-
-JMP2r
+@pstr ( str* -- ) &w LDAk #18 DEO INC2 LDAk ,&w JCN POP2 JMP2r
 
 @no-name $1
 

@@ -29,6 +29,13 @@ Since this is designed to be used principally on a handheld devices without a wi
 - `B+Right`, open a window
 - `B+Left`, close a window
 
+## Notes
+
+- `---- name.txt` is a filepath
+- `name.txt` is a filename
+- `desktop/id` is an icon
+- `desktop/file` is a file
+
 ## TODO
 
 - Change icon on alt mod for drag.
@@ -60,6 +67,7 @@ Since this is designed to be used principally on a handheld devices without a wi
     - Support ICN/CHR mode switching
 - Screensaver?
 - Don't open Tile twice
+- Block changing path when windows with names are open
 
 ## Support
 

@@ -2,7 +2,7 @@
 
 	03 "Potato $1
 		01 '2 :open-disk "Disk 20 "Util. $1
-		02 'w :open-look "Wallpaper $1
+		02 'w :open-wallpaper "Wallpaper $1
 		01 'q :exit "Exit $1
 	04 "File $1
 		01 'n :file-create "Create $1
@@ -24,31 +24,165 @@
 		82 00 :go-file "Open $1
 	$1
 
-@file-create ( -- )
+( window management )
 
-	;&new-name
-		DUP2 ;get-path JSR2 .File/name DEO2
-	#0001 .File/length DEO2
-	;&buf .File/write DEO2
-		;find-name JSR2 ;sel JSR2
+@pick-win ( x* y* -- <id> )
 
-JMP2r
-	&new-name "NEWFILE $1
-	&buf 00
-
-@file-rename ( -- )
-
-JMP2r
-
-@file-clone ( -- )
+	,&y STR2 ,&x STR2
+	#00 .length LDZ
+	&loop
+        DUP #01 SUB #0a MUL .windows ADD
+			#00 SWP [ LIT2 &x $2 ] [ LIT2 &y $2 ] ROT2 ,within-win JSR ,&found JCN
+        #01 SUB LTHk ,&loop JCN
+    POP2
+    #ff
 
 JMP2r
+	&found NIP #01 SUB JMP2r
 
-@file-delete ( -- )
+@within-win ( x* y* win* -- flag )
 
-	;draw-item-text/sel LDA ;get-file JSR2 ;get-path JSR2 .File/name DEO2
-	#01 .File/delete DEO
+	STH2
+	( x0 ) OVR2 STH2kr LDA2 LTS2 ,&fail JCN
+	( y0 ) DUP2 STH2kr INC2 INC2 LDA2 LTS2 ,&fail JCN
+	( x1 ) OVR2 STH2kr LDA2k SWP2 #0004 ADD2 LDA #00 SWP #30 SFT2 ADD2 GTS2 ,&fail JCN
+	( y1 ) DUP2 STH2kr INC2 INC2 LDA2k SWP2 #0003 ADD2 LDA #00 SWP #30 SFT2 ADD2 GTS2 ,&fail JCN
+	POP2 POP2 POP2r #01
+
+JMP2r
+	&fail POP2 POP2 POP2r #00 JMP2r
+
+@add-win ( name* app* h w y* x* -- )
+
+	.length LDZ #0a MUL .windows ADD STHk
+	STZ2 INCr INCr
+	STHkr STZ2 INCr INCr
+	STHkr STZ2 INCr INCr
+	STHkr STZ2 INCr INCr
+	STHr STZ2
+	.length LDZk INC SWP STZ
+	.length LDZ #01 SUB
+
+@sel-win ( id -- )
+
+	DUP #ff EQU ;sel-desktop JCN2
+	DUP .length LDZ GTH ,&unchanged JCN
+
+	;get-win JSR2 #000a SWP2 ;get-active-win JSR2 ;mswp JSR2
+
+	( draw menu )
+	;get-active-win JSR2
+		DUP2 ;draw-win JSR2
+		#0006 ADD2 LDA2
+
+	( get manifest )
+	LDA2 ;draw-menu/manifest STA2
+
+	;draw-menu-bg JSR2
+	;draw-menu JSR2
+
+JMP2r
+	&unchanged POP JMP2r
+
+@go-active ( -- )
+
+	.length LDZ
+	DUP ,&valid JCN
+	POP
+
+JMP2r
+	&valid #01 SUB ,sel-win JSR JMP2r
+
+@go-home ( -- )
+
+	;buf/loc #0040 ;mclr JSR2
+	LIT '. ;buf/loc STA
+	#00 ;sel-icon JSR2
+
+JMP2r
+
+@go-file ( -- )
+
+	;draw-item-text/sel LDA ;get-file JSR2 ;open-file JSR2
+
+JMP2r
+
+@sel-desktop ( -- )
+
+	;manifest ;draw-menu/manifest LDA2 EQU2 ,&skip JCN
+		;manifest ;draw-menu/manifest STA2
+		;draw-menu-bg JSR2
+		;draw-menu JSR2
+		&skip
+
+JMP2r
+
+@close-win ( -- )
+
+	.length LDZk #01 SUB SWP STZ
+	;sel-desktop JSR2
 	;draw-desktop JSR2
+
+JMP2r
+
+@tab-win ( -- )
+
+	.Screen/height DEI2 #000a SUB2 ;get-active-win JSR2 INC2 INC2 STA2
+	;sel-desktop JSR2
+	;draw-desktop JSR2
+
+JMP2r
+
+@expand-win ( -- )
+
+	#0018 ;get-active-win JSR2 INC2 INC2 STA2
+	;draw-desktop JSR2
+
+JMP2r
+
+@center-win ( -- )
+
+	;get-active-win JSR2
+	STH2k
+	( /w ) #0004 ADD2
+	( -x ) LDAk #00 SWP #31 SFT2 .Screen/width DEI2 #01 SFT2 SWP2 SUB2 STH2kr STA2
+	( /h ) INC2 INC2r INC2r
+	( -y ) LDA #00 SWP #31 SFT2 .Screen/height DEI2 #01 SFT2 SWP2 SUB2 STH2r STA2
+	;draw-desktop JSR2
+
+JMP2r
+
+@get-rows ( -- rows )
+
+	.Screen/height DEI2 #0018 SUB2 #0018 DIV2 NIP
+
+JMP2r
+
+@get-active-app ( -- addr* )
+
+	;get-active-win JSR2 #0006 ADD2 LDA2
+
+JMP2r
+
+@get-active-win ( -- addr* )
+
+	.length LDZ #01 SUB
+
+@get-win ( id -- addr* )
+
+	DUP #ff NEQ ,&exists JCN
+		POP #ffff JMP2r
+		&exists
+	#0a MUL .windows ADD #00 SWP
+
+JMP2r
+
+@pick-icon ( x* y* -- <id> )
+
+	( y ) #0018 SUB2 #0018 DIV2 NIP
+	ROT ROT
+	( x ) #0010 SUB2 #00a0 DIV2 NIP
+	;get-rows JSR2 MUL ADD
 
 JMP2r
 
@@ -56,50 +190,32 @@ JMP2r
 
 	;draw-item-text/sel LDA
 		DUP ,&continue JCN POP JMP2r
-		&continue #01 SUB ;sel JSR2
+		&continue #01 SUB ;sel-icon JSR2
 
 JMP2r
 
 @sel-down ( -- )
 
-	;draw-item-text/sel LDA INC ;sel JSR2
+	;draw-item-text/sel LDA INC ;sel-icon JSR2
 
 JMP2r
 
 @sel-left ( -- )
 
-	;draw-item-text/sel LDA ;get-rows JSR2 SUB ;sel JSR2
+	;draw-item-text/sel LDA ;get-rows JSR2 SUB ;sel-icon JSR2
 
 JMP2r
 
 @sel-right ( -- )
 
-	;draw-item-text/sel LDA ;get-rows JSR2 ADD ;sel JSR2
+	;draw-item-text/sel LDA ;get-rows JSR2 ADD ;sel-icon JSR2
 
 JMP2r
 
-@sel ( id -- )
+@sel-icon ( id -- )
 
 	;draw-item-text/sel STA
 	;draw-desktop JSR2
-
-JMP2r
-
-@open-as-data ( -- )
-
-	( TODO: create hex editor )
-
-JMP2r
-
-@open-as-text ( -- )
-
-	;draw-item-text/sel LDA ;get-file JSR2 ;open-text JSR2
-
-JMP2r
-
-@open-as-pict ( -- )
-
-	;draw-item-text/sel LDA ;get-file JSR2 ;open-pict JSR2
 
 JMP2r
 
@@ -271,30 +387,3 @@ JMP2r
 		#01 ;draw-chr/color STA
 		;dict/empty ;draw-text JSR2
 	JMP2r
-
-@edit-copy ( -- ) JMP2r
-@edit-paste ( -- ) JMP2r
-@edit-cut ( -- ) JMP2r
-@edit-erase ( -- ) JMP2r
-@toggle-zoom ( -- ) JMP2r
-
-@open-disk ( -- )
-
-	;no-name ;app-disk #1613 #0023 #0073 ;add-win JSR2
-	;center-win JSR2
-
-JMP2r
-
-@open-look ( -- )
-
-	;patt-chr ;paint-patt/addr STA2
-	;no-name ;app-tile #0a0f #0023 #0073 ;add-win JSR2
-	;center-win JSR2
-
-JMP2r
-
-@get-rows ( -- rows )
-
-	.Screen/height DEI2 #0018 SUB2 #0018 DIV2 NIP
-
-JMP2r

@@ -138,7 +138,7 @@ JMP2r
 
 JMP2r
 
-@draw-bar ( den num -- )
+@draw-progbar ( den num -- )
 
 	STH
 	#00 .Screen/auto DEO
@@ -175,23 +175,6 @@ JMP2r
 	.Screen/y DEI2k STH2r SUB2 ROT DEO2
 
 JMP2r
-
-@get-strw ( str* -- width* )
-
-	;slen JSR2 #30 SFT2
-
-JMP2r
-
-@read-size ( 00x00* -- w h )
-
-	DUP2 ;sbyte JSR2 #00 EQU ,&cancel JCN
-	INC2k INC2 LDA LIT 'x NEQ ,&cancel JCN
-	DUP2 #0003 ADD2 ;sbyte JSR2 #00 EQU ,&cancel JCN
-	( y ) DUP2 #0003 ADD2 ;sbyte JSR2 STH
-	( x ) ;sbyte JSR2 STHr
-
-JMP2r
-	&cancel POP2 #0000 JMP2r
 
 @draw-drag ( win* color -- )
 
