@@ -63,8 +63,10 @@ JMP2r
 		12 00 :expand-win "Expand $1
 		22 00 :tab-win "Tab $1
 		42 00 :close-win "Close $1
-	01 "Edit $1
+	03 "Tile $1
 		00 08 :clear-patt "Clear $1
+		40 00 :prev-tile "Prev $1
+		80 00 :next-tile "Next $1
 	04 "Color $1
 		00 '1 :select-color1 "Background $1
 		00 '2 :select-color2 "Color1 $1
@@ -95,10 +97,31 @@ JMP2r
 	.Mouse/state DEI ,&on-click JCN
 		POP2 POP2 POP2 BRK
 		&on-click
-
 	;rel-mouse JSR2 POP2
-
-	#03 SFT2 NIP ROT ROT #03 SFT2 NIP SWP ;paint-patt JSR2
+	#03 SFT2 NIP ROT ROT #03 SFT2 NIP SWP
+	OVR #07 GTH ,&skip JCN
+	DUP #07 GTH ,&no-paint JCN
+		;paint-patt JSR2 BRK
+		&no-paint
+	DUP #09 NEQ ,&no-swatch JCN
+		POP #01 SFT ;paint-patt/color STA
+		#ffff ;paint-patt/last STA2
+		#00 .Mouse/state DEO BRK
+		&no-swatch
+	DUP2 #000b NEQ2 ,&no-l JCN
+		;prev-tile JSR2
+		#00 .Mouse/state DEO
+		POP2
+		BRK
+		&no-l
+	DUP2 #070b NEQ2 ,&no-r JCN
+		;next-tile JSR2
+		#00 .Mouse/state DEO
+		POP2
+		BRK
+		&no-r
+	&skip
+	BUG2
 
 BRK
 
@@ -107,9 +130,23 @@ BRK
 @select-color3 ( -- ) #02 ;paint-patt/color STA JMP2r
 @select-color4 ( -- ) #03 ;paint-patt/color STA JMP2r
 
+@prev-tile ( -- )
+
+	;paint-patt/addr LDA2 #0010 SUB2 ;paint-patt/addr STA2
+	;draw-desktop JSR2
+
+JMP2r
+
+@next-tile ( -- )
+
+	;paint-patt/addr LDA2 #0010 ADD2 ;paint-patt/addr STA2
+	;draw-desktop JSR2
+
+JMP2r
+
 @clear-patt ( -- )
 
-	;patt-chr #0010 ;mclr JSR2
+	;paint-patt/addr LDA2 #0010 ;mclr JSR2
 	;draw-desktop JSR2
 
 JMP2r
@@ -122,7 +159,7 @@ JMP2r
 
 	DUP2 ,&last STR2
 
-	#00 SWP ;patt-chr ADD2
+	#00 SWP [ LIT2 &addr :patt-chr ] ADD2
 	ROT #00 SWP
 	SWP2
 	OVR2 OVR2
@@ -158,10 +195,10 @@ JMP2r
 		#00 OVR #07 AND #30 SFT2 [ LIT2 &x $2 ] ADD2 .Screen/x DEO2
 		#00 OVR #33 SFT2 [ LIT2 &y $2 ] ADD2 .Screen/y DEO2
 		( ch1 )
-		#00 OVR #03 SFT2 ;patt-chr ADD2 LDA
+		#00 OVR #03 SFT2 ;paint-patt/addr LDA2 ADD2 LDA
 		OVR #07 AND #07 SWP SUB SFT #01 AND STH
 		( ch2 )
-		#00 OVR #03 SFT2 ;patt-chr ADD2 #0008 ADD2 LDA
+		#00 OVR #03 SFT2 ;paint-patt/addr LDA2 ADD2 #0008 ADD2 LDA
 		OVR #07 AND #07 SWP SUB SFT #01 AND #10 SFT STHr
 		ADD
 		#8c ADD .Screen/sprite DEO
@@ -190,23 +227,12 @@ JMP2r
 	;arrow-icns/h .Screen/addr DEO2
 	#0a .Screen/sprite DEO
 	#0f .Screen/sprite DEO
-	;patt-chr ;draw-short JSR2
+	;paint-patt/addr LDA2 ;draw-short JSR2
 	#0f .Screen/sprite DEO
 	;arrow-icns/h .Screen/addr DEO2
 	#1a .Screen/sprite DEO
 
 	#01 .Screen/auto DEO
-
-JMP2r
-
-@draw-slider ( -- )
-
-	;bigpixel-icn .Screen/addr DEO2
-	#0800
-	&l
-		#01 .Screen/sprite DEO
-		INC GTHk ,&l JCN
-	POP2
 
 JMP2r
 

@@ -251,6 +251,7 @@ JMP2r
 
 @open-look ( -- )
 
+	;patt-chr ;paint-patt/addr STA2
 	;no-name ;app-tile4 #0a0f #0023 #0073 ;add-win JSR2
 	;center-win JSR2
 
