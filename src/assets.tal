@@ -14,10 +14,11 @@
 		"Jul $1 "Aug $1 "Sep $1 "Oct $1 "Nov $1 "Dec $1
 	&icn-ext ".icn $1
 
-@patt-icn
-	1122 4488 1122 4488
+@patt-chr
+	0f0f 0f0f 0f0f 0f0f 0000 0000 ffff ffff
 @bigpixel-icn
 	7cfe fefe fefe 7c00
+	0000 0000 0000 0000
 @line-icn
 	00aa 0000 0000 0000
 @vert-icn

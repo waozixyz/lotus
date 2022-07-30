@@ -63,6 +63,13 @@ JMP2r
 		12 00 :expand-win "Expand $1
 		22 00 :tab-win "Tab $1
 		42 00 :close-win "Close $1
+	01 "Edit $1
+		00 08 :clear-patt "Clear $1
+	04 "Color $1
+		00 '1 :select-color1 "Background $1
+		00 '2 :select-color2 "Color1 $1
+		00 '3 :select-color3 "Color2 $1
+		00 '4 :select-color4 "Color3 $1
 	02 "Settings $1
 		02 00 :toggle-zoom "Decimal $1 ( TODO )
 		02 00 :toggle-zoom "Hexadecimal $1 ( TODO )
@@ -85,10 +92,55 @@ JMP2r
 
 &on-mouse ( x* y* win* -> )
 
-	POP2 POP2 POP2
-	#1234 BUG2
+	.Mouse/state DEI ,&on-click JCN
+		POP2 POP2 POP2 BRK
+		&on-click
+
+	;rel-mouse JSR2 POP2
+
+	#03 SFT2 NIP ROT ROT #03 SFT2 NIP SWP ;paint-patt JSR2
 
 BRK
+
+@select-color1 ( -- ) #00 ;paint-patt/color STA JMP2r
+@select-color2 ( -- ) #01 ;paint-patt/color STA JMP2r
+@select-color3 ( -- ) #02 ;paint-patt/color STA JMP2r
+@select-color4 ( -- ) #03 ;paint-patt/color STA JMP2r
+
+@clear-patt ( -- )
+
+	;patt-chr #0010 ;mclr JSR2
+	;draw-desktop JSR2
+
+JMP2r
+
+@paint-patt ( x y -- )
+
+	#00 SWP ;patt-chr ADD2
+	ROT #00 SWP
+	SWP2
+	OVR2 OVR2
+	( ch1 ) [ LIT &color 01 ] #00 ,toggle-pixel JSR
+	( ch2 ) #0008 ADD2 ,&color LDR #01 ,toggle-pixel JSR
+	;draw-desktop JSR2
+
+JMP2r
+
+@toggle-pixel ( x* addr* color index -- )
+
+	STH2
+	LDAk
+	STH SWP2 NIP
+	STHr SWP
+	STH2r SFT #01 AND ,&do-set JCN
+		( mask ) #01 #07 ROT #07 AND SUB #40 SFT SFT #ff EOR AND
+		( save ) ROT ROT STA
+		JMP2r
+	&do-set
+		( mask ) #01 #07 ROT #07 AND SUB #40 SFT SFT ORA
+		( save ) ROT ROT STA
+
+JMP2r
 
 @draw-editor ( -- )
 
@@ -99,9 +151,15 @@ BRK
 	&v
 		#00 OVR #07 AND #30 SFT2 [ LIT2 &x $2 ] ADD2 .Screen/x DEO2
 		#00 OVR #33 SFT2 [ LIT2 &y $2 ] ADD2 .Screen/y DEO2
-		#00 OVR #03 SFT2 ;patt-icn ADD2 LDA
-		OVR #07 AND #07 SWP SUB SFT #01 AND #10 SFT
-		#0c ADD .Screen/sprite DEO
+		( ch1 )
+		#00 OVR #03 SFT2 ;patt-chr ADD2 LDA
+		OVR #07 AND #07 SWP SUB SFT #01 AND STH
+		( ch2 )
+		#00 OVR #03 SFT2 ;patt-chr ADD2 #0008 ADD2 LDA
+		OVR #07 AND #07 SWP SUB SFT #01 AND #10 SFT STHr
+		ADD
+
+		#8c ADD .Screen/sprite DEO
 		INC GTHk ,&v JCN
 	POP2
 

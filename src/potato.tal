@@ -125,13 +125,11 @@ BRK
 	.Mouse/state DEI #00 EQU ,&no-touch JCN
 		.Mouse/x DEI2 .Mouse/y DEI2 ;pick-win JSR2
 		DUP ;sel-win JSR2
-		#00 .Mouse/state DEO
 		( TODO: cleanup )
 		;get-win JSR2
 		INC2 INC2 LDA2 .Mouse/y DEI2 SWP2 SUB2
 		#000a GTH2 ,&no-bar JCN
 			;set-drag JSR2
-			#01 .Mouse/state DEO
 			&no-bar
 		&no-touch
 
@@ -467,6 +465,17 @@ JMP2r
 			&no-lb
 		INC2 LDAk ,&w JCN
 	POP2
+
+JMP2r
+
+@rel-mouse ( x* y* win* -- x* y* win* )
+
+	STH2k
+	( y ) INC2 INC2 LDA2 SUB2 #0012 SUB2
+	SWP2
+	( x ) STH2kr LDA2 SUB2 #0008 SUB2
+	SWP2
+	STH2r
 
 JMP2r
 
