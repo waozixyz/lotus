@@ -85,7 +85,13 @@ JMP2r
 JMP2r
 
 &on-button ( win* -> ) POP2 BRK
-&on-mouse ( win* -> ) POP2 BRK
+
+&on-mouse ( x* y* win* -> )
+
+	POP2 POP2 POP2
+	#1234 BUG2
+
+BRK
 
 @draw-editor ( -- )
 

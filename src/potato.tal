@@ -121,6 +121,12 @@ BRK
 	.drag LDZ #ff NEQ ;on-drag JCN2
 	.Mouse/state DEI .Controller/button DEI #0102 EQU2 ;on-drag-start JCN2
 
+	( send mouse to active win )
+	.Mouse/x DEI2 .Mouse/y DEI2 ;get-active-win JSR2
+		ROT2k ROT2 ROT2 ;within-win JSR2 ,&send JCN
+	POP2 POP2 POP2
+
+	( pick window )
 	.Mouse/state DEI #00 EQU ,&no-touch JCN
 		.Mouse/x DEI2 .Mouse/y DEI2 ;pick-win JSR2
 		DUP ;sel-win JSR2
@@ -135,6 +141,7 @@ BRK
 		&no-touch
 
 BRK
+	&send ;get-active-app JSR2 #0004 ADD2 LDA2 JMP2
 
 ( drag )
 
@@ -318,6 +325,12 @@ JMP2r
 	( /h ) INC2 INC2r INC2r
 	( -y ) LDA #00 SWP #31 SFT2 .Screen/height DEI2 #01 SFT2 SWP2 SUB2 STH2r STA2
 	;draw-desktop JSR2
+
+JMP2r
+
+@get-active-app ( -- addr* )
+
+	;get-active-win JSR2 #0006 ADD2 LDA2
 
 JMP2r
 
