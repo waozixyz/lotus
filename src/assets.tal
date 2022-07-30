@@ -12,6 +12,7 @@
 	&icn-ext ".icn $1
 	&chr-ext ".chr $1
 	&pcm-ext ".pcm $1
+	&rom-ext ".rom $1
 	&snarf-ext ".snarf $1
 	&theme-ext ".theme $1
 	&dotw

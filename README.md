@@ -70,7 +70,8 @@ Since this is designed to be used principally on a handheld devices without a wi
 - Block changing path when windows with names are open
 - RGB tool
     - Open `.theme` file with RGB slider
-- Global color value
+- Swatch should show icon over selection
+- Catch maximum number of windows
 
 ## Support
 

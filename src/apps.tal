@@ -94,7 +94,7 @@ JMP2r
 		OVR .System/b STHk ,&set-color JSR STHr ,&set-nibble JSR
 		&no-b
 	DUP #09 NEQ ,&no-swatch JCN
-		OVR #02 SFT BUGk .cursor/color STZ
+		OVR #02 SFT .cursor/color STZ
 		[ LIT2 &win $2 ] ;draw-win JSR2
 		,&release JMP
 		&no-swatch

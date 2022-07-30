@@ -61,8 +61,6 @@
 	;draw-desktop JSR2
 	;untrap JSR2
 
-	;open-theme JSR2
-
 BRK
 
 @exit ( -- )
@@ -245,6 +243,7 @@ JMP2r
 	DUP2 ;scap JSR2 #0004 SUB2 ;dict/icn-ext ;scmp JSR2 ,open-pict JCN
 	DUP2 ;scap JSR2 #0004 SUB2 ;dict/chr-ext ;scmp JSR2 ,open-pict JCN
 	DUP2 ;scap JSR2 #0004 SUB2 ;dict/pcm-ext ;scmp JSR2 ,open-play JCN
+	DUP2 ;scap JSR2 #0004 SUB2 ;dict/rom-ext ;scmp JSR2 ,open-load JCN
 	DUP2 #0005 ADD2 ;is-binary JSR2 ,open-hexa JCN
 	;open-text JSR2
 
@@ -293,6 +292,12 @@ JMP2r
 
 JMP2r
 
+@open-load ( file* -- )
+
+	( TODO )
+
+JMP2r
+
 @open-as-data ( -- )
 
 	( TODO: create hex editor )
@@ -314,25 +319,38 @@ JMP2r
 
 @open-disk ( -- )
 
+	( unique )
+	;app-disk ;find-win JSR2
+		DUP #ff NEQ ,&reselect JCN POP
 	;no-name ;app-disk #1613 #0000 DUP2 ;add-win JSR2
 	;center-win JSR2
 
 JMP2r
+	&reselect ;sel-win JSR2 JMP2r
 
 @open-wallpaper ( -- )
 
 	;patt-chr ;paint-patt/addr STA2
+	( unique )
+	;app-tile ;find-win JSR2
+		DUP #ff NEQ ,&reselect JCN POP
+	( create )
 	;no-name ;app-tile #0a0f #0000 DUP2 ;add-win JSR2
 	;center-win JSR2
 
 JMP2r
+	&reselect ;sel-win JSR2 JMP2r
 
 @open-theme ( -- )
 
+	( unique )
+	;app-color ;find-win JSR2
+		DUP #ff NEQ ,&reselect JCN POP
 	;no-name ;app-color #0a0f #0000 DUP2 ;add-win JSR2
 	;center-win JSR2
 
 JMP2r
+	&reselect ;sel-win JSR2 JMP2r
 
 @get-path ( file* -- abs* )
 

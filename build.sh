@@ -16,6 +16,8 @@ fi
 echo "Assembling.."
 uxnasm src/potato.tal bin/potato.rom
 
+cp ~/roms/noodle.rom bin/noodle.rom
+
 if [ -d "$HOME/roms" ] && [ -e ./bin/potato.rom ]
 then
 	cp ./bin/potato.rom $HOME/roms
