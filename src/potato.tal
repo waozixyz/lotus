@@ -52,8 +52,8 @@
 	#a70f .System/b DEO2
 
 	( size )
-	#0200 .Screen/width DEO2
-	#0200 .Screen/height DEO2
+	( #0200 .Screen/width DEO2
+	#0200 .Screen/height DEO2 )
 
 	#ff .drag STZ
 
@@ -357,7 +357,7 @@ JMP2r
 	LDAk LIT '! EQU ;open-potato JCN2
 	DUP2 ;scap JSR2 #0004 SUB2 ;dict/icn-ext ;scmp JSR2 ,open-pict JCN
 
-	;get-path JSR2 ;open-text JSR2
+	;open-text JSR2
 
 JMP2r
 
@@ -378,7 +378,7 @@ JMP2r
 
 @open-text ( file* -- )
 
-	;app-text #3023 #001d #0034 ;add-win JSR2
+	#0005 ADD2 ;app-text #3023 #001d #0034 ;add-win JSR2
 
 JMP2r
 

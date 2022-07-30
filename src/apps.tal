@@ -251,7 +251,7 @@ JMP2r
 
 	( get path )
 	DUP2
-	#0008 ADD2 LDA2 .File/name DEO2
+	#0008 ADD2 LDA2 ;get-path JSR2 .File/name DEO2
 	#0000 ;buf/app SUB2 .File/length DEO2
 	;buf/app .File/read DEO2
 	( cap )

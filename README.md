@@ -59,6 +59,7 @@ Since this is designed to be used principally on a handheld devices without a wi
 - Tile
     - Support ICN/CHR mode switching
     - Support Copy/Paste(snarf)
+- Screensaver?
 
 ## Support
 
