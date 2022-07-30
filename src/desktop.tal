@@ -27,7 +27,7 @@
 @file-create ( -- )
 
 	;&new-name
-		DUP2 .File/name DEO2
+		DUP2 ;get-path JSR2 .File/name DEO2
 	#0001 .File/length DEO2
 	;&buf .File/write DEO2
 		;find-name JSR2 ;sel JSR2
@@ -38,11 +38,9 @@ JMP2r
 
 @file-rename ( -- )
 
-
 JMP2r
 
 @file-clone ( -- )
-
 
 JMP2r
 
