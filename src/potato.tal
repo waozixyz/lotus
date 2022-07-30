@@ -149,13 +149,22 @@ BRK
 
 @touch-desktop ( -> )
 
-	.Mouse/x DEI2 .Mouse/y DEI2 ;pick-icon JSR2 ;sel JSR2
+	.Mouse/x DEI2 .Mouse/y DEI2 ;pick-icon JSR2
+
+	.Mouse/state DEI #01 GTH ,&launch JCN
+
+	;sel JSR2
 
 	POP
 	;sel-desktop JSR2
 	#00 .Mouse/state DEO
 
 BRK
+	&launch
+		;get-file JSR2 ;open-file JSR2
+		#00 .Mouse/state DEO
+		POP
+	BRK
 
 ( drag )
 
@@ -310,9 +319,11 @@ JMP2r
 
 @sel-desktop ( -- )
 
-	;manifest ;draw-menu/manifest STA2
-	;draw-menu-bg JSR2
-	;draw-menu JSR2
+	;manifest ;draw-menu/manifest LDA2 EQU2 ,&skip JCN
+		;manifest ;draw-menu/manifest STA2
+		;draw-menu-bg JSR2
+		;draw-menu JSR2
+		&skip
 
 JMP2r
 
