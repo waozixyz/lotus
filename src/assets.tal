@@ -13,6 +13,8 @@
 		"Jan $1 "Feb $1 "Mar $1 "Apr $1 "May $1 "Jun $1
 		"Jul $1 "Aug $1 "Sep $1 "Oct $1 "Nov $1 "Dec $1
 	&icn-ext ".icn $1
+	&snarf-ext ".snarf $1
+	&theme-ext ".theme $1
 
 ( icn )
 
@@ -107,9 +109,7 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
 ( chr )
 
 @patt-chr
-	4080 0000 0000 0102
-	0000 0000 0000 0000
-
+	2a55 aa55 aa55 aa54 0000 0000 0000 0000
 @icons
 	&fonts
 	0000 0000 0307 0f0e 0000 0000 0000 0000

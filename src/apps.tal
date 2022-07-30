@@ -63,10 +63,12 @@ JMP2r
 		12 00 :expand-win "Expand $1
 		22 00 :tab-win "Tab $1
 		42 00 :close-win "Close $1
-	03 "Edit $1
+	05 "Edit $1
 		00 08 :clear-patt "Clear $1
 		40 00 :prev-tile "Prev $1
 		80 00 :next-tile "Next $1
+		01 'c :copy-patt "Copy $1
+		01 'v :paste-patt "Paste $1
 	04 "Color $1
 		00 '1 :select-color1 "Background $1
 		00 '2 :select-color2 "Color1 $1
@@ -167,6 +169,23 @@ BRK
 
 @mode-chr ( -- ) ( TODO ) JMP2r
 @mode-icn ( -- ) ( TODO ) JMP2r
+
+@copy-patt ( -- )
+
+	;dict/snarf-ext .File/name DEO2
+	#0010 .File/length DEO2
+	;patt-chr .File/write DEO2
+
+JMP2r
+
+@paste-patt ( -- )
+
+	;dict/snarf-ext .File/name DEO2
+	#0010 .File/length DEO2
+	;patt-chr .File/read DEO2
+	;draw-desktop JSR2
+
+JMP2r
 
 @prev-tile ( -- )
 

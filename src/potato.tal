@@ -159,10 +159,10 @@ BRK
 	DUP2 #40 ;draw-drag JSR2
 
 	( move window )
-	#000d .Mouse/x DEI2 [ LIT2 &x $2 ] SUB2 STH2kr LDA2 ADD2
+	#0008 .Mouse/x DEI2 [ LIT2 &x $2 ] SUB2 STH2kr LDA2 ADD2
 		;clamp-win JSR2 STH2kr STA2
 	INC2r INC2r
-	#001d .Mouse/y DEI2 [ LIT2 &y $2 ] SUB2 STH2kr LDA2 ADD2
+	#0018 .Mouse/y DEI2 [ LIT2 &y $2 ] SUB2 STH2kr LDA2 ADD2
 		;clamp-win JSR2
 		.Screen/height DEI2 #000a SUB2 LTH2k POP2?
 		STH2r STA2
@@ -315,7 +315,7 @@ JMP2r
 
 @expand-win ( -- )
 
-	#001d ;get-active-win JSR2 INC2 INC2 STA2
+	#0018 ;get-active-win JSR2 INC2 INC2 STA2
 	;draw-desktop JSR2
 
 JMP2r

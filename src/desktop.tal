@@ -143,11 +143,9 @@ JMP2r
 	;buf/loc .File/name DEO2
 	#0400 .File/length DEO2
 
-	;buf/dir #0017 ADD2
+	;buf/dir
 		DUP2 .File/read DEO2
 		;remove-lb JSR2
-
-	;&init ;buf/dir #0017 ;mcpy JSR2
 
 	LITr 00
 	;buf/dir

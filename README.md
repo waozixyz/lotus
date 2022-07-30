@@ -48,6 +48,7 @@ Since this is designed to be used principally on a handheld devices without a wi
     - Select image
 - Theme selector
     - Save patt after theme
+- RGB tool
 - Error modal/application
 - Throw error when trying to open a folder as pict/text/data
 - Mouse picking on desktop
@@ -55,10 +56,8 @@ Since this is designed to be used principally on a handheld devices without a wi
 - Desktop
     - Rename file
     - Copy file
-    - Delete file
 - Tile
     - Support ICN/CHR mode switching
-    - Support Copy/Paste(snarf)
 - Screensaver?
 
 ## Support
