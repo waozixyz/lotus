@@ -135,7 +135,9 @@ BRK
 
 	( send mouse to active win )
 	.Mouse/x DEI2 .Mouse/y DEI2 ;get-active-win JSR2
+		DUP2 #ffff EQU2 ,&skip JCN
 		ROT2k ROT2 ROT2 ;within-win JSR2 ,&send JCN
+	&skip
 	POP2 POP2 POP2
 
 BRK
@@ -339,7 +341,7 @@ JMP2r
 @get-win ( id -- addr* )
 
 	DUP #ff NEQ ,&exists JCN
-		JMP2r
+		POP #ffff JMP2r
 		&exists
 	#0a MUL .windows ADD #00 SWP
 
@@ -454,6 +456,20 @@ JMP2r
 		INC2 LDAk ,&w JCN
 	POP2
 	STH2r
+
+JMP2r
+
+@get-chr ( pixel -- color )
+
+	STH DUP2 STHkr ,get-icn JSR
+	ROT ROT #0008 ADD2 STHr ,get-icn JSR #10 SFT ORA
+
+JMP2r
+
+@get-icn ( addr* pixel -- color )
+
+	( y ) STHk #00 SWP #03 SFT2 SWP2 ADD2 LDA
+	( x ) STHr #07 AND #07 SWP SUB SFT #01 AND
 
 JMP2r
 
