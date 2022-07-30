@@ -58,6 +58,7 @@ Since this is designed to be used principally on a handheld devices without a wi
     - Delete file
 - Tile
     - Support ICN/CHR mode switching
+    - Support Copy/Paste(snarf)
 
 ## Support
 

@@ -128,8 +128,9 @@ BRK
 	( pick window )
 	.Mouse/state DEI #00 EQU ,&no-touch JCN
 		.Mouse/x DEI2 .Mouse/y DEI2 ;pick-win JSR2
+		DUP #ff EQU ,&no-win JCN
 		DUP ;sel-win JSR2
-		( TODO: cleanup )
+		( pick dragbar )
 		;get-win JSR2
 		INC2 INC2 LDA2 .Mouse/y DEI2 SWP2 SUB2
 		#000a GTH2 ,&no-bar JCN
@@ -145,6 +146,7 @@ BRK
 	POP2 POP2 POP2
 
 BRK
+	&no-win POP ;sel-desktop JSR2 #00 .Mouse/state DEO BRK
 	&send ;get-active-app JSR2 #0004 ADD2 LDA2 JMP2
 
 ( drag )
@@ -289,7 +291,7 @@ JMP2r
 
 JMP2r
 
-@sel-desktop ( ff -- )
+@sel-desktop ( -- )
 
 	;manifest ;draw-menu/manifest STA2
 	;draw-menu-bg JSR2
