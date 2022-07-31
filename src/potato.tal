@@ -98,7 +98,7 @@ BRK
 
 	.Mouse/y DEI2 #000c LTH2 ;trap-menu JCN2
 
-	#42 .Mouse/state DEI #00 NEQ SUB ;update-cursor JSR2
+	#42 .Mouse/state DEI #00 NEQ SUB ;cursor-icn ;update-cursor JSR2
 
 	( handle drag )
 	.drag LDZ #ff NEQ ;on-drag JCN2
@@ -276,9 +276,19 @@ JMP2r
 
 @open-load ( file* -- )
 
-	( TODO )
+	#0005 ADD2 ;get-path JSR2 .File/name DEO2
+	#fe00 .File/length DEO2
+	;loader-rom #ffd5 #002a ;mcpy JSR2
+	;clear-screen JSR2
+	POP POP2r
+    #ffd5 JMP2
 
 JMP2r
+
+@loader-rom
+	8000 8000 0711 0106 80f7 0d02 a001 00af
+    80ac 37a0 ffd5 80a2 36ef 3826 8000 0505
+    1521 aa80 f50d 2222 6f2c
 
 @open-as-data ( -- )
 

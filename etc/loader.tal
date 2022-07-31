@@ -1,0 +1,49 @@
+(
+    uxnasm etc/loader.tal bin/loader.rom && uxnemu bin/loader.rom
+    uxncli ~/roms/hexdump.rom bin/loader.rom
+
+    8000 8000 0711 0106 80f7 0d02 a001 00af
+    80ac 37a0 ffd5 80a2 36ef 3826 8000 0505
+    1521 aa80 f50d 2222 6f2c
+)
+
+|a0 @File &vector $2 &success $2 &stat $2 &delete $1 &append $1 &name $2 &length $2 &read $2 &write $2
+
+|0100
+
+    ( calculate position )
+    ;b ;a SUB2 DUP2 ;print JSR2 #2018 DEO
+    #ffff SWP2 SUB2 ;print JSR2 #0a18 DEO
+
+    ( prelude )
+    ;name .File/name DEO2
+    #fe00 .File/length DEO2
+    #ffd5 JMP2
+
+BRK
+
+@name "etc/noodle.rom $1
+
+@print ( short* -- )
+
+	SWP ,&byte JSR
+	&byte ( byte -- ) DUP #04 SFT ,&char JSR
+	&char ( char -- ) #0f AND DUP #09 GTH #27 MUL ADD #30 ADD #18 DEO
+
+JMP2r
+
+|ffd5
+
+    @a
+    ( blank zero-page )
+    #00 &w #00 OVR STZ INC DUP ,&w JCN POP
+    ( load rom )
+    #0100 STH2k .File/read DEO2
+    ( blank memory )
+    #ffd5 .File/success DEI2 STH2kr ADD2
+    &l DUP2 #00 ROT ROT STA INC2 GTH2k ,&l JCN POP2 POP2
+    ( begin )
+    STH2r JMP2
+    @b
+
+BRK

@@ -378,3 +378,22 @@ JMP2r
 	#0f AND DUP #09 GTH #07 MUL ADD #30 ADD ;draw-chr JSR2
 
 JMP2r
+
+@clear-screen ( -- )
+
+	#01 .Screen/auto DEO
+	#0000 .Screen/y DEO2
+	.Screen/height DEI2 #03 SFT2 NIP #00
+	&h
+		#0000 .Screen/x DEO2
+		.Screen/width DEI2 #03 SFT2 NIP #00
+		&w
+			#00 .Screen/sprite DEO
+			INC GTHk ,&w JCN
+		POP2
+		.Screen/y DEI2k #0008 ADD2 ROT DEO2
+		INC GTHk ,&h JCN
+	POP2
+	#15 .Screen/auto DEO
+
+JMP2r
