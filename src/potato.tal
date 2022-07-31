@@ -49,6 +49,7 @@
 	#500f .System/r DEO2
 	#b70f .System/g DEO2
 	#a70f .System/b DEO2
+	;load-theme JSR2
 
 	( size )
 	( #0200 .Screen/width DEO2
