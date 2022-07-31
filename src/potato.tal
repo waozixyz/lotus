@@ -223,10 +223,10 @@ JMP2r
 
 	DUP2 #ffff EQU2 ,&no-file JCN
 	LDAk LIT '- EQU ,open-folder JCN
-	DUP2 ;scap JSR2 #0004 SUB2 ;dict/icn-ext ;scmp JSR2 ,open-pict JCN
-	DUP2 ;scap JSR2 #0004 SUB2 ;dict/chr-ext ;scmp JSR2 ,open-pict JCN
-	DUP2 ;scap JSR2 #0004 SUB2 ;dict/pcm-ext ;scmp JSR2 ,open-play JCN
-	DUP2 ;scap JSR2 #0004 SUB2 ;dict/rom-ext ;scmp JSR2 ,open-load JCN
+	DUP2 ;dict/icn-ext ;has-ext JSR2 ,open-pict JCN
+	DUP2 ;dict/chr-ext ;has-ext JSR2 ,open-pict JCN
+	DUP2 ;dict/pcm-ext ;has-ext JSR2 ,open-play JCN
+	DUP2 ;dict/rom-ext ;has-ext JSR2 ,open-load JCN
 	DUP2 #0005 ADD2 ;is-binary JSR2 ,open-hexa JCN
 	;open-text JSR2
 

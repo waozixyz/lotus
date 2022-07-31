@@ -30,11 +30,12 @@
 @pick-win ( x* y* -- <id> )
 
 	,&y STR2 ,&x STR2
-	#00 .length LDZ
+	#00 .length LDZ DUP #00 EQU ,&skip JCN
 	&loop
 		DUP #01 SUB #0a MUL .windows ADD
 			#00 SWP [ LIT2 &x $2 ] [ LIT2 &y $2 ] ROT2 ,within-win JSR ,&found JCN
 			#01 SUB LTHk ,&loop JCN
+		&skip
 	POP2
 	#ff
 
