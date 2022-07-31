@@ -22,7 +22,7 @@ uxnemu bin/potato.rom
 
 ## Manual
 
-Since this is designed to be used principally on a handheld devices without a window manager, the controls are aimed at d-pad centric. The pattern here is using the B button to handle all window operations, and leave the A button to the applications.
+Since this is designed to be used principally on a handheld devices without a window manager, the controls are aimed at d-pad centric. The pattern here is using the B button to handle all window operations, and leave the A button to the applications. Alternatively, you can open a file with `mouse2`.
 
 - `B+Up`, expand a window
 - `B+Down`, tab a window
@@ -38,7 +38,7 @@ Since this is designed to be used principally on a handheld devices without a wi
 
 ## TODO
 
-- Change icon on alt mod for drag.
+- Change cursor icon on alt mod for drag.
 - Audio player.
 - Terminal.
 - Piano.
@@ -51,13 +51,10 @@ Since this is designed to be used principally on a handheld devices without a wi
     - Select next image
     - Select prev image
 - Clock widget
-- Wallpaper application
-    - Select image
-- Theme selector
-    - Save patt after theme
+- Wallpaper application?
+    - Select `.paper` image
 - Error modal/application
 - Throw error when trying to open a folder as pict/text/data
-- Mouse picking on desktop
 - Hex editor
 - Desktop
     - Rename file
@@ -65,8 +62,6 @@ Since this is designed to be used principally on a handheld devices without a wi
 - Tile
     - Support ICN/CHR mode switching
 - Screensaver?
-- Don't open Tile twice
-- Don't open System twice
 - Block changing path when windows with names are open
 - RGB tool
     - Open `.theme` file with RGB slider
