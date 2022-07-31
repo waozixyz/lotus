@@ -50,7 +50,7 @@ JMP2r
 	&items
 		:size-assets-end :size-assets-start :dict/fontsicons :icons/fonts
 		:size-desktop-end :size-desktop-start :dict/desktop :icons/desktop
-		:size-apps-end :size-apps-start :dict/applications :icons/unknown
+		:size-apps-end :size-apps-start :dict/applications :icons/application
 		:size-system-end :size-system-start :dict/system :icons/potato
 	&full "65536 $1
 

@@ -347,7 +347,7 @@ JMP2r
 	&folder POP2 ;icons/folder ;draw-icon JSR2 JMP2r
 	&large POP2 ;icons/unknown ;draw-icon JSR2 JMP2r
 	&hidden POP2 ;icons/pict ;draw-icon JSR2 JMP2r
-	&rom POP2 ;icons/desktop ;draw-icon JSR2 JMP2r
+	&rom POP2 ;icons/application ;draw-icon JSR2 JMP2r
 
 @draw-item-text ( ptr* id -- ptr* )
 
