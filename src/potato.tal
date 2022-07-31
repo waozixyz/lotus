@@ -212,8 +212,8 @@ JMP2r
 
 @set-dir ( path* -- )
 
-	( test to see if windows will crash )
-	#0005 ADD2 ;buf/loc ;scpy JSR2
+	;buf/loc ;scpy JSR2
+	#00 ;sel-icon JSR2
 
 JMP2r
 
@@ -235,8 +235,7 @@ JMP2r
 
 @open-folder ( file* -- )
 
-	;set-dir JSR2
-	#00 ;sel-icon JSR2
+	#0005 ADD2 ;set-dir JSR2
 
 JMP2r
 

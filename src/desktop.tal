@@ -110,9 +110,7 @@ JMP2r
 
 @go-home ( -- )
 
-	;buf/loc #0040 ;mclr JSR2
-	LIT '. ;buf/loc STA
-	#00 ;sel-icon JSR2
+	;dict/home-ext ;set-dir JSR2
 
 JMP2r
 
