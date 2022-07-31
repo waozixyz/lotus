@@ -32,11 +32,11 @@
 	,&y STR2 ,&x STR2
 	#00 .length LDZ
 	&loop
-        DUP #01 SUB #0a MUL .windows ADD
+		DUP #01 SUB #0a MUL .windows ADD
 			#00 SWP [ LIT2 &x $2 ] [ LIT2 &y $2 ] ROT2 ,within-win JSR ,&found JCN
-        #01 SUB LTHk ,&loop JCN
-    POP2
-    #ff
+			#01 SUB LTHk ,&loop JCN
+	POP2
+	#ff
 
 JMP2r
 	&found NIP #01 SUB JMP2r
@@ -58,9 +58,9 @@ JMP2r
 	,&a STR2
 	.length LDZ #00
 	&loop
-        DUP #0a MUL .windows ADD #06 ADD LDZ2 [ LIT2 &a $2 ] EQU2 ,&found JCN
-        INC GTHk ,&loop JCN
-    POP2
+		DUP #0a MUL .windows ADD #06 ADD LDZ2 [ LIT2 &a $2 ] EQU2 ,&found JCN
+		INC GTHk ,&loop JCN
+	POP2
 	#ff
 
 JMP2r
@@ -337,29 +337,24 @@ JMP2r
 
 @draw-item-icon ( ptr* -- ptr* )
 
-	LDAk LIT '- EQU ;&folder JCN2
-	LDAk LIT '? EQU ;&large JCN2
-	DUP2 #0005 ADD2 LDA LIT '. EQU ;&hidden JCN2
-	LDAk LIT '! EQU ;&potato JCN2
-	LDAk LIT '@ EQU ;&disk JCN2
+	LDAk LIT '- EQU ,&folder JCN
+	LDAk LIT '? EQU ,&large JCN
+	DUP2 #0005 ADD2 LDA LIT '. EQU ,&hidden JCN
+	DUP2 #0005 ADD2 ;dict/rom-ext ;has-ext JSR2 ,&rom JCN
 	POP2 ;icons/text ;draw-icon JSR2
 
 JMP2r
 	&folder POP2 ;icons/folder ;draw-icon JSR2 JMP2r
 	&large POP2 ;icons/unknown ;draw-icon JSR2 JMP2r
-	&potato POP2 ;icons/potato ;draw-icon JSR2 JMP2r
-	&disk POP2 ;icons/disk ;draw-icon JSR2 JMP2r
-	&hidden POP2  ;icons/pict ;draw-icon JSR2 JMP2r
+	&hidden POP2 ;icons/pict ;draw-icon JSR2 JMP2r
+	&rom POP2 ;icons/desktop ;draw-icon JSR2 JMP2r
 
 @draw-item-text ( ptr* id -- ptr* )
 
 	[ LIT &sel 00 ] EQU #09 MUL INC INC ;draw-chr/color STA
 
-	LDAk LIT '- EQU ;&folder JCN2
-	LDAk LIT '? EQU ;&folder JCN2
-
-	LDAk LIT '! EQU ;&potato JCN2
-	LDAk LIT '@ EQU ;&disk JCN2
+	LDAk LIT '- EQU ;&no-size JCN2
+	LDAk LIT '? EQU ;&no-size JCN2
 
 	.Screen/x DEI2k #0020 ADD2 STH2k ROT DEO2
 	.Screen/y DEI2k #0014 SUB2 ROT DEO2
@@ -376,28 +371,8 @@ JMP2r
 
 JMP2r
 	&buf $5
-	&folder
+	&no-size
 		.Screen/y DEI2k #0010 SUB2 ROT DEO2
 		.Screen/x DEI2k #0020 ADD2 ROT DEO2
 		#0005 ADD2 ;draw-text JSR2
-	JMP2r
-	&potato
-		.Screen/x DEI2k #0020 ADD2 STH2k ROT DEO2
-		.Screen/y DEI2k #0014 SUB2 ROT DEO2
-			#0005 ADD2 ;draw-text JSR2
-		STH2r .Screen/x DEO2
-		.Screen/y DEI2k #0009 ADD2 ROT DEO2
-		#01 ;draw-chr/color STA
-		#0000 ;buf/app SUB2 ;draw-dec JSR2
-		#20 ;draw-chr JSR2
-		;dict/free ;draw-text JSR2
-	JMP2r
-	&disk
-		.Screen/x DEI2k #0020 ADD2 STH2k ROT DEO2
-		.Screen/y DEI2k #0014 SUB2 ROT DEO2
-			#0005 ADD2 ;draw-text JSR2
-		STH2r .Screen/x DEO2
-		.Screen/y DEI2k #0009 ADD2 ROT DEO2
-		#01 ;draw-chr/color STA
-		;dict/empty ;draw-text JSR2
 	JMP2r

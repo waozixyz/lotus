@@ -17,7 +17,7 @@
 %menu-l { #30 }
 %menu-r { #03 }
 
-%MOD  { DIVk MUL SUB }
+%MOD { DIVk MUL SUB }
 %MOD2 { DIV2k MUL2 SUB2 }
 %LTS2 { #8000 STH2k ADD2 SWP2 STH2r ADD2 GTH2 }
 %GTS2 { #8000 STH2k ADD2 SWP2 STH2r ADD2 LTH2 }
@@ -282,14 +282,14 @@ JMP2r
 	;loader-rom #ffd5 #002a ;mcpy JSR2
 	;clear-screen JSR2
 	POP POP2r
-    #ffd5 JMP2
+	#ffd5 JMP2
 
 JMP2r
 
 @loader-rom
 	8000 8000 0711 0106 80f7 0d02 a001 00af
-    80ac 37a0 ffd5 80a2 36ef 3826 8000 0505
-    1521 aa80 f50d 2222 6f2c
+	80ac 37a0 ffd5 80a2 36ef 3826 8000 0505
+	1521 aa80 f50d 2222 6f2c
 
 @open-as-data ( -- )
 
@@ -506,6 +506,18 @@ JMP2r
 	( x ) STH2kr LDA2 SUB2 #0008 SUB2
 	SWP2
 	STH2r
+
+JMP2r
+
+@has-ext ( str* ext* -- flag )
+
+	SWP2 ,get-ext JSR ;scmp JSR2
+
+JMP2r
+
+@get-ext ( str* -- ext* )
+
+	;scap JSR2 #0004 SUB2
 
 JMP2r
 
