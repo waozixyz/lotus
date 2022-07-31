@@ -329,6 +329,17 @@ JMP2r
 
 JMP2r
 
+@update-cursor ( color -- )
+
+	#00 .Screen/auto DEO
+	#40 ,draw-cursor JSR
+	.Mouse/x DEI2 DUP2 .cursor/x STZ2 .Screen/x DEO2
+	.Mouse/y DEI2 DUP2 .cursor/y STZ2 .Screen/y DEO2
+	;cursor-icn .Screen/addr DEO2
+	.Screen/sprite DEO
+
+JMP2r
+
 @draw-cursor ( color -- )
 
 	.cursor/x LDZ2 .Screen/x DEO2

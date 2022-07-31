@@ -78,17 +78,6 @@ JMP2r
 
 JMP2r
 
-@trap ( -- )
-
-	( ;on-frame-trap .Screen/vector DEO2
-	;on-button-trap .Controller/vector DEO2
-	;on-mouse-trap .Mouse/vector DEO2 )
-	( clear cursor )
-	#40 ;draw-cursor JSR2
-	( release mouse ) #00 .Mouse/state DEO
-
-JMP2r
-
 @on-frame ( -> )
 
 	;update-clock JSR2
@@ -109,16 +98,9 @@ BRK
 
 	.Mouse/y DEI2 #000c LTH2 ;trap-menu JCN2
 
-	#00 .Screen/auto DEO
-	( clear last cursor )
-	#40 ;draw-cursor JSR2
-	( record mouse positions )
-	.Mouse/x DEI2 DUP2 .cursor/x STZ2 .Screen/x DEO2
-	.Mouse/y DEI2 DUP2 .cursor/y STZ2 .Screen/y DEO2
-	( draw new cursor )
-	;cursor-icn .Screen/addr DEO2
-	#42 .Mouse/state DEI #00 NEQ SUB .Screen/sprite DEO
+	#42 .Mouse/state DEI #00 NEQ SUB ;update-cursor JSR2
 
+	( handle drag )
 	.drag LDZ #ff NEQ ;on-drag JCN2
 	.Mouse/state DEI .Controller/button DEI #0102 EQU2 ;on-drag-start JCN2
 
