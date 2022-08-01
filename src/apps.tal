@@ -13,6 +13,7 @@
 	:disk-manifest
 	:&on-draw
 	:void-mouse
+	:void-button
 
 &on-draw ( win* -- )
 
@@ -75,6 +76,7 @@ JMP2r
 	:color-manifest
 	:&on-draw
 	:&on-mouse
+	:void-button
 
 &on-mouse ( x* y* win* -> )
 
@@ -182,6 +184,7 @@ JMP2r
 	:tile-manifest
 	:&on-draw
 	:&on-mouse
+	:void-button
 
 &on-draw ( win* -- )
 
@@ -349,6 +352,7 @@ JMP2r
 	:text-manifest
 	:&on-draw
 	:void-mouse
+	:void-button
 
 &on-draw ( win* -- )
 
@@ -378,13 +382,14 @@ JMP2r
 		22 00 :tab-win "Tab $1
 		42 00 :close-win "Close $1
 	01 "View $1
-		01 'i :app-pict-invert "Invert $1
+		01 'i :app-pict/invert "Invert $1
 	$1
 
 @app-pict
 	:pict-manifest
 	:&on-draw
 	:void-mouse
+	:void-button
 
 &on-draw ( win* -- )
 
@@ -396,7 +401,7 @@ JMP2r
 
 JMP2r
 
-@app-pict-invert ( -- )
+&invert ( -- )
 
 	#0e #0b ;draw-image/color LDA #0e NEQ POP? ;draw-image/color STA
 
@@ -420,6 +425,7 @@ JMP2r
 	:form-manifest
 	:&on-draw
 	:void-mouse
+	:&on-button
 
 &on-draw ( win* -- )
 
@@ -432,6 +438,12 @@ JMP2r
 	[ LIT2 &action $2 ] #08 ;draw-button JSR2
 
 JMP2r
+
+&on-button ( button key win* -> )
+
+	BUG2 BUG2
+
+BRK
 
 ( ------------------------------------------------------------- )
 
@@ -447,6 +459,7 @@ JMP2r
 	:error-manifest
 	:&on-draw
 	:void-mouse
+	:void-button
 
 &on-draw ( win* -- )
 
@@ -499,6 +512,7 @@ JMP2r
 ( defaults )
 
 @void-mouse ( x* y* win* -- ) POP2 POP2 POP2 BRK
+@void-button ( button key win* -- ) POP2 POP2 BRK
 
 @edit-copy ( -- ) JMP2r
 @edit-paste ( -- ) JMP2r

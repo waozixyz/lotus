@@ -93,6 +93,16 @@ BRK
 		&skip
 	POP2
 
+	( send button to active win )
+	;get-active-win JSR2
+	DUP2 #ffff EQU2 ,&no-win JCN
+		.Controller/button DEI2
+		SWP2 DUP2
+		( /app ) #0006 ADD2 LDA2
+		( /app/button ) #0006 ADD2 LDA2 JMP2
+	&no-win
+	POP2
+
 BRK
 
 @on-mouse ( -> )
