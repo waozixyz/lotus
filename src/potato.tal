@@ -393,20 +393,28 @@ JMP2r
 
 @file-create ( -- )
 
-	;&placeholder ;app-form/target STA2
+	;dict/newfile-txt ;buf/tmp2 ;scpy JSR2
+
+	;buf/tmp2 ;app-form/target STA2
 	;dict/create
 		DUP2 ;app-form/action STA2
 		;app-form #1809 #0000 DUP2 ;add-win JSR2
 	;center-win JSR2
 
-	( ;&new-name
+	;cb-create ;app-form/callback STA2
+
+JMP2r
+
+
+@cb-create ( -- )
+
+	;buf/tmp2
 		DUP2 ;get-path JSR2 .File/name DEO2
 	#0001 .File/length DEO2
 	;&buf .File/write DEO2
-		;find-name JSR2 ;sel-icon JSR2 )
+		;find-name JSR2 ;sel-icon JSR2
 
 JMP2r
-	&placeholder "newfile.txt $1
 	&buf 00
 
 @file-rename ( -- )
@@ -570,6 +578,18 @@ JMP2r
 
 JMP2r
 
+@skey ( key buf* len* -- )
+
+	,&len STR2
+	STH2 DUP STH2r ROT #08 EQU ,&erase JCN
+	OVR2 ;slen JSR2 [ LIT2 &len $2 ] LTH2 ,&ok JCN
+		POP2 POP JMP2r
+		&ok
+	;sput JSR2
+
+JMP2r
+	&erase ;spop JSR2 POP JMP2r
+
 @has-ext ( str* ext* -- flag )
 
 	SWP2 ,get-ext JSR ;scmp JSR2
@@ -606,6 +626,6 @@ JMP2r
 @buf
 	&loc '. $3f
 	&tmp $40
-	&tmp2 $40
+	&tmp2 $40 ( used for file operations )
 	&dir $400
 	&app

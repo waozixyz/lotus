@@ -447,8 +447,18 @@ JMP2r
 		POP POP2 BRK
 		&has-key
 
-	;&target LDA2 ;sput JSR2
+	DUP #0d EQU ,&validate JCN
+
+	;&target LDA2 #0040 ;skey JSR2
 	;draw-win JSR2
+
+BRK
+
+&validate ( win* key -> )
+
+	POP POP2
+	[ LIT2 &callback $2 ] JSR2
+	;close-win JSR2
 
 BRK
 
