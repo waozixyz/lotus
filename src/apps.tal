@@ -411,20 +411,18 @@ JMP2r
 
 JMP2r
 
-( ------------------------------------------------------------- )
+( --MODALS----------------------------------------------------- )
 
 @form-manifest
 
-	03 "Form $1
-		12 00 :expand-win "Expand $1
-		22 00 :tab-win "Tab $1
-		42 00 :close-win "Close $1
+	01 "Form $1
+		42 00 :close-win "Cancel $1
 	$1
 
 @app-form
 	:form-manifest
 	:&on-draw
-	:void-mouse
+	:&on-mouse
 	:&on-button
 
 &on-draw ( win* -- )
@@ -439,6 +437,20 @@ JMP2r
 
 JMP2r
 
+&on-mouse ( x* y* win* -- )
+
+	.Mouse/state DEI ,&on-click JCN
+		POP2 POP2 POP2 BRK
+		&on-click
+	;rel-mouse JSR2 POP2
+	( focus button )
+	#0018 SUB2 SWP2 #0030 SUB2 SWP2
+	( collision )
+	#000f LTH2 ROT ROT #0050 LTH2 AND ,&validate-mouse JCN
+
+BRK
+	&validate-mouse ( -- ) #00 .Mouse/state DEO ,&validate JMP JMP2r
+
 &on-button ( button key win* -> )
 
 	SWP2
@@ -447,30 +459,27 @@ JMP2r
 		POP POP2 BRK
 		&has-key
 
-	DUP #0d EQU ,&validate JCN
+	DUP #0d EQU ,&validate-key JCN
 
 	;&target LDA2 #0040 ;skey JSR2
 	;draw-win JSR2
 
 BRK
+	&validate-key ( key win* -- ) POP POP2
 
 &validate ( win* key -> )
 
-	POP POP2
 	[ LIT2 &callback $2 ] JSR2
 	;close-win JSR2
 
 BRK
 
-
 ( ------------------------------------------------------------- )
 
 @option-manifest
 
-	03 "Option $1
-		12 00 :expand-win "Expand $1
-		22 00 :tab-win "Tab $1
-		42 00 :close-win "Close $1
+	01 "Form $1
+		42 00 :close-win "Cancel $1
 	$1
 
 @app-option
@@ -516,10 +525,8 @@ BRK
 
 @error-manifest
 
-	03 "Error $1
-		12 00 :expand-win "Expand $1
-		22 00 :tab-win "Tab $1
-		42 00 :close-win "Close $1
+	01 "Form $1
+		42 00 :close-win "Cancel $1
 	$1
 
 @app-error
