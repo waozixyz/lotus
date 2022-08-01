@@ -407,14 +407,23 @@ JMP2r
 
 &callback ( -- )
 
+	( check if name already exists )
+	;buf/tmp2 ;find-name JSR2 #ff NEQ ,&duplicate JCN
+
+	( create file )
 	;buf/tmp2
 		DUP2 ;get-path JSR2 .File/name DEO2
 	#0001 .File/length DEO2
 	;&buf .File/write DEO2
 		;find-name JSR2 ;sel-icon JSR2
+	;close-win JSR2
 
 JMP2r
 	&buf 00
+	&duplicate
+		;close-win JSR2
+		;dict/create ;buf/tmp2 ;add-err JSR2
+	JMP2r
 
 @file-rename ( -- )
 
@@ -428,7 +437,9 @@ JMP2r
 		DUP2 ;app-form/action STA2
 		;app-form #1808 #0000 DUP2 ;add-win JSR2
 	;center-win JSR2
+
 	( TODO )
+
 
 JMP2r
 	&fail #0005 ADD2 ;dict/rename SWP2 ;add-err JSR2 JMP2r
@@ -472,7 +483,7 @@ JMP2r
 
 	;buf/tmp2 ;get-path JSR2 .File/name DEO2
 	#01 .File/delete DEO
-	;draw-desktop JSR2
+	;close-win JSR2
 
 JMP2r
 
