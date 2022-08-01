@@ -405,11 +405,15 @@ JMP2r
 
 @file-delete ( -- )
 
-	;draw-item-text/sel LDA ;get-file JSR2 ;get-path JSR2 .File/name DEO2
+	;draw-item-text/sel LDA ;get-file JSR2
+		LDAk LIT '- EQU ,&fail JCN
+		LDAk LIT '? EQU ,&fail JCN
+	#0005 ADD2 ;get-path JSR2 .File/name DEO2
 	#01 .File/delete DEO
 	;draw-desktop JSR2
 
 JMP2r
+	&fail ( TODO: throw error ) POP2 JMP2r
 
 @is-binary ( file* -- flag )
 
