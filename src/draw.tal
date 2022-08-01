@@ -336,26 +336,6 @@ JMP2r
 		DIV2k DUP ,&emit JSR MUL2 SUB2
 	JMP2r
 
-@draw-list ( str* id -- )
-
-	,&t STR
-	.Screen/x DEI2 ,&x STR2
-
-	LDAk #00 EQU ,&end JCN
-	#01 .Screen/auto DEO
-	LITr 00
-	&while
-		[ LIT2 &x $2 ] .Screen/x DEO2
-		#02 #0e [ LIT &t $1 ] STHkr EQU POP? ;draw-chr/color STA
-		;draw-line JSR2
-		INCr
-		INC2 LDAk ,&while JCN
-	&end
-	POP2
-	POPr
-
-JMP2r
-
 @draw-textarea ( str* w h -- )
 
 	.Screen/x DEI2k #0008 SUB2 ROT DEO2
@@ -396,19 +376,21 @@ JMP2r
 
 @draw-text ( str* -- )
 
-	#01 .Screen/auto DEO
 	;draw-str JSR2 POP2
 
 JMP2r
 
-@draw-line ( str* -- str* )
+@draw-line ( str* -- )
 
+	.Screen/x DEI2 ,&x STR2
 	#01 .Screen/auto DEO
 	&w
 		LDAk #00 EQU ,&end JCN
 		LDAk ;draw-chr JSR2
 		INC2 LDAk #0a NEQ ,&w JCN
 	&end
+	POP2
+	[ LIT2 &x $2 ] .Screen/x DEO2
 
 @draw-lb ( -- )
 
