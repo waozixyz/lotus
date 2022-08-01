@@ -401,12 +401,11 @@ JMP2r
 		;app-form #1809 #0000 DUP2 ;add-win JSR2
 	;center-win JSR2
 
-	;cb-create ;app-form/callback STA2
+	;&callback ;app-form/callback STA2
 
 JMP2r
 
-
-@cb-create ( -- )
+&callback ( -- )
 
 	;buf/tmp2
 		DUP2 ;get-path JSR2 .File/name DEO2
@@ -455,12 +454,29 @@ JMP2r
 	;draw-item-text/sel LDA ;get-file JSR2
 		LDAk LIT '- EQU ,&fail JCN
 		LDAk LIT '? EQU ,&fail JCN
-	#0005 ADD2 ;get-path JSR2 .File/name DEO2
+
+	#0005 ADD2 ;buf/tmp2 ;scpy JSR2
+
+	;buf/tmp2 ;app-option/target STA2
+	;dict/delete
+		DUP2 ;app-option/action STA2
+		;app-option #1808 #0000 DUP2 ;add-win JSR2
+	;center-win JSR2
+
+	;&callback ;app-option/callback STA2
+
+JMP2r
+	&fail ;dict/rename ;add-err JSR2 JMP2r
+
+&callback ( -- )
+
+	;buf/tmp2 ;get-path JSR2 .File/name DEO2
 	#01 .File/delete DEO
 	;draw-desktop JSR2
 
 JMP2r
-	&fail ;dict/rename ;add-err JSR2 JMP2r
+
+( etc )
 
 @is-binary ( file* -- flag )
 
