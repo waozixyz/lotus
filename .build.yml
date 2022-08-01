@@ -1,0 +1,21 @@
+image: debian/stable
+oauth: pages.sr.ht/PAGES:RW
+environment:
+    SITE: rabbits.srht.site/potato
+sources:
+    - https://git.sr.ht/~rabbits/potato
+tasks:
+    - prepare: |
+        curl -fsS https://rabbits.srht.site/uxn/uxn-lin64.tar.gz | tar -zx
+    - build: |
+        cd potato
+        ../uxn/uxnasm src/potato.tal ../potato.rom
+    - upload: |
+        tar -czf out.tar.gz potato.rom
+        acurl() {
+            set +x
+            curl -H "Authorization: Bearer ${OAUTH2_TOKEN}" "${@}"
+            set -x
+        }
+        acurl -fsS "https://pages.sr.ht/publish/${SITE}" -Fcontent=@out.tar.gz
+        acurl -fsS "https://pages.sr.ht/publish/${SITE}" -Fcontent=@out.tar.gz -Fprotocol=GEMINI
