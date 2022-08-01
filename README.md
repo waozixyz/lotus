@@ -61,6 +61,7 @@ Since this is designed to be used principally on a handheld devices without a wi
 - Screensaver?
 - Swatch should show icon over selection
 - Catch maximum number of windows
+- Windows names shouldn't leave window bar bounds
 
 ## Support
 

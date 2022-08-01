@@ -254,8 +254,8 @@ JMP2r
 	LDAk LIT '- EQU ,open-folder JCN
 	DUP2 ;dict/icn-ext ;has-ext JSR2 ;open-pict JCN2
 	DUP2 ;dict/chr-ext ;has-ext JSR2 ;open-pict JCN2
-	( DUP2 ;dict/pcm-ext ;has-ext JSR2 ,open-play JCN
-	DUP2 ;dict/rom-ext ;has-ext JSR2 ,open-load JCN )
+	DUP2 ;dict/pcm-ext ;has-ext JSR2 ,open-play JCN
+	DUP2 ;dict/rom-ext ;has-ext JSR2 ,open-load JCN
 	DUP2 #0005 ADD2 ;dict/theme-ext ;scmp JSR2 ,open-theme JCN
 	DUP2 #0005 ADD2 ;is-binary JSR2 ,open-hexa JCN
 	;open-text JSR2
@@ -294,7 +294,6 @@ JMP2r
 	;open-color JSR2
 
 JMP2r
-
 
 @open-load ( file* -- )
 
@@ -396,7 +395,7 @@ JMP2r
 
 	;scap JSR2 #0009 SUB2 ;read-size JSR2
 
-	DUP2 #0000 NEQ2 ,&continue JCN
+	ORAk ,&continue JCN
 		POP2 #1010
 		&continue
 

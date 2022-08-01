@@ -297,8 +297,8 @@ JMP2r
 
 	DUP2 ;get-ext JSR2 ;dict/chr-ext ;scmp JSR2 STH
 	( toggle 1-bit/2-bit )
-	#0010 #0008 STHkr JMP SWP2 POP2 .File/length DEO2
-	[ LIT &2bit 81 ] [ LIT &1bit 0e ] STHr JMP SWP POP ,&color STR
+	#0010 #0008 STHkr POP2? .File/length DEO2
+	[ LIT &2bit 81 ] [ LIT &1bit 0e ] STHr POP? ,&color STR
 	DUP2 .File/name DEO2
 		;read-pict-size JSR2
 	,&height STR ,&width STR
