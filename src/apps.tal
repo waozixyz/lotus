@@ -530,7 +530,7 @@ BRK
 @app-error
 	:error-manifest
 	:&on-draw
-	:void-mouse
+	:&on-mouse
 	:&on-button
 
 &on-draw ( win* -- )
@@ -545,6 +545,19 @@ BRK
 
 JMP2r
 	&invalid-txt "Invalid 20 "Target: $1
+
+&on-mouse ( x* y* win* -- )
+
+	.Mouse/state DEI ,&on-click JCN
+		POP2 POP2 POP2 BRK
+		&on-click
+	;rel-mouse JSR2 POP2
+	( focus button )
+	#0020 SUB2 SWP2 #0030 SUB2 SWP2
+	( collision )
+	#000f LTH2 ROT ROT #0050 LTH2 AND ,&validate JCN
+
+BRK
 
 &on-button ( button key win* -> )
 
