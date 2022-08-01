@@ -387,13 +387,13 @@ JMP2r
 	.Screen/x DEI2k #0008 SUB2 ROT DEO2
 	.Screen/y DEI2k #0002 SUB2 ROT DEO2
 
-	#0004 ADD2 LDA2k SWP2 #0004 ADD2 LDA2 ;get-path JSR2 SWP2 ;draw-image JSR2
+	#0008 ADD2 LDA2 ;get-path JSR2 ;draw-pict JSR2
 
 JMP2r
 
 &invert ( -- )
 
-	#0e #0b ;draw-image/color LDA #0e NEQ POP? ;draw-image/color STA
+	#0e0b ;draw-pict/1bit LDA #0e NEQ POP? ;draw-pict/1bit STA
 
 	;get-active-win JSR2
 		DUP2 ;set-anchor-body JSR2 POP2

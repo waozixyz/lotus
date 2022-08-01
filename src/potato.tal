@@ -252,10 +252,10 @@ JMP2r
 
 	DUP2 #ffff EQU2 ,&no-file JCN
 	LDAk LIT '- EQU ,open-folder JCN
-	DUP2 ;dict/icn-ext ;has-ext JSR2 ,open-pict JCN
-	DUP2 ;dict/chr-ext ;has-ext JSR2 ,open-pict JCN
-	DUP2 ;dict/pcm-ext ;has-ext JSR2 ,open-play JCN
-	DUP2 ;dict/rom-ext ;has-ext JSR2 ,open-load JCN
+	DUP2 ;dict/icn-ext ;has-ext JSR2 ;open-pict JCN2
+	DUP2 ;dict/chr-ext ;has-ext JSR2 ;open-pict JCN2
+	( DUP2 ;dict/pcm-ext ;has-ext JSR2 ,open-play JCN
+	DUP2 ;dict/rom-ext ;has-ext JSR2 ,open-load JCN )
 	DUP2 #0005 ADD2 ;dict/theme-ext ;scmp JSR2 ,open-theme JCN
 	DUP2 #0005 ADD2 ;is-binary JSR2 ,open-hexa JCN
 	;open-text JSR2
@@ -295,35 +295,26 @@ JMP2r
 
 JMP2r
 
-@open-pict ( file* -- )
-
-	#0005 ADD2
-	DUP2
-	( read size from path )
-	;read-pict-size JSR2
-	ORAk ,&has-size JCN
-		( default size )
-		POP2 #2010
-		&has-size
-	INC INC STH2
-	;app-pict STH2r #0020 DUP2 ;add-win JSR2
-
-JMP2r
 
 @open-load ( file* -- )
 
 	#0005 ADD2 ;get-path JSR2 .File/name DEO2
 	#fe00 .File/length DEO2
-	;&loader-rom #ffd5 #002a ;mcpy JSR2
+	;loader-rom #ffd5 #002a ;mcpy JSR2
 	;clear-screen JSR2
 	POP POP2r
 	#ffd5 JMP2
 
 JMP2r
-	&loader-rom
-	8000 8000 0711 0106 80f7 0d02 a001 00af
-	80ac 37a0 ffd5 80a2 36ef 3826 8000 0505
-	1521 aa80 f50d 2222 6f2c
+
+@open-pict ( file* -- )
+
+	#0005 ADD2
+	DUP2 ;read-pict-size JSR2
+	;app-pict SWP2 INC INC #0000 DUP2 ;add-win JSR2
+	;center-win JSR2
+
+JMP2r
 
 @open-as-data ( -- )
 
@@ -339,10 +330,18 @@ JMP2r
 
 @open-as-pict ( -- )
 
-	;draw-item-text/sel LDA ;get-file JSR2 ;open-pict JSR2
+	;draw-item-text/sel LDA ;get-file JSR2
+
+	LDAk LIT '- EQU ,&invalid JCN
+	LDAk LIT '? EQU ,&invalid JCN
+
+	;open-pict JSR2
 	;center-win JSR2
 
 JMP2r
+	&invalid
+		#0005 ADD2 ;dict/open SWP2 ;add-err JSR2
+	JMP2r
 
 @open-disk ( -- )
 
@@ -396,6 +395,10 @@ JMP2r
 @read-pict-size ( filename* -- size* )
 
 	;scap JSR2 #0009 SUB2 ;read-size JSR2
+
+	DUP2 #0000 NEQ2 ,&continue JCN
+		POP2 #1010
+		&continue
 
 JMP2r
 

@@ -291,27 +291,33 @@ JMP2r
 
 JMP2r
 
-@draw-image ( name* w h -- )
+( image handlers )
 
-	POP ,&w STR
-	.Screen/x DEI2 ,&x STR2
-	.File/name DEO2
-	[ LIT2 &length 0008 ] .File/length DEO2
+@draw-pict ( name* -- )
+
+	DUP2 ;get-ext JSR2 ;dict/chr-ext ;scmp JSR2 STH
+	( toggle 1-bit/2-bit )
+	#0010 #0008 STHkr JMP SWP2 POP2 .File/length DEO2
+	[ LIT &2bit 81 ] [ LIT &1bit 0e ] STHr JMP SWP POP ,&color STR
+	DUP2 .File/name DEO2
+		;read-pict-size JSR2
+	,&height STR ,&width STR
+	.Screen/x DEI2 ,&anchor STR2
 	;&buf .Screen/addr DEO2
+	( draw )
 	#01 .Screen/auto DEO
-	#00
-	&stream
-		;&buf .File/read DEO2
-		.File/success DEI2 #0000 EQU2 ,&end JCN
-		[ LIT &color 0e ] .Screen/sprite DEO
-		INC DUP [ LIT &w $1 ] LTH ,&no-line JCN
-			[ LIT2 &x $2 ] .Screen/x DEO2
-			;draw-lb JSR2
-			POP #00
-			&no-line
-		,&stream JMP
-	&end
-	POP
+	[ LIT &height $1 ] #00
+	&v
+		[ LIT2 &anchor $2 ] .Screen/x DEO2
+		[ LIT &width $1 ] #00
+		&h
+			;&buf .File/read DEO2
+			[ LIT &color $1 ] .Screen/sprite DEO
+			INC GTHk ,&h JCN
+		POP2
+		;draw-lb JSR2
+		INC GTHk ,&v JCN
+	POP2
 
 JMP2r
 	&buf $10

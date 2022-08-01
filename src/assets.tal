@@ -10,6 +10,7 @@
 	&rename "Rename $1
 	&delete "Delete $1
 	&clone "Clone $1
+	&open "Open $1
 	&error "Error $1
 	&ok "OK $1
 	&red "Red $1
@@ -229,3 +230,10 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
 @menu-chr
 	ffff ffff ffff ffff ffff ffff ffff ffff
 	ffff ffff ffff ff00 ffff ffff ffff ffff
+
+( blobs )
+
+@loader-rom
+	8000 8000 0711 0106 80f7 0d02 a001 00af
+	80ac 37a0 ffd5 80a2 36ef 3826 8000 0505
+	1521 aa80 f50d 2222 6f2c
