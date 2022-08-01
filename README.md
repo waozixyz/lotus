@@ -46,15 +46,12 @@ Since this is designed to be used principally on a handheld devices without a wi
 - Basic text editor?
     - Scrollbar
 - Image viewer
-    - chr view
     - palette chooser
     - Select next image
     - Select prev image
 - Clock widget
 - Wallpaper application?
     - Select `.paper` image
-- Error modal/application
-- Throw error when trying to open a folder as pict/text/data
 - Hex editor
 - Desktop
     - Rename file
@@ -62,12 +59,8 @@ Since this is designed to be used principally on a handheld devices without a wi
 - Tile
     - Support ICN/CHR mode switching
 - Screensaver?
-- Block changing path when windows with names are open
-- RGB tool
-    - Open `.theme` file with RGB slider
 - Swatch should show icon over selection
 - Catch maximum number of windows
-- Always center new windows on creation
 
 ## Support
 
