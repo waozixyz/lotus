@@ -6,6 +6,7 @@
 	&desktop "Desktop $1
 	&system "System $1
 	&applications "Applications $1
+	&create "Create $1
 	&red "Red $1
 	&green "Green $1
 	&blue "Blue $1
@@ -91,6 +92,14 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
 1818 1818 1818 1818 380c 0c06 0c0c 3800
 0000 60f2 9e0c 0000 0018 1834 3462 7e00
 
+@input-icns
+	&a 00ff 8080 8080 8080 8080 8080 8080 ff00
+	&b 00ff 0000 0000 0000 0000 0000 0000 ff00
+	&c 00fe 0202 0202 0202 0202 0202 0202 fe00
+@button-icns
+	&a 000f 304f 5fbf bfbf bfbf bf5f 4f30 0f00
+	&b 00ff 00ff ffff ffff ffff ffff ff00 ff00
+	&c 00e0 18e4 f4fa fafa fafa faf4 e418 e000
 @bigpixel-icn
 	7cfe fefe fefe 7c00
 	0000 0000 0000 0000

@@ -379,16 +379,23 @@ JMP2r
 
 JMP2r
 
+( file operations )
+
 @file-create ( -- )
 
-	;&new-name
+	;&placeholder ;app-form/placeholder STA2
+	;dict/create ;app-form/action STA2
+	;dict/create ;app-form #1809 #0000 DUP2 ;add-win JSR2
+	;center-win JSR2
+
+	( ;&new-name
 		DUP2 ;get-path JSR2 .File/name DEO2
 	#0001 .File/length DEO2
 	;&buf .File/write DEO2
-		;find-name JSR2 ;sel-icon JSR2
+		;find-name JSR2 ;sel-icon JSR2 )
 
 JMP2r
-	&new-name "NEWFILE $1
+	&placeholder "newfile.txt $1
 	&buf 00
 
 @file-rename ( -- )

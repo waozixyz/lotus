@@ -408,6 +408,34 @@ JMP2r
 
 ( ------------------------------------------------------------- )
 
+@form-manifest
+
+	03 "Form $1
+		12 00 :expand-win "Expand $1
+		22 00 :tab-win "Tab $1
+		42 00 :close-win "Close $1
+	$1
+
+@app-form
+	:form-manifest
+	:&on-draw
+	:void-mouse
+
+&on-draw ( win* -- )
+
+	( input )
+	[ LIT2 &placeholder $2 ] #14 ;draw-input JSR2
+	( button )
+	;set-anchor-body JSR2
+	.Screen/x DEI2k #0030 ADD2 ROT DEO2
+	.Screen/y DEI2k #0020 ADD2 ROT DEO2
+	[ LIT2 &action $2 ] #08 ;draw-button JSR2
+	POP2
+
+JMP2r
+
+( ------------------------------------------------------------- )
+
 @update-clock ( -- )
 
 	[ LIT &last ff ] .DateTime/minute DEI NEQ ,&continue JCN

@@ -79,6 +79,51 @@ JMP2r
 
 JMP2r
 
+@draw-input ( str* w -- )
+
+	DUP ;input-icns ;draw-capped JSR2
+	#30 SFT #00 SWP #000e ADD2 STH2
+	.Screen/x DEI2k STH2r SUB2 ROT DEO2
+	.Screen/y DEI2k #0004 ADD2 ROT DEO2
+
+	#0a ;draw-chr/color STA
+	;draw-str JSR2 POP2
+
+JMP2r
+
+@draw-button ( str* w -- )
+
+	DUP ;button-icns ,draw-capped JSR
+	( button center )
+	#31 SFT #00 SWP #0008 ADD2 STH2
+	( string center )
+	DUP2 ;slen JSR2 #31 SFT2 STH2 ADD2r
+
+	.Screen/x DEI2k STH2r SUB2 ROT DEO2
+	.Screen/y DEI2k #0004 ADD2 ROT DEO2
+
+	#0f ;draw-chr/color STA
+	;draw-str JSR2 POP2
+
+JMP2r
+
+@draw-capped ( w sprite* -- )
+
+	#15 .Screen/auto DEO
+	DUP2 .Screen/addr DEO2 #0010 ADD2
+	#0a .Screen/sprite DEO
+	ROT #00
+	&l
+		OVR2 .Screen/addr DEO2
+		#0a .Screen/sprite DEO
+		INC GTHk ,&l JCN
+	POP2
+	#15 .Screen/auto DEO
+	#0010 ADD2 .Screen/addr DEO2
+	#0a .Screen/sprite DEO
+
+JMP2r
+
 @draw-fill ( w h -- )
 
 	#01 .Screen/auto DEO

@@ -67,6 +67,7 @@ Since this is designed to be used principally on a handheld devices without a wi
     - Open `.theme` file with RGB slider
 - Swatch should show icon over selection
 - Catch maximum number of windows
+- Always center new windows on creation
 
 ## Support
 
