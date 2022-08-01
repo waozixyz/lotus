@@ -49,7 +49,7 @@
 	#500f .System/r DEO2
 	#b70f .System/g DEO2
 	#a70f .System/b DEO2
-	;load-theme JSR2
+	;dict/theme-ext ;load-theme JSR2
 
 	( size )
 	( #0200 .Screen/width DEO2
@@ -256,6 +256,7 @@ JMP2r
 	DUP2 ;dict/chr-ext ;has-ext JSR2 ,open-pict JCN
 	DUP2 ;dict/pcm-ext ;has-ext JSR2 ,open-play JCN
 	DUP2 ;dict/rom-ext ;has-ext JSR2 ,open-load JCN
+	DUP2 #0005 ADD2 ;dict/theme-ext ;scmp JSR2 ,open-theme JCN
 	DUP2 #0005 ADD2 ;is-binary JSR2 ,open-hexa JCN
 	;open-text JSR2
 
@@ -270,8 +271,7 @@ JMP2r
 
 @open-hexa ( file* -- )
 
-	( TODO )
-	BUG2
+	POP2
 
 JMP2r
 
@@ -283,8 +283,15 @@ JMP2r
 
 @open-play ( file* -- )
 
-	( TODO )
-	BUG2
+	POP2
+
+JMP2r
+
+@open-theme ( file* -- )
+
+	#0005 ADD2 ;get-path JSR2 ;load-theme JSR2
+	;open-tile JSR2
+	;open-color JSR2
 
 JMP2r
 
@@ -307,14 +314,13 @@ JMP2r
 
 	#0005 ADD2 ;get-path JSR2 .File/name DEO2
 	#fe00 .File/length DEO2
-	;loader-rom #ffd5 #002a ;mcpy JSR2
+	;&loader-rom #ffd5 #002a ;mcpy JSR2
 	;clear-screen JSR2
 	POP POP2r
 	#ffd5 JMP2
 
 JMP2r
-
-@loader-rom
+	&loader-rom
 	8000 8000 0711 0106 80f7 0d02 a001 00af
 	80ac 37a0 ffd5 80a2 36ef 3826 8000 0505
 	1521 aa80 f50d 2222 6f2c
@@ -349,26 +355,30 @@ JMP2r
 JMP2r
 	&reselect ;sel-win JSR2 JMP2r
 
-@open-wallpaper ( -- )
+@open-tile ( -- )
 
 	;patt-chr ;paint-patt/addr STA2
 	( unique )
 	;app-tile ;find-win JSR2
 		DUP #ff NEQ ,&reselect JCN POP
 	( create )
-	;no-name ;app-tile #0a0f #0000 DUP2 ;add-win JSR2
-	;center-win JSR2
+	;no-name ;app-tile #0a0f
+	( y ) .Screen/height DEI2 #0088 SUB2
+	( x ) .Screen/width DEI2 #0060 SUB2
+		;add-win JSR2
 
 JMP2r
 	&reselect ;sel-win JSR2 JMP2r
 
-@open-theme ( -- )
+@open-color ( -- )
 
 	( unique )
 	;app-color ;find-win JSR2
 		DUP #ff NEQ ,&reselect JCN POP
-	;no-name ;app-color #0a0f #0000 DUP2 ;add-win JSR2
-	;center-win JSR2
+	;no-name ;app-color #0a0f
+	( y ) .Screen/height DEI2 #0088 SUB2
+	( x ) .Screen/width DEI2 #00c0 SUB2
+		;add-win JSR2
 
 JMP2r
 	&reselect ;sel-win JSR2 JMP2r

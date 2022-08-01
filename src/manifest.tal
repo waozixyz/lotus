@@ -350,9 +350,9 @@ JMP2r
 
 ( theme )
 
-@load-theme ( -- )
+@load-theme ( name* -- )
 
-	;&path .File/name DEO2
+	 .File/name DEO2
 	#0002 .File/length DEO2
 	;&r .File/read DEO2
 	;&g .File/read DEO2
@@ -365,7 +365,21 @@ JMP2r
 	;patt-chr .File/read DEO2
 
 JMP2r
-	&path ".theme $1
+
+@save-theme ( -- )
+
+	;dict/theme-ext ;get-path JSR2 .File/name DEO2
+	#0002 .File/length DEO2
+	.System/r DEI2 ,&w JSR
+	.System/g DEI2 ,&w JSR
+	.System/b DEI2 ,&w JSR
+	#0010 .File/length DEO2
+	;patt-chr .File/write DEO2
+	;draw-desktop JSR2
+
+JMP2r
+	&w ,&b STR2 ;&b .File/write DEO2 JMP2r
+	&b $2
 
 ( stdlib )
 

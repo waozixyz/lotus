@@ -144,20 +144,6 @@ JMP2r
 
 JMP2r
 
-@save-theme ( -- )
-
-	;dict/theme-ext .File/name DEO2
-	#0002 .File/length DEO2
-	.System/r DEI2 ,&w JSR
-	.System/g DEI2 ,&w JSR
-	.System/b DEI2 ,&w JSR
-	#0010 .File/length DEO2
-	;patt-chr .File/write DEO2
-
-JMP2r
-	&w ,&b STR2 ;&b .File/write DEO2 JMP2r
-	&b $2
-
 ( ------------------------------------------------------------- )
 
 @tile-manifest
@@ -591,7 +577,7 @@ BRK
 	#01 .Screen/auto DEO
 	#0004 .Screen/y DEO2
 	#0c ;draw-chr/color STA
-	.Screen/width DEI2 #0098 SUB2 .Screen/x DEO2
+	.Screen/width DEI2 #0098 SUB2 #00 .DateTime/day DEI #0a LTH #30 SFT2 ADD2 .Screen/x DEO2
 
 	#00 .DateTime/dotw DEI #20 SFT ;dict/dotw ADD2 ;draw-text JSR2
 	LIT ', ;draw-chr JSR2
