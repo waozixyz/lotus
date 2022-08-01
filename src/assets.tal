@@ -7,6 +7,8 @@
 	&system "System $1
 	&applications "Applications $1
 	&create "Create $1
+	&rename "Rename $1
+	&clone "Clone $1
 	&red "Red $1
 	&green "Green $1
 	&blue "Blue $1
