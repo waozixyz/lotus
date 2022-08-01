@@ -426,13 +426,41 @@ JMP2r
 	( input )
 	[ LIT2 &placeholder $2 ] #14 ;draw-input JSR2
 	( button )
-	;set-anchor-body JSR2
+	;set-anchor-body JSR2 POP2
 	.Screen/x DEI2k #0030 ADD2 ROT DEO2
-	.Screen/y DEI2k #0020 ADD2 ROT DEO2
+	.Screen/y DEI2k #0018 ADD2 ROT DEO2
 	[ LIT2 &action $2 ] #08 ;draw-button JSR2
-	POP2
 
 JMP2r
+
+( ------------------------------------------------------------- )
+
+@error-manifest
+
+	03 "Error $1
+		12 00 :expand-win "Expand $1
+		22 00 :tab-win "Tab $1
+		42 00 :close-win "Close $1
+	$1
+
+@app-error
+	:error-manifest
+	:&on-draw
+	:void-mouse
+
+&on-draw ( win* -- )
+
+	;&invalid-txt ;draw-str JSR2 POP2
+	DUP2 ;set-anchor-body JSR2 POP2
+	.Screen/y DEI2k #0010 ADD2 ROT DEO2
+	[ LIT2 &target $2 ] ;draw-str JSR2 POP2
+	;set-anchor-body JSR2 POP2
+	.Screen/x DEI2k #0030 ADD2 ROT DEO2
+	.Screen/y DEI2k #0020 ADD2 ROT DEO2
+	;dict/ok #08 ;draw-button JSR2
+
+JMP2r
+	&invalid-txt "Invalid 20 "Target: $1
 
 ( ------------------------------------------------------------- )
 

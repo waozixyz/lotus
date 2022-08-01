@@ -9,6 +9,8 @@
 	&create "Create $1
 	&rename "Rename $1
 	&clone "Clone $1
+	&error "Error $1
+	&ok "OK $1
 	&red "Red $1
 	&green "Green $1
 	&blue "Blue $1

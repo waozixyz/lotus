@@ -67,6 +67,14 @@ JMP2r
 JMP2r
 	&found NIP JMP2r
 
+@add-err ( action* target* -- )
+
+	;app-error/target STA2
+	;app-error #1809 #0000 DUP2 ;add-win JSR2
+	;center-win JSR2
+
+JMP2r
+
 @add-win ( name* app* h w y* x* -- )
 
 	.length LDZ #0a MUL .windows ADD STHk
