@@ -151,6 +151,8 @@ JMP2r
 	.System/r DEI2 ,&w JSR
 	.System/g DEI2 ,&w JSR
 	.System/b DEI2 ,&w JSR
+	#0010 .File/length DEO2
+	;patt-chr .File/write DEO2
 
 JMP2r
 	&w ,&b STR2 ;&b .File/write DEO2 JMP2r
@@ -164,6 +166,8 @@ JMP2r
 		12 00 :expand-win "Expand $1
 		22 00 :tab-win "Tab $1
 		42 00 :close-win "Close $1
+	01 "File $1
+		01 's :save-theme "Save $1
 	05 "Edit $1
 		00 08 :clear-patt "Clear $1
 		40 00 :prev-tile "Prev $1

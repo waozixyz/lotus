@@ -361,6 +361,8 @@ JMP2r
 	LIT2 &r $2 .System/r DEO2
 	LIT2 &g $2 .System/g DEO2
 	LIT2 &b $2 .System/b DEO2
+	#0010 .File/length DEO2
+	;patt-chr .File/read DEO2
 
 JMP2r
 	&path ".theme $1
