@@ -89,7 +89,7 @@ BRK
 
 	.Controller/button DEI2 ;find-modkey JSR2
 	ORAk #00 EQU ,&skip JCN
-		DUP2 JSR2
+		( blocking ) JSR2 BRK
 		&skip
 	POP2
 
@@ -393,7 +393,7 @@ JMP2r
 
 @file-create ( -- )
 
-	;&placeholder ;app-form/placeholder STA2
+	;&placeholder ;app-form/target STA2
 	;dict/create
 		DUP2 ;app-form/action STA2
 		;app-form #1809 #0000 DUP2 ;add-win JSR2
@@ -414,14 +414,13 @@ JMP2r
 	;draw-item-text/sel LDA ;get-file JSR2
 		LDAk LIT '- EQU ,&fail JCN
 		LDAk LIT '? EQU ,&fail JCN
-	POP2
-
-	;draw-item-text/sel LDA ;get-file JSR2 #0005 ADD2 ;app-form/placeholder STA2
+	( copy name in tmp2 )
+	#0005 ADD2 ;buf/tmp2 ;scpy JSR2
+	;buf/tmp2 ;app-form/target STA2
 	;dict/rename
 		DUP2 ;app-form/action STA2
 		;app-form #1808 #0000 DUP2 ;add-win JSR2
 	;center-win JSR2
-
 	( TODO )
 
 JMP2r
@@ -432,7 +431,7 @@ JMP2r
 	;draw-item-text/sel LDA ;get-file JSR2
 		LDAk LIT '- EQU ,&fail JCN
 		LDAk LIT '? EQU ,&fail JCN
-	;draw-item-text/sel LDA ;get-file JSR2 #0005 ADD2 ;app-form/placeholder STA2
+	;draw-item-text/sel LDA ;get-file JSR2 #0005 ADD2 ;app-form/target STA2
 	;dict/clone
 		DUP2 ;app-form/action STA2
 		;app-form #1809 #0000 DUP2 ;add-win JSR2
@@ -607,5 +606,6 @@ JMP2r
 @buf
 	&loc '. $3f
 	&tmp $40
+	&tmp2 $40
 	&dir $400
 	&app

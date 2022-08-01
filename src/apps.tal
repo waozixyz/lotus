@@ -430,7 +430,7 @@ JMP2r
 &on-draw ( win* -- )
 
 	( input )
-	[ LIT2 &placeholder $2 ] #14 ;draw-input JSR2
+	[ LIT2 &target $2 ] #14 ;draw-input JSR2
 	( button )
 	;set-anchor-body JSR2 POP2
 	.Screen/x DEI2k #0030 ADD2 ROT DEO2
@@ -441,7 +441,14 @@ JMP2r
 
 &on-button ( button key win* -> )
 
-	BUG2 BUG2
+	SWP2
+	NIP
+	DUP ,&has-key JCN
+		POP POP2 BRK
+		&has-key
+
+	;&target LDA2 ;sput JSR2
+	;draw-win JSR2
 
 BRK
 
