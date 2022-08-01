@@ -81,6 +81,8 @@ JMP2r
 
 @draw-input ( str* w -- )
 
+	.Screen/x DEI2 ,&x STR2 .Screen/y DEI2 ,&y STR2
+
 	DUP ;input-icns ;draw-capped JSR2
 	#30 SFT #00 SWP #000e ADD2 STH2
 	.Screen/x DEI2k STH2r SUB2 ROT DEO2
@@ -88,6 +90,10 @@ JMP2r
 
 	#0a ;draw-chr/color STA
 	;draw-str JSR2 POP2
+
+	( re-anchor )
+	[ LIT2 &x $2 ] .Screen/x DEO2
+	[ LIT2 &y $2 ] #0018 ADD2 .Screen/y DEO2
 
 JMP2r
 

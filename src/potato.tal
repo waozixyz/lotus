@@ -398,7 +398,7 @@ JMP2r
 	;buf/tmp2 ;app-form/target STA2
 	;dict/create
 		DUP2 ;app-form/action STA2
-		;app-form #1809 #0000 DUP2 ;add-win JSR2
+		;app-form #1808 #0000 DUP2 ;add-win JSR2
 	;center-win JSR2
 
 	;&callback ;app-form/callback STA2
