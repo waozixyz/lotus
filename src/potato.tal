@@ -447,7 +447,7 @@ JMP2r
 	( TODO )
 
 JMP2r
-	&fail ;dict/rename ;add-err JSR2 JMP2r
+	&fail #0005 ADD2 ;dict/rename SWP2 ;add-err JSR2 JMP2r
 
 @file-delete ( -- )
 
@@ -460,13 +460,13 @@ JMP2r
 	;buf/tmp2 ;app-option/target STA2
 	;dict/delete
 		DUP2 ;app-option/action STA2
-		;app-option #1808 #0000 DUP2 ;add-win JSR2
+		;app-option #1807 #0000 DUP2 ;add-win JSR2
 	;center-win JSR2
 
 	;&callback ;app-option/callback STA2
 
 JMP2r
-	&fail ;dict/rename ;add-err JSR2 JMP2r
+	&fail #0005 ADD2 ;dict/delete SWP2 ;add-err JSR2 JMP2r
 
 &callback ( -- )
 
@@ -597,14 +597,19 @@ JMP2r
 @skey ( key buf* len* -- )
 
 	,&len STR2
-	STH2 DUP STH2r ROT #08 EQU ,&erase JCN
+	STH2 DUP STH2r ROT
+	DUP #08 EQU ,&erase JCN
+	DUP #20 LTH ,&invalid JCN
+	DUP #7e GTH ,&invalid JCN
+	POP
 	OVR2 ;slen JSR2 [ LIT2 &len $2 ] LTH2 ,&ok JCN
 		POP2 POP JMP2r
 		&ok
 	;sput JSR2
 
 JMP2r
-	&erase ;spop JSR2 POP JMP2r
+	&erase POP ;spop JSR2 POP JMP2r
+	&invalid POP2 POP2 JMP2r
 
 @has-ext ( str* ext* -- flag )
 

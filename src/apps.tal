@@ -472,40 +472,48 @@ BRK
 
 @option-manifest
 
-	01 "Form $1
+	01 "Option $1
 		42 00 :close-win "Cancel $1
 	$1
 
 @app-option
 	:option-manifest
 	:&on-draw
-	:void-mouse
+	:&on-mouse
 	:&on-button
 
 &on-draw ( win* -- )
 
 	POP2
 	[ LIT2 &target $2 ] ;draw-line JSR2
+	;draw-lb JSR2
+	.Screen/x DEI2k #0030 ADD2 ROT DEO2
 	[ LIT2 &action $2 ] #08 ;draw-button JSR2
 
 JMP2r
 
-&on-button ( button key win* -> )
+&on-mouse ( x* y* win* -- )
 
-	SWP2
-	NIP
-	DUP ,&has-key JCN
-		POP POP2 BRK
-		&has-key
-
-	DUP #0d EQU ,&validate JCN
-	POP POP2
+	.Mouse/state DEI ,&on-click JCN
+		POP2 POP2 POP2 BRK
+		&on-click
+	;rel-mouse JSR2 POP2
+	( focus button )
+	#0010 SUB2 SWP2 #0030 SUB2 SWP2
+	( collision )
+	#000f LTH2 ROT ROT #0050 LTH2 AND ,&validate JCN
 
 BRK
 
-&validate ( win* key -> )
+&on-button ( button key win* -> )
 
-	POP POP2
+	POP2 NIP #0d EQU ,&validate JCN
+
+BRK
+
+&validate ( win* -> )
+
+	#00 .Mouse/state DEO
 	[ LIT2 &callback $2 ] JSR2
 	;close-win JSR2
 
@@ -515,7 +523,7 @@ BRK
 
 @error-manifest
 
-	01 "Form $1
+	01 "Error $1
 		42 00 :close-win "Cancel $1
 	$1
 
@@ -523,21 +531,33 @@ BRK
 	:error-manifest
 	:&on-draw
 	:void-mouse
-	:void-button
+	:&on-button
 
 &on-draw ( win* -- )
 
-	;&invalid-txt ;draw-str JSR2 POP2
-	DUP2 ;set-anchor-body JSR2 POP2
-	.Screen/y DEI2k #0010 ADD2 ROT DEO2
-	[ LIT2 &target $2 ] ;draw-str JSR2 POP2
-	;set-anchor-body JSR2 POP2
+	POP2
+	;&invalid-txt ;draw-line JSR2
+	;draw-lb JSR2
+	[ LIT2 &target $2 ] ;draw-line JSR2
+	;draw-lb JSR2
 	.Screen/x DEI2k #0030 ADD2 ROT DEO2
-	.Screen/y DEI2k #0020 ADD2 ROT DEO2
 	;dict/ok #08 ;draw-button JSR2
 
 JMP2r
 	&invalid-txt "Invalid 20 "Target: $1
+
+&on-button ( button key win* -> )
+
+	POP2 NIP ,&validate JCN
+
+BRK
+
+&validate ( win* -> )
+
+	#00 .Mouse/state DEO
+	;close-win JSR2
+
+BRK
 
 ( ------------------------------------------------------------- )
 
