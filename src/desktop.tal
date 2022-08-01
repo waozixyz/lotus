@@ -345,15 +345,17 @@ JMP2r
 @draw-item-icon ( ptr* -- ptr* )
 
 	LDAk LIT '- EQU ,&folder JCN
-	LDAk LIT '? EQU ,&large JCN
-	DUP2 #0005 ADD2 LDA LIT '. EQU ,&hidden JCN
+	LDAk LIT '? EQU ,&unknown JCN
+	DUP2 #0005 ADD2 LDA LIT '. EQU ,&unknown JCN
 	DUP2 #0005 ADD2 ;dict/rom-ext ;has-ext JSR2 ,&rom JCN
+	DUP2 #0005 ADD2 ;dict/chr-ext ;has-ext JSR2 ,&picture JCN
+	DUP2 #0005 ADD2 ;dict/icn-ext ;has-ext JSR2 ,&picture JCN
 	POP2 ;icons/text ;draw-icon JSR2
 
 JMP2r
 	&folder POP2 ;icons/folder ;draw-icon JSR2 JMP2r
-	&large POP2 ;icons/unknown ;draw-icon JSR2 JMP2r
-	&hidden POP2 ;icons/unknown ;draw-icon JSR2 JMP2r
+	&unknown POP2 ;icons/unknown ;draw-icon JSR2 JMP2r
+	&picture POP2 ;icons/picture ;draw-icon JSR2 JMP2r
 	&rom POP2 ;icons/application ;draw-icon JSR2 JMP2r
 
 @draw-item-text ( ptr* id -- ptr* )
