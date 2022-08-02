@@ -489,11 +489,11 @@ JMP2r
 		;dict/create ;buf/form ;add-err JMP2
 		&unique
 
-	;close-win JSR2
-
 	( a* ) [ LIT2 &src $2 ] ;make-path JSR2
 	( b* ) ;buf/form ;make-dst JSR2
 		;fcpy JSR2
+
+	;close-win JSR2
 
 	;buf/form ;find-name JSR2 ;sel-icon JSR2
 
