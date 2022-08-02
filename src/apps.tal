@@ -371,8 +371,10 @@ JMP2r
 		12 00 :expand-win "Expand $1
 		22 00 :tab-win "Tab $1
 		42 00 :close-win "Close $1
-	01 "View $1
-		01 'i :app-pict/invert "Invert $1
+	03 "View $1
+		00 'i :app-pict/invert "Invert $1
+		10 00 :app-pict/prev "Previous $1
+		20 00 :app-pict/next "Next $1
 	$1
 
 @app-pict
@@ -387,6 +389,7 @@ JMP2r
 	.Screen/x DEI2k #0008 SUB2 ROT DEO2
 	.Screen/y DEI2k #0002 SUB2 ROT DEO2
 
+	( image )
 	#0008 ADD2 LDA2 ;get-path JSR2 ;draw-pict JSR2
 
 JMP2r
@@ -398,6 +401,44 @@ JMP2r
 	;get-active-win JSR2
 		DUP2 ;set-anchor-body JSR2 POP2
 	;app-pict/on-draw JSR2
+
+JMP2r
+
+&prev ( -- )
+
+	;get-active-win JSR2 STH2k
+		( /name ) #0008 ADD2 LDA2
+		( desktop id ) ;find-name JSR2
+
+	( check start )
+	DUP ,&no-start JCN
+		POP JMP2r
+		&no-start
+
+	( next name )
+	;close-win JSR2
+	#01 SUB
+		DUP ;draw-item-text/sel STA
+		;get-file JSR2 ;open-pict JSR2
+
+JMP2r
+
+&next ( -- )
+
+	;get-active-win JSR2 STH2k
+		( /name ) #0008 ADD2 LDA2
+		( desktop id ) ;find-name JSR2
+
+	( check end )
+	DUP ;desk-len JSR2 LTH ,&no-end JCN
+		POP JMP2r
+		&no-end
+
+	( next name )
+	;close-win JSR2
+	INC
+		DUP ;draw-item-text/sel STA
+		;get-file JSR2 ;open-pict JSR2
 
 JMP2r
 

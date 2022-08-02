@@ -240,6 +240,19 @@ JMP2r
 
 JMP2r
 
+@desk-len ( -- len )
+
+	LITr 00
+	;buf/dir
+	&w
+		;scap JSR2 INCr
+		INC2 LDAk ,&w JCN
+	POP2
+	STHr
+	#01 SUB
+
+JMP2r
+
 @get-file ( id -- <file*> )
 
 	STH
