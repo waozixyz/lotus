@@ -496,9 +496,10 @@ JMP2r
 		LDAk LIT '- EQU ,&fail JCN
 		LDAk LIT '? EQU ,&fail JCN
 
-	#0005 ADD2 ;get-path JSR2 ;buf/tmp2 ;scpy JSR2
+	#0005 ADD2
+		DUP2 ;app-option/target STA2
+		;&target STA2
 
-	;buf/tmp2 ;app-option/target STA2
 	;dict/delete
 		DUP2 ;app-option/action STA2
 		;app-option #1807 #0000 DUP2 ;add-win JSR2
@@ -511,7 +512,7 @@ JMP2r
 
 &callback ( -- )
 
-	;buf/tmp2 ;fdel JSR2
+	[ LIT2 &target $2 ] ;get-path JSR2 ;fdel JSR2
 	;close-win JSR2
 
 JMP2r
