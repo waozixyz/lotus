@@ -366,21 +366,6 @@ JMP2r
 
 JMP2r
 
-@save-theme ( -- )
-
-	;dict/theme-ext ;get-path JSR2 .File/name DEO2
-	#0002 .File/length DEO2
-	.System/r DEI2 ,&w JSR
-	.System/g DEI2 ,&w JSR
-	.System/b DEI2 ,&w JSR
-	#0010 .File/length DEO2
-	;patt-chr .File/write DEO2
-	;draw-desktop JSR2
-
-JMP2r
-	&w ,&b STR2 ;&b .File/write DEO2 JMP2r
-	&b $2
-
 ( stdlib )
 
 @scap ( str* -- end* ) LDAk #00 NEQ JMP JMP2r &w INC2 LDAk ,&w JCN JMP2r

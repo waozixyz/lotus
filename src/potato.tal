@@ -290,7 +290,7 @@ JMP2r
 
 @open-theme ( file* -- )
 
-	#0005 ADD2 ;get-path JSR2 ;load-theme JSR2
+	#0005 ADD2 ;make-path JSR2 ;load-theme JSR2
 	;open-tile JSR2
 	;open-color JSR2
 
@@ -298,7 +298,7 @@ JMP2r
 
 @open-load ( file* -- )
 
-	#0005 ADD2 ;get-path JSR2 .File/name DEO2
+	#0005 ADD2 ;make-path JSR2 .File/name DEO2
 	#fe00 .File/length DEO2
 	;loader-rom #ffd5 #002a ;mcpy JSR2
 	;clear-screen JSR2
@@ -382,13 +382,23 @@ JMP2r
 JMP2r
 	&reselect ;sel-win JSR2 JMP2r
 
-@get-path ( file* -- abs* )
+@make-dst ( file* -- abs* )
 
-	;buf/tmp #0040 ;mclr JSR2
-	;buf/loc ;buf/tmp ;scat JSR2
-	LIT '/ ;buf/tmp ;sput JSR2
-	;buf/tmp ;scat JSR2
-	;buf/tmp
+	;buf/dst STH2k #0040 ;mclr JSR2
+	;buf/loc STH2kr ;scat JSR2
+	LIT '/ STH2kr ;sput JSR2
+	STH2kr ;scat JSR2
+	STH2r
+
+JMP2r
+
+@make-path ( file* -- abs* )
+
+	;buf/path #0040 ;mclr JSR2
+	;buf/loc ;buf/path ;scat JSR2
+	LIT '/ ;buf/path ;sput JSR2
+	;buf/path ;scat JSR2
+	;buf/path
 
 JMP2r
 
@@ -407,7 +417,6 @@ JMP2r
 @file-create ( -- )
 
 	;dict/newfile-txt ;buf/tmp2 ;scpy JSR2
-	;buf/tmp2 ;app-form/target STA2
 	;&callback ;app-form/callback STA2
 	( open modal )
 	;dict/create
@@ -423,7 +432,7 @@ JMP2r
 	;buf/tmp2 ;find-name JSR2 #ff NEQ ,&duplicate JCN
 	( create file )
 	;buf/tmp2
-		DUP2 ;get-path JSR2 .File/name DEO2
+		DUP2 ;make-path JSR2 .File/name DEO2
 	#0001 .File/length DEO2
 	;&buf .File/write DEO2
 		;find-name JSR2 ;sel-icon JSR2
@@ -443,7 +452,6 @@ JMP2r
 		LDAk LIT '? EQU ,&fail JCN
 	( copy name in tmp2 )
 	#0005 ADD2 ;buf/tmp2 ;scpy JSR2
-	;buf/tmp2 ;app-form/target STA2
 	;dict/rename
 		DUP2 ;app-form/action STA2
 		;app-form #1808 #0000 DUP2 ;add-win JSR2
@@ -459,14 +467,16 @@ JMP2r
 	;draw-item-text/sel LDA ;get-file JSR2
 		LDAk LIT '- EQU ,&fail JCN
 		LDAk LIT '? EQU ,&fail JCN
-	( copy name in tmp2 )
-	#0005 ADD2 ;get-path JSR2 ;buf/tmp2 ;scpy JSR2
-	;buf/tmp2 ;app-form/target STA2
-	( open modal )
+
+	#0005 ADD2
+		DUP2 ;buf/form ;scpy JSR2
+		;&src STA2
+
 	;dict/clone
 		DUP2 ;app-form/action STA2
 		;app-form #1809 #0000 DUP2 ;add-win JSR2
 	;center-win JSR2
+
 	;&callback ;app-form/callback STA2
 
 JMP2r
@@ -474,21 +484,19 @@ JMP2r
 
 &callback ( -- )
 
-	( check if name already exists )
-	;buf/tmp2 ;find-name JSR2 #ff NEQ ,&duplicate JCN
+	;buf/form ;find-name JSR2 INC ,&unique JCN
+		;close-win JSR2
+		;dict/create ;buf/form ;add-err JSR2
+		&unique
 
-	( a* ) ;draw-item-text/sel LDA ;get-file JSR2 #0005 ADD2 ;get-path JSR2
-	( b* ) ;buf/tmp2
+	( a* ) [ LIT2 &src $2 ] ;make-path JSR2
+	( b* ) ;buf/form ;make-dst JSR2
 		;fcpy JSR2
 
 	;close-win JSR2
-	;buf/tmp2 ;find-name JSR2 ;sel-icon JSR2
+	;buf/form ;find-name JSR2 ;sel-icon JSR2
 
 JMP2r
-	&duplicate
-		;close-win JSR2
-		;dict/create ;buf/tmp2 ;add-err JSR2
-	JMP2r
 
 @file-delete ( -- )
 
@@ -498,7 +506,7 @@ JMP2r
 
 	#0005 ADD2
 		DUP2 ;app-option/target STA2
-		;&target STA2
+		;&src STA2
 
 	;dict/delete
 		DUP2 ;app-option/action STA2
@@ -512,7 +520,7 @@ JMP2r
 
 &callback ( -- )
 
-	[ LIT2 &target $2 ] ;get-path JSR2 ;fdel JSR2
+	[ LIT2 &src $2 ] ;make-path JSR2 ;fdel JSR2
 	;close-win JSR2
 
 JMP2r
@@ -687,6 +695,21 @@ JMP2r
 
 JMP2r
 
+@save-theme ( -- )
+
+	;dict/theme-ext ;make-path JSR2 .File/name DEO2
+	#0002 .File/length DEO2
+	.System/r DEI2 ,&w JSR
+	.System/g DEI2 ,&w JSR
+	.System/b DEI2 ,&w JSR
+	#0010 .File/length DEO2
+	;patt-chr .File/write DEO2
+	;draw-desktop JSR2
+
+JMP2r
+	&w ,&b STR2 ;&b .File/write DEO2 JMP2r
+	&b $2
+
 @scmp ( a* b* -- f ) STH2 &l LDAk LDAkr STHr ANDk #00 EQU ,&e JCN NEQk ,&e JCN POP2 INC2 INC2r ,&l JMP &e NIP2 POP2r EQU JMP2r
 @pstr ( str* -- ) &w LDAk #18 DEO INC2 LDAk ,&w JCN POP2 JMP2r
 
@@ -710,6 +733,9 @@ JMP2r
 
 @buf
 	&loc '. $3f
+	&path $40 ( used by make-path )
+	&dst $40 ( used by src/dst file operation )
+	&form $40 ( used by app-form )
 	&tmp $40
 	&tmp2 $40 ( used for file operations )
 	&dir $400
