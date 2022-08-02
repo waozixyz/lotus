@@ -416,9 +416,9 @@ JMP2r
 
 @file-create ( -- )
 
-	;dict/newfile-txt ;buf/tmp2 ;scpy JSR2
+	;dict/newfile-txt ;buf/form ;scpy JSR2
 	;&callback ;app-form/callback STA2
-	( open modal )
+
 	;dict/create
 		DUP2 ;app-form/action STA2
 		;app-form #1808 #0000 DUP2 ;add-win JSR2
@@ -428,22 +428,21 @@ JMP2r
 
 &callback ( -- )
 
-	( check if name already exists )
-	;buf/tmp2 ;find-name JSR2 #ff NEQ ,&duplicate JCN
-	( create file )
-	;buf/tmp2
-		DUP2 ;make-path JSR2 .File/name DEO2
+	;buf/form ;find-name JSR2 #ff EQU ,&unique JCN
+		;close-win JSR2
+		;dict/create ;buf/form ;add-err JMP2
+		&unique
+
+	;buf/form ;make-path JSR2 .File/name DEO2
 	#0001 .File/length DEO2
 	;&buf .File/write DEO2
-		;find-name JSR2 ;sel-icon JSR2
+
 	;close-win JSR2
+
+	;buf/form ;find-name JSR2 ;sel-icon JSR2
 
 JMP2r
 	&buf 00
-	&duplicate
-		;close-win JSR2
-		;dict/create ;buf/tmp2 ;add-err JSR2
-	JMP2r
 
 @file-rename ( -- )
 
@@ -465,6 +464,7 @@ JMP2r
 @file-clone ( -- )
 
 	;draw-item-text/sel LDA ;get-file JSR2
+		DUP2 #ffff EQU2 ,&fail JCN
 		LDAk LIT '- EQU ,&fail JCN
 		LDAk LIT '? EQU ,&fail JCN
 
@@ -484,16 +484,17 @@ JMP2r
 
 &callback ( -- )
 
-	;buf/form ;find-name JSR2 INC ,&unique JCN
+	;buf/form ;find-name JSR2 #ff EQU ,&unique JCN
 		;close-win JSR2
-		;dict/create ;buf/form ;add-err JSR2
+		;dict/create ;buf/form ;add-err JMP2
 		&unique
+
+	;close-win JSR2
 
 	( a* ) [ LIT2 &src $2 ] ;make-path JSR2
 	( b* ) ;buf/form ;make-dst JSR2
 		;fcpy JSR2
 
-	;close-win JSR2
 	;buf/form ;find-name JSR2 ;sel-icon JSR2
 
 JMP2r
@@ -501,6 +502,7 @@ JMP2r
 @file-delete ( -- )
 
 	;draw-item-text/sel LDA ;get-file JSR2
+		DUP2 #ffff EQU2 ,&fail JCN
 		LDAk LIT '- EQU ,&fail JCN
 		LDAk LIT '? EQU ,&fail JCN
 
@@ -520,7 +522,8 @@ JMP2r
 
 &callback ( -- )
 
-	[ LIT2 &src $2 ] ;make-path JSR2 ;fdel JSR2
+	( a* ) [ LIT2 &src $2 ] ;make-path JSR2 ;fdel JSR2
+
 	;close-win JSR2
 
 JMP2r
