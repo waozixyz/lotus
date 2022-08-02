@@ -460,7 +460,7 @@ JMP2r
 		LDAk LIT '- EQU ,&fail JCN
 		LDAk LIT '? EQU ,&fail JCN
 	( copy name in tmp2 )
-	#0005 ADD2 ;buf/tmp2 ;scpy JSR2
+	#0005 ADD2 ;get-path JSR2 ;buf/tmp2 ;scpy JSR2
 	;buf/tmp2 ;app-form/target STA2
 	( open modal )
 	;dict/clone
@@ -477,9 +477,9 @@ JMP2r
 	( check if name already exists )
 	;buf/tmp2 ;find-name JSR2 #ff NEQ ,&duplicate JCN
 
-	( a* ) ;draw-item-text/sel LDA ;get-file JSR2 #0005 ADD2
+	( a* ) ;draw-item-text/sel LDA ;get-file JSR2 #0005 ADD2 ;get-path JSR2
 	( b* ) ;buf/tmp2
-		;copy-file JSR2
+		;fcpy JSR2
 
 	;close-win JSR2
 	;buf/tmp2 ;find-name JSR2 ;sel-icon JSR2
@@ -496,7 +496,7 @@ JMP2r
 		LDAk LIT '- EQU ,&fail JCN
 		LDAk LIT '? EQU ,&fail JCN
 
-	#0005 ADD2 ;buf/tmp2 ;scpy JSR2
+	#0005 ADD2 ;get-path JSR2 ;buf/tmp2 ;scpy JSR2
 
 	;buf/tmp2 ;app-option/target STA2
 	;dict/delete
@@ -511,8 +511,7 @@ JMP2r
 
 &callback ( -- )
 
-	;buf/tmp2 ;get-path JSR2 .File/name DEO2
-	#01 .File/delete DEO
+	;buf/tmp2 ;fdel JSR2
 	;close-win JSR2
 
 JMP2r
@@ -535,24 +534,30 @@ JMP2r
 JMP2r
 	&true #01 JMP2r
 
-@copy-file ( src* dst* -- )
+( helpers )
 
-	.Disk/name DEO2
-	#0001 .Disk/length DEO2
-	.File/name DEO2
-	#0001 .File/length DEO2
+@fcpy ( src* dst* -- )
 
+	.Disk/name DEO2 #0001 .Disk/length DEO2
+	.File/name DEO2 #0001 .File/length DEO2
+	;&b
 	&stream
-	;&b .File/read DEO2
-	.File/success DEI2 #0000 EQU2 ,&end JCN
-		;&b .Disk/write DEO2
+		DUP2 .File/read DEO2
+		.File/success DEI2 ORA ,&continue JCN
+			POP2 JMP2r
+			&continue
+		DUP2 .Disk/write DEO2
 		,&stream JMP
-		&end
 
 JMP2r
 	&b $1
 
-( helpers )
+@fdel ( src* -- )
+
+	.File/name DEO2
+	#01 .File/delete DEO
+
+JMP2r
 
 @mswp ( len* a* b* -- )
 
