@@ -53,8 +53,8 @@
 	;dict/theme-ext ;load-theme JSR2
 
 	( size )
-	( #0200 .Screen/width DEO2
-	#0200 .Screen/height DEO2 )
+	#0320 .Screen/width DEO2
+	#0208 .Screen/height DEO2
 
 	#ff .drag STZ
 
@@ -310,6 +310,7 @@ JMP2r
 @open-font ( file* -- )
 
 	#0005 ADD2 ;app-font #2222 #001d #0034 ;add-win JSR2
+	;center-win JSR2
 
 JMP2r
 

@@ -407,7 +407,7 @@ JMP2r
 
 &prev ( -- )
 
-	;get-active-win JSR2 STH2k
+	;get-active-win JSR2
 		( /name ) #0008 ADD2 LDA2
 		( desktop id ) ;find-name JSR2
 
@@ -426,7 +426,7 @@ JMP2r
 
 &next ( -- )
 
-	;get-active-win JSR2 STH2k
+	;get-active-win JSR2
 		( /name ) #0008 ADD2 LDA2
 		( desktop id ) ;find-name JSR2
 
@@ -442,7 +442,6 @@ JMP2r
 		;get-file JSR2 ;open-pict JSR2
 
 JMP2r
-
 
 ( ------------------------------------------------------------- )
 
@@ -492,7 +491,7 @@ JMP2r
 
 &prev ( -- )
 
-	;get-active-win JSR2 STH2k
+	;get-active-win JSR2
 		( /name ) #0008 ADD2 LDA2
 		( desktop id ) ;find-name JSR2
 
@@ -511,7 +510,7 @@ JMP2r
 
 &next ( -- )
 
-	;get-active-win JSR2 STH2k
+	;get-active-win JSR2
 		( /name ) #0008 ADD2 LDA2
 		( desktop id ) ;find-name JSR2
 
