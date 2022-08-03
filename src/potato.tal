@@ -241,7 +241,6 @@ JMP2r
 	#00 ;sel-icon JSR2
 
 JMP2r
-	&busy ( win ) ;sel-win JSR2 ;center-win JSR2 JMP2r
 
 @pop-dir ( path* -- )
 
