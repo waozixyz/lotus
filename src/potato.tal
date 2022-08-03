@@ -367,12 +367,21 @@ JMP2r
 		#0005 ADD2 ;dict/open SWP2 ;add-err JSR2
 	JMP2r
 
-@open-disk ( -- )
+
+@open-as-font ( -- )
+
+JMP2r
+
+@open-as-sound ( -- )
+
+JMP2r
+
+@open-about ( -- )
 
 	( unique )
-	;app-disk ;find-win JSR2
+	;app-about ;find-win JSR2
 		DUP #ff NEQ ,&reselect JCN POP
-	;no-name ;app-disk #1613 #0000 DUP2 ;add-win JSR2
+	;no-name ;app-about #1613 #0000 DUP2 ;add-win JSR2
 	;center-win JSR2
 
 JMP2r

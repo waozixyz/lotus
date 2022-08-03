@@ -1,4 +1,4 @@
-@disk-manifest
+@about-manifest
 
 	03 "Disk $1
 		12 00 :expand-win "Expand $1
@@ -9,8 +9,8 @@
 		02 00 :toggle-zoom "Hexadecimal $1 ( TODO )
 	$1
 
-@app-disk
-	:disk-manifest
+@app-about
+	:about-manifest
 	:&on-draw
 	:void-mouse
 	:void-button
