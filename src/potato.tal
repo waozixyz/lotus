@@ -245,7 +245,7 @@ JMP2r
 @pop-dir ( path* -- )
 
 	;validate-dir JSR2
-
+	;buf/loc ;dict/home-ext ;scmp JSR2 ,&skip JCN
 	POP2
 	;buf/loc ;buf/loc ;scap JSR2
 	&loop
@@ -254,6 +254,7 @@ JMP2r
 		&found
 	NIP2
 	#00 ROT ROT STA
+	&skip
 	#00 ;sel-icon JSR2
 
 JMP2r
@@ -512,7 +513,6 @@ JMP2r
 
 @is-binary ( file* -- flag )
 
-	DUP2 ECHO
 	.File/name DEO2
 	#0001 .File/length DEO2
 	&s
