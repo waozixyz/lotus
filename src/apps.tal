@@ -497,6 +497,8 @@ BRK
 	#00 .Mouse/state DEO
 	#0000 .Controller/button DEO2
 	[ LIT2 &callback $2 ] JSR2
+	;close-win JSR2
+	;buf/form ;find-name JSR2 ;sel-icon JSR2
 
 BRK
 

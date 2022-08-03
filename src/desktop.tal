@@ -75,6 +75,16 @@ JMP2r
 
 JMP2r
 
+@add-form ( action* target* callback* -- )
+
+	;app-form/callback STA2
+	;buf/form ;scpy JSR2
+	DUP2 ;app-form/action STA2
+		;app-form #1809 #0000 DUP2 ;add-win JSR2
+	;center-win JSR2
+
+JMP2r
+
 @add-win ( name* app* h w y* x* -- )
 
 	.length LDZ #0a MUL .windows ADD STHk
