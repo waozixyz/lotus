@@ -43,7 +43,7 @@ Since this is designed to be used principally on a handheld devices without a wi
 - Terminal.
 - Piano.
 - Documentation.
-- Basic text editor?
+- Basic text viewer/editor?
     - Scrollbar
 - Clock widget
 - Wallpaper application?
@@ -58,6 +58,7 @@ Since this is designed to be used principally on a handheld devices without a wi
 - Swatch should show icon over selection
 - Catch maximum number of windows
 - Windows names shouldn't leave window bar bounds
+- uf2 viewer
 
 ## Support
 

@@ -422,11 +422,6 @@ JMP2r
 
 &callback ( -- )
 
-	;buf/form ;find-name JSR2 #ff EQU ,&unique JCN
-		;close-win JSR2
-		;dict/create ;buf/form ;add-err JMP2
-		&unique
-
 	;buf/form ;make-src JSR2 .File/name DEO2
 	#0001 .File/length DEO2
 	;&buf .File/write DEO2
@@ -436,23 +431,12 @@ JMP2r
 
 @file-rename ( -- )
 
-	;draw-item-text/sel LDA ;get-file JSR2
-		DUP2 #ffff EQU2 ,&fail JCN
-		LDAk LIT '- EQU ,&fail JCN
-		LDAk LIT '? EQU ,&fail JCN
-
-	#0005 ADD2 DUP2 ;&src STA2
+	;file-validate JSR2 #0005 ADD2 DUP2 ;&src STA2
 	;dict/rename SWP2 ;&callback ;add-form JSR2
 
 JMP2r
-	&fail #0005 ADD2 ;dict/rename SWP2 ;add-err JSR2 JMP2r
 
 &callback ( -- )
-
-	;buf/form ;find-name JSR2 #ff EQU ,&unique JCN
-		;close-win JSR2
-		;dict/create ;buf/form ;add-err JMP2
-		&unique
 
 	( a* ) [ LIT2 &src $2 ] ;make-src JSR2
 	( b* ) ;buf/form ;make-dst JSR2
@@ -464,23 +448,12 @@ JMP2r
 
 @file-clone ( -- )
 
-	;draw-item-text/sel LDA ;get-file JSR2
-		DUP2 #ffff EQU2 ,&fail JCN
-		LDAk LIT '- EQU ,&fail JCN
-		LDAk LIT '? EQU ,&fail JCN
-
-	#0005 ADD2 DUP2 ;&src STA2
+	;file-validate JSR2 #0005 ADD2 DUP2 ;&src STA2
 	;dict/clone SWP2 ;&callback ;add-form JSR2
 
 JMP2r
-	&fail #0005 ADD2 ;dict/rename SWP2 ;add-err JSR2 JMP2r
 
 &callback ( -- )
-
-	;buf/form ;find-name JSR2 #ff EQU ,&unique JCN
-		;close-win JSR2
-		;dict/create ;buf/form ;add-err JMP2
-		&unique
 
 	( a* ) [ LIT2 &src $2 ] ;make-src JSR2
 	( b* ) ;buf/form ;make-dst JSR2
@@ -490,10 +463,7 @@ JMP2r
 
 @file-delete ( -- )
 
-	;draw-item-text/sel LDA ;get-file JSR2
-		DUP2 #ffff EQU2 ,&fail JCN
-		LDAk LIT '- EQU ,&fail JCN
-		LDAk LIT '? EQU ,&fail JCN
+	;file-validate JSR2
 
 	#0005 ADD2
 		DUP2 ;app-option/target STA2
@@ -507,7 +477,6 @@ JMP2r
 	;&callback ;app-option/callback STA2
 
 JMP2r
-	&fail #0005 ADD2 ;dict/delete SWP2 ;add-err JSR2 JMP2r
 
 &callback ( -- )
 
@@ -516,6 +485,17 @@ JMP2r
 	;close-win JSR2
 
 JMP2r
+
+@file-validate ( -- file* )
+
+	;draw-item-text/sel LDA ;get-file JSR2
+		DUP2 #ffff EQU2 ,&fail JCN
+		LDAk LIT '- EQU ,&fail JCN
+		LDAk LIT '? EQU ,&fail JCN
+	( -> do file operations )
+
+JMP2r
+	&fail POP2r #0005 ADD2 ;dict/rename SWP2 ;add-err JSR2 JMP2r
 
 ( etc )
 
