@@ -279,6 +279,7 @@ JMP2r
 	LDAk LIT '- EQU ,open-folder JCN
 	DUP2 ;dict/icn-ext ;has-ext JSR2 ;open-pict JCN2
 	DUP2 ;dict/chr-ext ;has-ext JSR2 ;open-pict JCN2
+	DUP2 ;dict/uf2-ext ;has-ext JSR2 ;open-font JCN2
 	DUP2 ;dict/pcm-ext ;has-ext JSR2 ,open-play JCN
 	DUP2 ;dict/rom-ext ;has-ext JSR2 ,open-load JCN
 	DUP2 #0005 ADD2 ;dict/theme-ext ;scmp JSR2 ,open-theme JCN
@@ -303,6 +304,12 @@ JMP2r
 @open-text ( file* -- )
 
 	#0005 ADD2 ;app-text #3023 #001d #0034 ;add-win JSR2
+
+JMP2r
+
+@open-font ( file* -- )
+
+	#0005 ADD2 ;app-font #2222 #001d #0034 ;add-win JSR2
 
 JMP2r
 
@@ -367,10 +374,20 @@ JMP2r
 		#0005 ADD2 ;dict/open SWP2 ;add-err JSR2
 	JMP2r
 
-
 @open-as-font ( -- )
 
+	;draw-item-text/sel LDA ;get-file JSR2
+
+	LDAk LIT '- EQU ,&invalid JCN
+	LDAk LIT '? EQU ,&invalid JCN
+
+	;open-font JSR2
+	;center-win JSR2
+
 JMP2r
+	&invalid
+		#0005 ADD2 ;dict/open SWP2 ;add-err JSR2
+	JMP2r
 
 @open-as-sound ( -- )
 
@@ -717,5 +734,6 @@ JMP2r
 	&src $40 ( used by make-src )
 	&dst $40 ( used by make-dst )
 	&form $40 ( used by app-form )
+	&page $100
 	&dir $400
 	&app

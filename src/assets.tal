@@ -18,6 +18,7 @@
 	&chr-ext ".chr $1
 	&pcm-ext ".pcm $1
 	&rom-ext ".rom $1
+	&uf2-ext ".uf2 $1
 	&home-ext ". $1
 	&parent-ext ".. $1
 	&snarf-ext ".snarf $1

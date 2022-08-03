@@ -443,6 +443,91 @@ JMP2r
 
 JMP2r
 
+
+( ------------------------------------------------------------- )
+
+@font-manifest
+
+	03 "Font $1
+		12 00 :expand-win "Expand $1
+		22 00 :tab-win "Tab $1
+		42 00 :close-win "Close $1
+	02 "View $1
+		10 00 :app-font/prev "Previous $1
+		20 00 :app-font/next "Next $1
+	$1
+
+@app-font
+	:font-manifest
+	:&on-draw
+	:void-mouse
+	:void-button
+
+&on-draw ( win* -- )
+
+	.Screen/x DEI2 ,&x STR2
+	.Screen/y DEI2 ,&y STR2
+	( load widths )
+	#0008 ADD2 LDA2 ;make-src JSR2 .File/name DEO2
+	#0100 .File/length DEO2
+	;buf/page .File/read DEO2
+	( load characters )
+	#0020 .File/length DEO2
+	#15 .Screen/auto DEO
+	#00
+	&stream
+		#00 OVR #0f AND #40 SFT2 [ LIT2 &x $2 ] ADD2 .Screen/x DEO2
+		#00 OVR #44 SFT2 [ LIT2 &y $2 ] ADD2 .Screen/y DEO2
+		;&buf-char .File/read DEO2
+		.File/success DEI2 #0000 EQU2 ,&end JCN
+			;&buf-char .Screen/addr DEO2
+			#0a .Screen/sprite DEOk DEO
+			INC
+		,&stream JMP &end
+	POP
+
+JMP2r
+
+&buf-char $20
+
+&prev ( -- )
+
+	;get-active-win JSR2 STH2k
+		( /name ) #0008 ADD2 LDA2
+		( desktop id ) ;find-name JSR2
+
+	( check start )
+	DUP ,&no-start JCN
+		POP JMP2r
+		&no-start
+
+	( next name )
+	;close-win JSR2
+	#01 SUB
+		DUP ;draw-item-text/sel STA
+		;get-file JSR2 ;open-font JSR2
+
+JMP2r
+
+&next ( -- )
+
+	;get-active-win JSR2 STH2k
+		( /name ) #0008 ADD2 LDA2
+		( desktop id ) ;find-name JSR2
+
+	( check end )
+	DUP ;desk-len JSR2 LTH ,&no-end JCN
+		POP JMP2r
+		&no-end
+
+	( next name )
+	;close-win JSR2
+	INC
+		DUP ;draw-item-text/sel STA
+		;get-file JSR2 ;open-font JSR2
+
+JMP2r
+
 ( --MODALS----------------------------------------------------- )
 
 @form-manifest
