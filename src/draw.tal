@@ -79,9 +79,21 @@ JMP2r
 
 JMP2r
 
+@scroll-text ( str* w -- str* w )
+
+	STHk ROT ROT DUP2
+	;slen JSR2 #00 STHr SUB2 DUP2 #8000 LTH2 ,&no-scroll JCN
+		POP2 #0000 &no-scroll
+	ADD2 ROT
+
+JMP2r
+
 @draw-input ( str* w -- )
 
-	.Screen/x DEI2 ,&x STR2 .Screen/y DEI2 ,&y STR2
+	.Screen/x DEI2 ,&x STR2
+	.Screen/y DEI2 ,&y STR2
+
+	,scroll-text JSR
 
 	DUP ;input-icns ;draw-capped JSR2
 	#30 SFT #00 SWP #000e ADD2 STH2
