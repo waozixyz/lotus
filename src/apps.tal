@@ -496,11 +496,10 @@ BRK
 
 	#00 .Mouse/state DEO
 	#0000 .Controller/button DEO2
-	;buf/form ;find-name JSR2
-		DUP #ff NEQ ,&not-unique JCN
+	;buf/form ;find-name JSR2 #ff NEQ ,&not-unique JCN
 	[ LIT2 &callback $2 ] JSR2
 	;close-win JSR2
-	;sel-icon JSR2
+	;buf/form ;find-name JSR2 ;sel-icon JSR2
 
 BRK
 
