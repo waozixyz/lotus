@@ -491,12 +491,10 @@ BRK
 	;draw-win JSR2
 
 BRK
-	&validate-key ( key win* -- ) POP POP2
+	&validate-key ( key win* -- ) POP #0000 .Controller/button DEO2  POP2
 
-&validate ( win* key -> )
+&validate ( -> )
 
-	#00 .Mouse/state DEO
-	#0000 .Controller/button DEO2
 	;buf/form ;find-name JSR2 #ff NEQ ,&not-unique JCN
 	[ LIT2 &callback $2 ] JSR2
 	;close-win JSR2
@@ -504,9 +502,8 @@ BRK
 
 BRK
 
-&not-unique ( -- )
+&not-unique ( -> )
 
-	POP
 	;close-win JSR2
 	;dict/create ;buf/form ;add-err JSR2
 
