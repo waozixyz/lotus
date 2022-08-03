@@ -348,7 +348,7 @@ JMP2r
 
 	( get path )
 	DUP2
-	#0008 ADD2 LDA2 ;make-path JSR2 .File/name DEO2
+	#0008 ADD2 LDA2 ;make-src JSR2 .File/name DEO2
 	#0000 ;buf/app SUB2 .File/length DEO2
 	;buf/app .File/read DEO2
 	( cap )
@@ -390,7 +390,7 @@ JMP2r
 	.Screen/y DEI2k #0002 SUB2 ROT DEO2
 
 	( image )
-	#0008 ADD2 LDA2 ;make-path JSR2 ;draw-pict JSR2
+	#0008 ADD2 LDA2 ;make-src JSR2 ;draw-pict JSR2
 
 JMP2r
 
