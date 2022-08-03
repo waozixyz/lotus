@@ -60,7 +60,7 @@
 
 	;draw-menu-bg JSR2
 	;draw-menu JSR2
-	;draw-desktop JSR2
+	;dict/home-ext ;set-dir JSR2
 	;untrap JSR2
 
 BRK
@@ -99,8 +99,8 @@ BRK
 	DUP2 #ffff EQU2 ,&no-win JCN
 		.Controller/button DEI2
 		SWP2 DUP2
-		( /app ) #0006 ADD2 LDA2
-		( /app/button ) #0006 ADD2 LDA2 JMP2
+		( app ) #0006 ADD2 LDA2
+		( app/button ) #0006 ADD2 LDA2 JMP2
 	&no-win
 	POP2
 
@@ -138,19 +138,18 @@ BRK
 	POP2 POP2 POP2
 
 BRK
-	&send ;get-active-app JSR2 #0004 ADD2 LDA2 JMP2
+	&send
+		( app ) ;get-active-win JSR2 #0006 ADD2 LDA2
+		( app/mouse ) #0004 ADD2 LDA2 JMP2
 
 @touch-desktop ( -> )
 
 	.Mouse/x DEI2 .Mouse/y DEI2 ;pick-icon JSR2
-
 	.Mouse/state DEI #01 GTH ,&launch JCN
-
 	;sel-icon JSR2
-
-	POP
 	;sel-desktop JSR2
 	#00 .Mouse/state DEO
+	POP
 
 BRK
 	&launch
@@ -221,6 +220,53 @@ BRK
 
 JMP2r
 
+( directory operations )
+
+@set-dir ( path* -- )
+
+	( do not leave with busy windows )
+	;busy-win JSR2
+		DUP #ff NEQ ,&busy JCN
+	POP
+	;buf/loc ;scpy JSR2
+	#00 ;sel-icon JSR2
+
+JMP2r
+	&busy ( win ) ;sel-win JSR2 ;center-win JSR2 JMP2r
+
+@push-dir ( path* -- )
+
+	( do not leave with busy windows )
+	;busy-win JSR2
+		DUP #ff NEQ ,&busy JCN
+	POP
+
+	DUP2 ;dict/parent-ext ;scmp JSR2 ,pop-dir JCN
+
+	LIT '/ ;buf/loc ;sput JSR2
+	;buf/loc ;scat JSR2
+	#00 ;sel-icon JSR2
+
+JMP2r
+	&busy ( win ) ;sel-win JSR2 ;center-win JSR2 JMP2r
+
+@pop-dir ( path* -- )
+
+	POP2
+	;buf/loc ;dict/home-ext ;scmp JSR2 ,&root JCN
+
+	;buf/loc ;buf/loc ;scap JSR2
+	&loop
+		LDAk LIT '/ EQU ,&found JCN
+		#0001 SUB2 LTH2k ,&loop JCN
+		&found
+	NIP2
+	#00 ROT ROT STA
+	&root
+	#00 ;sel-icon JSR2
+
+JMP2r
+
 @busy-win ( -- <id> )
 
 	.length LDZ #00 EQUk ,&skip JCN
@@ -233,19 +279,6 @@ JMP2r
 
 JMP2r
 	&busy NIP JMP2r
-
-@set-dir ( path* -- )
-
-	( do not leave with busy windows )
-	;busy-win JSR2
-		DUP #ff NEQ ,&busy JCN
-	POP
-
-	;buf/loc ;scpy JSR2
-	#00 ;sel-icon JSR2
-
-JMP2r
-	&busy ( win ) ;sel-win JSR2 ;center-win JSR2 JMP2r
 
 ( open a file )
 
@@ -266,7 +299,7 @@ JMP2r
 
 @open-folder ( file* -- )
 
-	#0005 ADD2 ;set-dir JSR2
+	#0005 ADD2 ;push-dir JSR2
 
 JMP2r
 
@@ -610,17 +643,6 @@ JMP2r
 
 JMP2r
 
-@remove-lb ( addr* -- )
-
-	&w
-		LDAk #0a NEQ ,&no-lb JCN
-			STH2k #00 STH2r STA
-			&no-lb
-		INC2 LDAk ,&w JCN
-	POP2
-
-JMP2r
-
 @get-strw ( str* -- width* )
 
 	;slen JSR2 #30 SFT2
@@ -708,6 +730,5 @@ JMP2r
 	&src $40 ( used by make-src )
 	&dst $40 ( used by make-dst )
 	&form $40 ( used by app-form )
-	&tmp2 $40 ( used for file operations )
 	&dir $400
 	&app

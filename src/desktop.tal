@@ -80,7 +80,7 @@ JMP2r
 	;app-form/callback STA2
 	;buf/form ;scpy JSR2
 	DUP2 ;app-form/action STA2
-		;app-form #1809 #0000 DUP2 ;add-win JSR2
+		;app-form #1808 #0000 DUP2 ;add-win JSR2
 	;center-win JSR2
 
 JMP2r
@@ -186,12 +186,6 @@ JMP2r
 @get-rows ( -- rows )
 
 	.Screen/height DEI2 #0018 SUB2 #0018 DIV2 NIP
-
-JMP2r
-
-@get-active-app ( -- addr* )
-
-	;get-active-win JSR2 #0006 ADD2 LDA2
 
 JMP2r
 
@@ -329,7 +323,13 @@ JMP2r
 	#0400 .File/length DEO2
 	;buf/dir
 		DUP2 .File/read DEO2
-		;remove-lb JSR2
+	( remove linebreaks )
+	&w
+		LDAk #0a NEQ ,&no-lb JCN
+			STH2k #00 STH2r STA
+			&no-lb
+		INC2 LDAk ,&w JCN
+	POP2
 
 JMP2r
 
