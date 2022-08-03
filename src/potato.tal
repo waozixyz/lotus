@@ -447,19 +447,42 @@ JMP2r
 @file-rename ( -- )
 
 	;draw-item-text/sel LDA ;get-file JSR2
+		DUP2 #ffff EQU2 ,&fail JCN
 		LDAk LIT '- EQU ,&fail JCN
 		LDAk LIT '? EQU ,&fail JCN
-	( copy name in tmp2 )
-	#0005 ADD2 ;buf/tmp2 ;scpy JSR2
+
+	#0005 ADD2
+		DUP2 ;buf/form ;scpy JSR2
+		;&src STA2
+
 	;dict/rename
 		DUP2 ;app-form/action STA2
-		;app-form #1808 #0000 DUP2 ;add-win JSR2
+		;app-form #1809 #0000 DUP2 ;add-win JSR2
 	;center-win JSR2
 
-	( TODO )
+	;&callback ;app-form/callback STA2
 
 JMP2r
 	&fail #0005 ADD2 ;dict/rename SWP2 ;add-err JSR2 JMP2r
+
+&callback ( -- )
+
+	;buf/form ;find-name JSR2 #ff EQU ,&unique JCN
+		;close-win JSR2
+		;dict/create ;buf/form ;add-err JMP2
+		&unique
+
+	( a* ) [ LIT2 &src $2 ] ;make-src JSR2
+	( b* ) ;buf/form ;make-dst JSR2
+		;fcpy JSR2
+	( a* ) ,&src LDR2 ;make-src JSR2
+		;fdel JSR2
+
+	;close-win JSR2
+
+	;buf/form ;find-name JSR2 ;sel-icon JSR2
+
+JMP2r
 
 @file-clone ( -- )
 
