@@ -224,25 +224,18 @@ JMP2r
 
 @set-dir ( path* -- )
 
-	( do not leave with busy windows )
-	;busy-win JSR2
-		DUP #ff NEQ ,&busy JCN
-	POP
+	;validate-dir JSR2
+
 	;buf/loc ;scpy JSR2
 	#00 ;sel-icon JSR2
 
 JMP2r
-	&busy ( win ) ;sel-win JSR2 ;center-win JSR2 JMP2r
 
 @push-dir ( path* -- )
 
-	( do not leave with busy windows )
-	;busy-win JSR2
-		DUP #ff NEQ ,&busy JCN
-	POP
+	;validate-dir JSR2
 
 	DUP2 ;dict/parent-ext ;scmp JSR2 ,pop-dir JCN
-
 	LIT '/ ;buf/loc ;sput JSR2
 	;buf/loc ;scat JSR2
 	#00 ;sel-icon JSR2
@@ -252,9 +245,9 @@ JMP2r
 
 @pop-dir ( path* -- )
 
-	POP2
-	;buf/loc ;dict/home-ext ;scmp JSR2 ,&root JCN
+	;validate-dir JSR2
 
+	POP2
 	;buf/loc ;buf/loc ;scap JSR2
 	&loop
 		LDAk LIT '/ EQU ,&found JCN
@@ -262,12 +255,11 @@ JMP2r
 		&found
 	NIP2
 	#00 ROT ROT STA
-	&root
 	#00 ;sel-icon JSR2
 
 JMP2r
 
-@busy-win ( -- <id> )
+@validate-dir ( -- <id> )
 
 	.length LDZ #00 EQUk ,&skip JCN
 	&loop
@@ -275,10 +267,9 @@ JMP2r
 		INC GTHk ,&loop JCN
 	&skip
 	POP2
-	#ff
 
 JMP2r
-	&busy NIP JMP2r
+	&busy POP2r NIP ;sel-win JSR2 ;center-win JSR2 POP2 JMP2r
 
 ( open a file )
 
