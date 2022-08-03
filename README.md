@@ -50,8 +50,7 @@ Since this is designed to be used principally on a handheld devices without a wi
     - Select `.paper` image
 - Hex editor
 - Desktop
-    - Rename file
-    - Copy file
+    - Display current location
 - Tile
     - Support ICN/CHR mode switching
 - Screensaver?
