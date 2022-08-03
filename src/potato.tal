@@ -486,26 +486,14 @@ JMP2r
 
 @file-delete ( -- )
 
-	;file-validate JSR2
-
-	#0005 ADD2
-		DUP2 ;app-option/target STA2
-		;&src STA2
-
-	;dict/delete
-		DUP2 ;app-option/action STA2
-		;app-option #1807 #0000 DUP2 ;add-win JSR2
-	;center-win JSR2
-
-	;&callback ;app-option/callback STA2
+	;file-validate JSR2 #0005 ADD2 DUP2 ;&src STA2
+	;dict/delete SWP2 ;&callback ;add-option JSR2
 
 JMP2r
 
 &callback ( -- )
 
 	( a* ) [ LIT2 &src $2 ] ;make-src JSR2 ;fdel JSR2
-
-	;close-win JSR2
 
 JMP2r
 

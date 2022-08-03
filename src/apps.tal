@@ -109,6 +109,7 @@ BRK
 	&release #00 .Mouse/state DEO POP2 BRK
 	&set-nibble ( -- )
 		.cursor/color LDZ #01 SFT ADD DEO
+		;get-active-win JSR2 ;draw-win JSR2
 	JMP2r
 	&set-color ( value color -- )
 		SWP ,&v STR
@@ -554,11 +555,12 @@ BRK
 
 BRK
 
-&validate ( win* -> )
+&validate ( -> )
 
 	#00 .Mouse/state DEO
 	#0000 .Controller/button DEO2
 	[ LIT2 &callback $2 ] JSR2
+	;close-win JSR2
 
 BRK
 
