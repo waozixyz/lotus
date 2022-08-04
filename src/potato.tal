@@ -264,7 +264,8 @@ JMP2r
 
 	.length LDZ #00 EQUk ,&skip JCN
 	&loop
-		DUP #0a MUL .windows ADD #08 ADD LDZ2 ;no-name NEQ2 ,&busy JCN
+		DUP ;get-win JSR2
+		( win/name ) #0008 ADD2 LDA2 ;no-name NEQ2 ,&busy JCN
 		INC GTHk ,&loop JCN
 	&skip
 	POP2

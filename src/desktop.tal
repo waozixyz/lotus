@@ -34,8 +34,7 @@
 	,&y STR2 ,&x STR2
 	#00 .length LDZ DUP #00 EQU ,&skip JCN
 	&loop
-		DUP #01 SUB #0a MUL .windows ADD
-			#00 SWP [ LIT2 &x $2 ] [ LIT2 &y $2 ] ROT2 ,within-win JSR ,&found JCN
+		DUP #01 SUB ;get-win JSR2 [ LIT2 &x $2 ] [ LIT2 &y $2 ] ROT2 ,within-win JSR ,&found JCN
 			#01 SUB LTHk ,&loop JCN
 		&skip
 	POP2
@@ -61,7 +60,8 @@ JMP2r
 	,&a STR2
 	.length LDZ #00
 	&loop
-		DUP #0a MUL .windows ADD #06 ADD LDZ2 [ LIT2 &a $2 ] EQU2 ,&found JCN
+		DUP ;get-win JSR2
+		( win/app ) #0006 ADD2 LDA2 [ LIT2 &a $2 ] EQU2 ,&found JCN
 		INC GTHk ,&loop JCN
 	POP2
 	#ff
@@ -210,10 +210,10 @@ JMP2r
 
 @get-win ( id -- addr* )
 
-	DUP #ff NEQ ,&exists JCN
+	DUP #10 LTH ,&exists JCN
 		POP #ffff JMP2r
 		&exists
-	#0a MUL .windows ADD #00 SWP
+	#0a MUL #00 SWP ;windows ADD2
 
 JMP2r
 
