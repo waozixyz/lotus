@@ -94,12 +94,11 @@ BRK
 	POP2
 
 	( send button to active win )
-	;get-active-win JSR2
+	( win ) ;get-active-win JSR2
 	DUP2 #ffff EQU2 ,&no-win JCN
-		.Controller/button DEI2
-		SWP2 DUP2
-		( app ) #0006 ADD2 LDA2
-		( app/button ) #0006 ADD2 LDA2 JMP2
+		.Controller/button DEI2 SWP2 DUP2
+		( win/app ) #0006 ADD2 LDA2
+		( win/app/button ) #0006 ADD2 LDA2 JMP2
 	&no-win
 	POP2
 
@@ -138,8 +137,9 @@ BRK
 
 BRK
 	&send
-		( app ) ;get-active-win JSR2 #0006 ADD2 LDA2
-		( app/mouse ) #0004 ADD2 LDA2 JMP2
+		( win ) ;get-active-win JSR2
+		( win/app ) #0006 ADD2 LDA2
+		( win/app/mouse ) #0004 ADD2 LDA2 JMP2
 
 @touch-desktop ( -> )
 
@@ -233,9 +233,7 @@ JMP2r
 @push-dir ( path* -- )
 
 	;validate-dir JSR2
-	DUP2 ;dict/parent-ext ;scmp JSR2 #01 NEQ ,&no-parent JCN
-		POP2 ,pop-dir JMP
-		&no-parent
+	DUP2 ;dict/parent-ext ;scmp JSR2 ,pop-dir JCN
 	LIT '/ ;buf/loc ;sput JSR2
 	;buf/loc ;scat JSR2
 	#00 ;sel-icon JSR2
@@ -254,6 +252,7 @@ JMP2r
 	NIP2
 	#00 ROT ROT STA
 	&skip
+	POP2
 	#00 ;sel-icon JSR2
 
 JMP2r

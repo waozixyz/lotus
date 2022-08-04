@@ -134,22 +134,22 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
 	7fff ffff ffff 7f00
 	fcfe fefe fefe fc00
 @octave-icns
-    &a
-    007c 7c7c 7c7c 7c7c
-    7c7c 7c7c 7c7c 7e7f
-    7f7f 7f7f 7f7f bec1
-    &b
-    001c 1c1c 1c1c 1c1c
-    1c1c 1c1c 1c1c 3e7f
-    7f7f 7f7f 7f7f bec1
-    &c
-    001f 1f1f 1f1f 1f1f
-    1f1f 1f1f 1f1f 3f7f
-    7f7f 7f7f 7f7f bec1
-    &d
-    7f7f 7f7f 7f7f 7f7f
-    7f7f 7f7f 7f7f 7f7f
-    7f7f 7f7f 7f7f ffff
+	&a
+	007c 7c7c 7c7c 7c7c
+	7c7c 7c7c 7c7c 7e7f
+	7f7f 7f7f 7f7f bec1
+	&b
+	001c 1c1c 1c1c 1c1c
+	1c1c 1c1c 1c1c 3e7f
+	7f7f 7f7f 7f7f bec1
+	&c
+	001f 1f1f 1f1f 1f1f
+	1f1f 1f1f 1f1f 3f7f
+	7f7f 7f7f 7f7f bec1
+	&d
+	7f7f 7f7f 7f7f 7f7f
+	7f7f 7f7f 7f7f 7f7f
+	7f7f 7f7f 7f7f ffff
 @knob-icns
 	0003 0c10 2020 4040
 	00c0 3008 0404 0202

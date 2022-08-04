@@ -713,7 +713,7 @@ BRK
 	;draw-win JSR2
 
 BRK
-	&validate-key ( key win* -- ) POP #0000 .Controller/button DEO2  POP2
+	&validate-key ( key win* -- ) POP #0000 .Controller/button DEO2 POP2
 
 &validate ( -> )
 

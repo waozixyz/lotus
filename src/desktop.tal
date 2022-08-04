@@ -140,7 +140,7 @@ JMP2r
 
 @go-home ( -- )
 
-	;pop-dir JSR2
+	;dict/parent-ext ;push-dir JSR2
 
 JMP2r
 
