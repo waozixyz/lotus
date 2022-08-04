@@ -49,7 +49,7 @@
 
 JMP2r
 	&items
-		:size-assets-end :size-assets-start :dict/fontsicons :icons/fonts
+		:size-assets-end :size-assets-start :dict/fontsicons :icons/font
 		:size-desktop-end :size-desktop-start :dict/desktop :icons/desktop
 		:size-apps-end :size-apps-start :dict/applications :icons/application
 		:size-system-end :size-system-start :dict/system :icons/potato
@@ -551,12 +551,13 @@ JMP2r
 
 &on-draw ( win* -- )
 
-
 	( win/name ) #0008 ADD2 LDA2 ;make-src JSR2 .File/name DEO2
 	#8000 .File/length DEO2
 	;buf/app .File/read DEO2
 
 	;buf/app .File/success DEI2 [ LIT2 &zoom 0001 ] ;draw-waveform JSR2
+
+	;draw-octave JSR2
 
 JMP2r
 

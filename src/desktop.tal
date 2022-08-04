@@ -391,6 +391,8 @@ JMP2r
 	DUP2 #0005 ADD2 ;dict/rom-ext ;has-ext JSR2 ,&rom JCN
 	DUP2 #0005 ADD2 ;dict/chr-ext ;has-ext JSR2 ,&picture JCN
 	DUP2 #0005 ADD2 ;dict/icn-ext ;has-ext JSR2 ,&picture JCN
+	DUP2 #0005 ADD2 ;dict/pcm-ext ;has-ext JSR2 ,&sample JCN
+	DUP2 #0005 ADD2 ;dict/uf2-ext ;has-ext JSR2 ,&font JCN
 	POP2 ;icons/text ;draw-icon JSR2
 
 JMP2r
@@ -398,6 +400,8 @@ JMP2r
 	&unknown POP2 ;icons/unknown ;draw-icon JSR2 JMP2r
 	&picture POP2 ;icons/picture ;draw-icon JSR2 JMP2r
 	&rom POP2 ;icons/application ;draw-icon JSR2 JMP2r
+	&sample POP2 ;icons/sample ;draw-icon JSR2 JMP2r
+	&font POP2 ;icons/font ;draw-icon JSR2 JMP2r
 
 @draw-item-text ( ptr* id -- ptr* )
 

@@ -316,7 +316,7 @@ JMP2r
 
 @open-sample ( file* -- )
 
-	#0005 ADD2 ;app-play #2210 #001d #0034 ;add-win JSR2
+	#0005 ADD2 ;app-play #220f #001d #0034 ;add-win JSR2
 	;center-win JSR2
 
 JMP2r
