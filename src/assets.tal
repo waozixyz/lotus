@@ -1,5 +1,4 @@
 @dict
-	&empty "Empty $1
 	&bytes "Bytes $1
 	&fontsicons "Font 20 "& 20 "Icons $1
 	&desktop "Desktop $1
@@ -135,7 +134,6 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
 	7fff ffff ffff 7f00
 	fcfe fefe fefe fc00
 
-
 @octave-icns
     &a
     007c 7c7c 7c7c 7c7c
@@ -153,12 +151,6 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
     7f7f 7f7f 7f7f 7f7f
     7f7f 7f7f 7f7f 7f7f
     7f7f 7f7f 7f7f ffff
-
-
-@arrow-icns2
-	0010 387c fe10 1000
-	&down
-	0010 1010 fe7c 3810
 
 @notes
 	30 32 34 35
@@ -188,7 +180,6 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
 	007c 8202 7e82 827e 00fc 8282 fc82 82fc
 	007c 8280 8080 827c 00fc 8282 8282 82fc
 	007c 8280 f080 827c 007c 8280 f080 8080
-
 
 ( chr )
 

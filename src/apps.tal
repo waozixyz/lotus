@@ -559,6 +559,21 @@ JMP2r
 
 	;draw-octave JSR2
 
+	.Screen/x DEI2 #0020 ADD2
+	.Screen/y DEI2
+
+	( env )
+	OVR2 OVR2 #01 ;draw-knob JSR2
+	OVR2 #0018 ADD2 OVR2 #07 ;draw-knob JSR2
+	OVR2 #0030 ADD2 OVR2 #06 ;draw-knob JSR2
+	OVR2 #0048 ADD2 OVR2 #0e ;draw-knob JSR2
+
+	( vol )
+	OVR2 #0078 ADD2 OVR2 #0f ;draw-knob JSR2
+	OVR2 #0090 ADD2 OVR2 #0f ;draw-knob JSR2
+
+	POP2 POP2
+
 JMP2r
 
 &prev ( -- )

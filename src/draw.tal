@@ -82,6 +82,55 @@ JMP2r
 
 JMP2r
 
+@draw-wallpaper ( -- )
+
+	#0000 .Screen/x DEO2
+	#0010 .Screen/y DEO2
+	#01 .Screen/auto DEO
+	;patt-chr .Screen/addr DEO2
+	;dict/paper-ext .File/name DEO2
+	#0008 .File/length DEO2
+
+	&stream
+		;patt-chr .File/read DEO2
+		.File/success DEI2 #0000 EQU2 ,&eof JCN
+		#01 .Screen/sprite DEO
+		.Screen/x DEI2 .Screen/width DEI2 LTH2 ,&no-lb JCN
+			#0000 .Screen/x DEO2
+			.Screen/y DEI2k #0008 ADD2 ROT DEO2
+			&no-lb
+		,&stream JMP
+		&eof
+	.Screen/y DEI2 .Screen/height DEI2 LTH2 ,draw-patt JCN
+
+JMP2r
+
+@draw-patt ( -- )
+
+	( cache size )
+	.Screen/width DEI2 #03 SFT2 NIP ,&x STR
+	.Screen/height DEI2 #03 SFT2 NIP INC ,&y STR
+	( draw )
+	#0010 .Screen/y DEO2
+	#01 .Screen/auto DEO
+	;patt-chr .Screen/addr DEO2
+	[ LIT &y $1 ] #00
+	&h
+		STHk
+		#0000 .Screen/x DEO2
+		[ LIT &x $1 ] #00
+		&w
+			DUP #01 AND #40 SFT STHkr #01 AND #50 SFT ORA #81 ORA
+				.Screen/sprite DEO
+			INC GTHk ,&w JCN
+		POP2
+		POPr
+		.Screen/y DEI2k #0008 ADD2 ROT DEO2
+		INC GTHk ,&h JCN
+	POP2
+
+JMP2r
+
 @scroll-text ( str* w -- str* w )
 
 	STHk ROT ROT DUP2
@@ -256,18 +305,18 @@ JMP2r
 	( circle )
 	;knob-icns .Screen/addr DEO2
 	#16 .Screen/auto DEO
-	#01 .Screen/sprite DEOk DEO
+	#0e .Screen/sprite DEOk DEO
 	#00 .Screen/auto DEO
 	( value )
 	#0010 ADD2 .Screen/y DEO2
 	#0004 ADD2 .Screen/x DEO2
-	;font-hex #00 STHkr #30 SFT ADD2 .Screen/addr DEO2
-	#01 .Screen/sprite DEO
+	STHkr ;draw-hex JSR2
+	#0e .Screen/sprite DEO
 	( marker )
 	.Screen/x DEI2 #0004 SUB2 #00 #00 STHkr ;knob-offsetx ADD2 LDA ADD2 .Screen/x DEO2
 	.Screen/y DEI2 #0010 SUB2 #00 #00 STHr ;knob-offsety ADD2 LDA ADD2 .Screen/y DEO2
 	;knob-icns #0020 ADD2 .Screen/addr DEO2
-	#05 .Screen/sprite DEO
+	#0a .Screen/sprite DEO
 
 JMP2r
 
@@ -277,7 +326,7 @@ JMP2r
 	.Screen/y DEI2
 
 	#02 .Screen/auto DEO
-	OVR2 #0040 ADD2 .Screen/x DEO2
+	OVR2 #0048 ADD2 .Screen/x DEO2
 	;arrow-icns/v .Screen/addr DEO2
 	DUP2 .Screen/y DEO2
 	#0e .Screen/sprite DEO
