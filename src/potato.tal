@@ -52,9 +52,9 @@
 	#a70f .System/b DEO2
 	;dict/theme-ext ;load-theme JSR2
 
-	( 800x520 )
-	( #0320 .Screen/width DEO2
-	#0208 .Screen/height DEO2 )
+	( 800x520 | 64:41 )
+	#0320 .Screen/width DEO2
+	#0208 .Screen/height DEO2
 
 	#ff .drag STZ
 

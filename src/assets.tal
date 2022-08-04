@@ -23,6 +23,7 @@
 	&parent-ext ".. $1
 	&snarf-ext ".snarf $1
 	&theme-ext ".theme $1
+	&paper-ext ".paper $1
 	&newfile-txt "newfile.txt $1
 	&dotw
 		"Sun $1 "Mon $1 "Tue $1 "Wed $1

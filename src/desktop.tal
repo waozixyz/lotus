@@ -308,6 +308,30 @@ JMP2r
 
 @draw-wallpaper ( -- )
 
+	#0000 .Screen/x DEO2
+	#0010 .Screen/y DEO2
+	#01 .Screen/auto DEO
+	;patt-chr .Screen/addr DEO2
+	;dict/paper-ext .File/name DEO2
+	#0008 .File/length DEO2
+
+	&stream
+		;patt-chr .File/read DEO2
+		.File/success DEI2 #0000 EQU2 ,&eof JCN
+		#01 .Screen/sprite DEO
+		.Screen/x DEI2 .Screen/width DEI2 LTH2 ,&no-lb JCN
+			#0000 .Screen/x DEO2
+			.Screen/y DEI2k #0008 ADD2 ROT DEO2
+			&no-lb
+		,&stream JMP
+		&eof
+	.Screen/y DEI2 .Screen/height DEI2 LTH2 ,draw-patt JCN
+
+JMP2r
+	&b $8
+
+@draw-patt ( -- )
+
 	( cache size )
 	.Screen/width DEI2 #03 SFT2 NIP ,&x STR
 	.Screen/height DEI2 #03 SFT2 NIP INC ,&y STR

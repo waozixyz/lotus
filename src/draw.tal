@@ -291,14 +291,14 @@ JMP2r
 	.Screen/y DEO2
 	.Screen/x DEO2
 	#25 .Screen/auto DEO
-	[ LIT &last ff ] STH
-	STHkr #00 EQU ;octave-icns/a ,draw-key JSR
-	STHkr #02 EQU ;octave-icns/b ,draw-key JSR
-	STHkr #04 EQU ;octave-icns/c ,draw-key JSR
-	STHkr #05 EQU ;octave-icns/a ,draw-key JSR
-	STHkr #07 EQU ;octave-icns/b ,draw-key JSR
-	STHkr #09 EQU ;octave-icns/b ,draw-key JSR
-	STHr #0b EQU ;octave-icns/c ,draw-key JSR
+	[ LIT &last ff ]
+	DUP #00 EQU ;octave-icns/a ,draw-key JSR
+	DUP #02 EQU ;octave-icns/b ,draw-key JSR
+	DUP #04 EQU ;octave-icns/c ,draw-key JSR
+	DUP #05 EQU ;octave-icns/a ,draw-key JSR
+	DUP #07 EQU ;octave-icns/b ,draw-key JSR
+	DUP #09 EQU ;octave-icns/b ,draw-key JSR
+	#0b EQU ;octave-icns/c ,draw-key JSR
 	#00 ;octave-icns/d ,draw-key JSR
 
 JMP2r
