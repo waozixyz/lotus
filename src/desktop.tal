@@ -99,12 +99,12 @@ JMP2r
 
 @add-win ( name* app* h w y* x* -- )
 
-	.length LDZ #0a MUL .windows ADD STHk
-	STZ2 INCr INCr
-	STHkr STZ2 INCr INCr
-	STHkr STZ2 INCr INCr
-	STHkr STZ2 INCr INCr
-	STHr STZ2
+	.length LDZ #40 SFT #00 SWP ;windows ADD2 STH2k
+	STA2 INCr INCr
+	STH2kr STA2 INCr INCr
+	STH2kr STA2 INCr INCr
+	STH2kr STA2 INCr INCr
+	STH2r STA2
 	.length LDZk INC SWP STZ
 	.length LDZ #01 SUB
 
@@ -140,7 +140,7 @@ JMP2r
 
 @go-home ( -- )
 
-	;dict/parent-ext ;push-dir JSR2
+	;pop-dir JSR2
 
 JMP2r
 
@@ -213,7 +213,7 @@ JMP2r
 	DUP #10 LTH ,&exists JCN
 		POP #ffff JMP2r
 		&exists
-	#0a MUL #00 SWP ;windows ADD2
+	#40 SFT #00 SWP ;windows ADD2
 
 JMP2r
 

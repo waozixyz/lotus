@@ -42,8 +42,6 @@
 	&x $2 &y $2 &color $1
 @drag $1
 @length $1
-@windows
-	( x* y* size* app* name* )
 
 |0100 ( -> )
 
@@ -235,19 +233,19 @@ JMP2r
 @push-dir ( path* -- )
 
 	;validate-dir JSR2
-
-	DUP2 ;dict/parent-ext ;scmp JSR2 ,pop-dir JCN
+	DUP2 ;dict/parent-ext ;scmp JSR2 #01 NEQ ,&no-parent JCN
+		POP2 ,pop-dir JMP
+		&no-parent
 	LIT '/ ;buf/loc ;sput JSR2
 	;buf/loc ;scat JSR2
 	#00 ;sel-icon JSR2
 
 JMP2r
 
-@pop-dir ( path* -- )
+@pop-dir ( -- )
 
 	;validate-dir JSR2
 	;buf/loc ;dict/home-ext ;scmp JSR2 ,&skip JCN
-	POP2
 	;buf/loc ;buf/loc ;scap JSR2
 	&loop
 		LDAk LIT '/ EQU ,&found JCN
@@ -260,7 +258,7 @@ JMP2r
 
 JMP2r
 
-@validate-dir ( -- <id> )
+@validate-dir ( -- )
 
 	.length LDZ #00 EQUk ,&skip JCN
 	&loop
@@ -732,6 +730,15 @@ JMP2r
 @size-assets-start
 	~src/assets.tal
 @size-assets-end
+
+@windows $100
+(
+	00 x*
+	02 y*
+	04 size*
+	06 app*
+	08 name*
+	0a buf* )
 
 @buf
 	&loc '. $3f
