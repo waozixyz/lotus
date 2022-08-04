@@ -536,6 +536,19 @@ JMP2r
 		12 00 :expand-win "Expand $1
 		22 00 :tab-win "Tab $1
 		42 00 :close-win "Close $1
+	0c "Keyboard $1
+		00 'a :app-play/notec "C $1
+		00 'w :app-play/notecs "C# $1
+		00 's :app-play/noted "D $1
+		00 'e :app-play/noteds "D# $1
+		00 'd :app-play/notee "E $1
+		00 'f :app-play/notef "F $1
+		00 't :app-play/notefs "F# $1
+		00 'g :app-play/noteg "G $1
+		00 'y :app-play/notegs "G# $1
+		00 'h :app-play/notea "A $1
+		00 'u :app-play/noteas "A# $1
+		00 'j :app-play/noteb "B $1
 	04 "View $1
 		10 00 :app-play/prev "Previous $1
 		20 00 :app-play/next "Next $1
@@ -554,24 +567,18 @@ JMP2r
 	( win/name ) #0008 ADD2 LDA2 ;make-src JSR2 .File/name DEO2
 	#8000 .File/length DEO2
 	;buf/app .File/read DEO2
-
 	;buf/app .File/success DEI2 [ LIT2 &zoom 0001 ] ;draw-waveform JSR2
-
 	;draw-octave JSR2
-
 	.Screen/x DEI2 #0020 ADD2
 	.Screen/y DEI2
-
 	( env )
 	OVR2 OVR2 #01 ;draw-knob JSR2
 	OVR2 #0018 ADD2 OVR2 #07 ;draw-knob JSR2
 	OVR2 #0030 ADD2 OVR2 #06 ;draw-knob JSR2
 	OVR2 #0048 ADD2 OVR2 #0e ;draw-knob JSR2
-
 	( vol )
 	OVR2 #0078 ADD2 OVR2 #0f ;draw-knob JSR2
 	OVR2 #0090 ADD2 OVR2 #0f ;draw-knob JSR2
-
 	POP2 POP2
 
 JMP2r
@@ -614,6 +621,23 @@ JMP2r
 
 JMP2r
 
+&notec ( -- ) #00 ;play-note JSR2 JMP2r
+&notecs ( -- ) #01 ;play-note JSR2 JMP2r
+&noted ( -- ) #02 ;play-note JSR2 JMP2r
+&noteds ( -- ) #03 ;play-note JSR2 JMP2r
+&notee ( -- ) #04 ;play-note JSR2 JMP2r
+&notef ( -- ) #05 ;play-note JSR2 JMP2r
+&notefs ( -- ) #06 ;play-note JSR2 JMP2r
+&noteg ( -- ) #07 ;play-note JSR2 JMP2r
+&notegs ( -- ) #08 ;play-note JSR2 JMP2r
+&notea ( -- ) #0a ;play-note JSR2 JMP2r
+&noteas ( -- ) #0b ;play-note JSR2 JMP2r
+&noteb ( -- ) #0c ;play-note JSR2 JMP2r
+
+&press-key ( key -- )
+
+JMP2r
+
 &zoomin ( -- )
 
 	;&zoom LDA2 #0001 EQU2 ,&skip JCN
@@ -627,6 +651,17 @@ JMP2r
 
 	;&zoom LDA2 INC2 ;&zoom STA2
 	;get-active-win JSR2 ;draw-win JSR2
+
+JMP2r
+
+@play-note ( pitch -- )
+
+	;buf/app .Audio0/addr DEO2
+	#2777 .Audio0/adsr DEO2
+	#0100 .Audio0/length DEO2
+	#ff .Audio0/volume DEO
+	( TODO: set octave )
+	#40 ADD BUGk .Audio0/pitch DEO
 
 JMP2r
 
