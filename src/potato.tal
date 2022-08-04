@@ -52,9 +52,9 @@
 	#a70f .System/b DEO2
 	;dict/theme-ext ;load-theme JSR2
 
-	( size )
-	#0320 .Screen/width DEO2
-	#0208 .Screen/height DEO2
+	( 800x520 )
+	( #0320 .Screen/width DEO2
+	#0208 .Screen/height DEO2 )
 
 	#ff .drag STZ
 
@@ -280,8 +280,8 @@ JMP2r
 	DUP2 ;dict/icn-ext ;has-ext JSR2 ;open-pict JCN2
 	DUP2 ;dict/chr-ext ;has-ext JSR2 ;open-pict JCN2
 	DUP2 ;dict/uf2-ext ;has-ext JSR2 ;open-font JCN2
-	DUP2 ;dict/pcm-ext ;has-ext JSR2 ,open-play JCN
-	DUP2 ;dict/rom-ext ;has-ext JSR2 ,open-load JCN
+	DUP2 ;dict/pcm-ext ;has-ext JSR2 ;open-sample JCN2
+	DUP2 ;dict/rom-ext ;has-ext JSR2 ;open-load JCN2
 	DUP2 #0005 ADD2 ;dict/theme-ext ;scmp JSR2 ,open-theme JCN
 	DUP2 #0005 ADD2 ;is-binary JSR2 ,open-hexa JCN
 	;open-text JSR2
@@ -314,9 +314,10 @@ JMP2r
 
 JMP2r
 
-@open-play ( file* -- )
+@open-sample ( file* -- )
 
-	POP2
+	#0005 ADD2 ;app-play #2210 #001d #0034 ;add-win JSR2
+	;center-win JSR2
 
 JMP2r
 

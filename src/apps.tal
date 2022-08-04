@@ -31,7 +31,7 @@
 	DUP2
 	LDA2k .Screen/x DEO2 POP2
 	.Screen/y DEI2k #000c ADD2 ROT DEO2
-	#16 ;draw-dotted JSR2
+	#16 #0a ;draw-dotted JSR2
 
 	LDA2k #0008 ADD2 ,&x STR2 INC2 INC2
 	LDA2k #0030 ADD2 ,&y STR2 POP2
@@ -524,6 +524,93 @@ JMP2r
 	INC
 		DUP ;draw-item-text/sel STA
 		;get-file JSR2 ;open-font JSR2
+
+JMP2r
+
+
+( ------------------------------------------------------------- )
+
+@play-manifest
+
+	03 "Play $1
+		12 00 :expand-win "Expand $1
+		22 00 :tab-win "Tab $1
+		42 00 :close-win "Close $1
+	04 "View $1
+		10 00 :app-play/prev "Previous $1
+		20 00 :app-play/next "Next $1
+		00 '[ :app-play/zoomin "Zoom 20 "In $1
+		00 '] :app-play/zoomout "Zoom 20 "Out $1
+	$1
+
+@app-play
+	:play-manifest
+	:&on-draw
+	:void-mouse
+	:void-button
+
+&on-draw ( win* -- )
+
+
+	( win/name ) #0008 ADD2 LDA2 ;make-src JSR2 .File/name DEO2
+	#8000 .File/length DEO2
+	;buf/app .File/read DEO2
+
+	;buf/app .File/success DEI2 [ LIT2 &zoom 0001 ] ;draw-waveform JSR2
+
+JMP2r
+
+&prev ( -- )
+
+	;get-active-win JSR2
+		( /name ) #0008 ADD2 LDA2
+		( desktop id ) ;find-name JSR2
+
+	( check start )
+	DUP ,&no-start JCN
+		POP JMP2r
+		&no-start
+
+	( next name )
+	;close-win JSR2
+	#01 SUB
+		DUP ;draw-item-text/sel STA
+		;get-file JSR2 ;open-sample JSR2
+
+JMP2r
+
+&next ( -- )
+
+	;get-active-win JSR2
+		( /name ) #0008 ADD2 LDA2
+		( desktop id ) ;find-name JSR2
+
+	( check end )
+	DUP ;desk-len JSR2 LTH ,&no-end JCN
+		POP JMP2r
+		&no-end
+
+	( next name )
+	;close-win JSR2
+	INC
+		DUP ;draw-item-text/sel STA
+		;get-file JSR2 ;open-sample JSR2
+
+JMP2r
+
+&zoomin ( -- )
+
+	;&zoom LDA2 #0001 EQU2 ,&skip JCN
+		;&zoom LDA2 #0001 SUB2 ;&zoom STA2
+		;get-active-win JSR2 ;draw-win JSR2
+		&skip
+
+JMP2r
+
+&zoomout ( -- )
+
+	;&zoom LDA2 INC2 ;&zoom STA2
+	;get-active-win JSR2 ;draw-win JSR2
 
 JMP2r
 

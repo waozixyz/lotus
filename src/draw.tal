@@ -66,16 +66,19 @@ JMP2r
 	#85 ;draw-frame/color STA
 	STH2kr ;frame1-chr ;draw-frame JSR2
 	OVR2 OVR2 #000a ADD2 .Screen/y DEO2 .Screen/x DEO2
-	STH2r POP ;draw-dotted JSR2
+	STH2r POP #0a ,draw-dotted JSR
 	.Screen/y DEO2 .Screen/x DEO2
 
 JMP2r
 
-@draw-dotted ( w -- )
+@draw-dotted ( w color -- )
 
+	.Screen/x DEI2 SWP2
+	,&color STR
 	#01 .Screen/auto DEO
 	;line-icn .Screen/addr DEO2
-	#00 &l #0a .Screen/sprite DEO INC GTHk ,&l JCN POP2
+	#00 &l [ LIT &color 0a ] .Screen/sprite DEO INC GTHk ,&l JCN POP2
+	.Screen/x DEO2
 
 JMP2r
 
@@ -145,7 +148,7 @@ JMP2r
 @draw-fill ( w h -- )
 
 	#01 .Screen/auto DEO
-	;&fill .Screen/addr DEO2
+	;fill-icn .Screen/addr DEO2
 	SWP ,&x STR
 	#00
 	&h
@@ -160,7 +163,6 @@ JMP2r
 	POP2
 
 JMP2r
-	&fill ffff ffff ffff ffff
 
 @draw-frame ( w h chr* -- )
 
@@ -215,6 +217,30 @@ JMP2r
 
 	.Screen/x DEI2k #0040 SUB2 ROT DEO2
 	.Screen/y DEI2k #0010 ADD2 ROT DEO2
+
+JMP2r
+
+@draw-waveform ( addr* length* zoom* -- )
+
+	.Screen/y DEI2 ,&y STR2
+
+	( draw mid )
+	.Screen/y DEI2k #001f ADD2 ROT DEO2
+	#20 #0c ;draw-dotted JSR2
+
+	( draw wav )
+	,&zoom STR2
+	#01 .Screen/auto DEO
+	LITr 00
+	ADD2k NIP2 SWP2
+	&loop
+		LDAk #00 SWP #02 SFT2 [ LIT2 &y $2 ] ADD2 .Screen/y DEO2
+		#0a .Screen/pixel DEO
+		INCr STHkr #00 EQU ,&end JCN
+		[ LIT2 &zoom $2 ] ADD2 GTH2k ,&loop JCN
+	&end
+	POP2 POP2
+	POPr
 
 JMP2r
 
