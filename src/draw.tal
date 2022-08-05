@@ -49,27 +49,21 @@ JMP2r
 
 @draw-win ( win* -- )
 
-	( get anchor )
-	LDA2k ,&x STR2 [ LIT2 &x $2 ] .Screen/x DEO2
-	INC2k INC2 LDA2 ,&y STR2 [ LIT2 &y $2 ] .Screen/y DEO2
+	DUP2
 
-	DUP2 #0004 ADD2
-	LDA2k ;draw-win-decor JSR2 INC2 INC2
-	( draw name )
-	#05 ;draw-chr/color STA
-	#20 ;draw-chr JSR2
-	( app/manifest ) LDA2k STH2k
-	( app/manifest/name ) LDA2 INC2 ;draw-text JSR2
-	#20 ;draw-chr JSR2
-	INC2 INC2
-	( file name )
-	#0a ;draw-chr/color STA
-	LDA2 ;draw-text JSR2
+	( header )
+	( x ) LDA2k DUP2 ,&x STR2 .Screen/x DEO2 INC2 INC2
+	( y ) LDA2k DUP2 ,&y STR2 .Screen/y DEO2 INC2 INC2
+	( size ) LDA2k ;draw-win-decor JSR2 INC2 INC2
+	( app ) LDA2k DUP2 ,&app STR2
+	( app/name ) LDA2 INC2 #05 ;draw-text-color JSR2 INC2 INC2
+	( space ) #20 ;draw-chr JSR2
+	( win/name ) LDA2 #0a ;draw-text-color JSR2
 
-	( on-draw )
-	,&x LDR2 #0008 ADD2 .Screen/x DEO2
-	,&y LDR2 #0012 ADD2 .Screen/y DEO2
-	STH2r INC2 INC2 LDA2 JMP2
+	( body )
+	( x ) [ LIT2 &x $2 ] #0008 ADD2 .Screen/x DEO2
+	( y ) [ LIT2 &y $2 ] #0012 ADD2 .Screen/y DEO2
+	( draw ) [ LIT2 &app $2 ] INC2 INC2 LDA2 JMP2
 
 JMP2r
 
@@ -619,6 +613,10 @@ JMP2r
 	[ LIT &color 03 ] .Screen/sprite DEO
 
 JMP2r
+
+@draw-text-color ( str* color -- )
+
+	;draw-chr/color STA
 
 @draw-text ( str* -- )
 

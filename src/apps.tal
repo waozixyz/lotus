@@ -665,7 +665,6 @@ JMP2r
 
 &press-key ( key -- )
 
-	BUGk
 	;play-note JSR2
 	;get-active-win JSR2 ;draw-win JSR2
 	#00 .Mouse/state DEO
@@ -896,6 +895,7 @@ JMP2r
 
 ( defaults )
 
+@void-draw ( win* -- ) POP2 JMP2r
 @void-mouse ( x* y* win* -- ) POP2 POP2 POP2 BRK
 @void-button ( button key win* -- ) POP2 POP2 BRK
 
