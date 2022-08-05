@@ -84,7 +84,7 @@ JMP2r
 		POP2 POP2 POP2 BRK
 		&on-click
 	DUP2 ,&win STR2
-	;rel-mouse JSR2 POP2
+	POP2
 	#03 SFT2 NIP ROT ROT #02 SFT2 NIP SWP
 
 	OVR #0f GTH ,&skip JCN
@@ -216,7 +216,7 @@ JMP2r
 	.Mouse/state DEI ,&on-click JCN
 		POP2 POP2 POP2 BRK
 		&on-click
-	;rel-mouse JSR2 POP2
+	POP2
 	#03 SFT2 NIP ROT ROT #03 SFT2 NIP SWP
 	OVR #07 GTH ,&skip JCN
 	DUP #07 GTH ,&no-paint JCN
@@ -588,7 +588,6 @@ JMP2r
 	.Mouse/state DEI ,&on-click JCN
 		POP2 POP2 POP2 BRK
 		&on-click
-	;rel-mouse JSR2
 	STH2
 	POP2
 	#03 SFT2
@@ -705,7 +704,7 @@ JMP2r
 	.Mouse/state DEI ,&on-click JCN
 		POP2 POP2 POP2 BRK
 		&on-click
-	;rel-mouse JSR2 POP2
+	POP2
 	( focus button )
 	#0018 SUB2 SWP2 #0030 SUB2 SWP2
 	( collision )
@@ -772,7 +771,7 @@ JMP2r
 	.Mouse/state DEI ,&on-click JCN
 		POP2 POP2 POP2 BRK
 		&on-click
-	;rel-mouse JSR2 POP2
+	POP2
 	( focus button )
 	#0010 SUB2 SWP2 #0030 SUB2 SWP2
 	( collision )
@@ -827,7 +826,7 @@ JMP2r
 	.Mouse/state DEI ,&on-click JCN
 		POP2 POP2 POP2 BRK
 		&on-click
-	;rel-mouse JSR2 POP2
+	POP2
 	( focus button )
 	#0020 SUB2 SWP2 #0030 SUB2 SWP2
 	( collision )
