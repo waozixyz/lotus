@@ -655,17 +655,6 @@ JMP2r
 
 JMP2r
 
-@play-note ( pitch -- )
-
-	;buf/app .Audio0/addr DEO2
-	#2777 .Audio0/adsr DEO2
-	[ LIT2 &length 0100 ] .Audio0/length DEO2
-	#ff .Audio0/volume DEO
-	( TODO: set octave )
-	#40 ADD BUGk .Audio0/pitch DEO
-
-JMP2r
-
 ( --MODALS----------------------------------------------------- )
 
 @form-manifest

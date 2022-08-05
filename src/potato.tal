@@ -391,63 +391,43 @@ JMP2r
 
 @open-as-data ( -- )
 
-	( TODO: create hex editor )
+	( TODO: )
 
 JMP2r
 
 @open-as-text ( -- )
 
-	;draw-item-text/sel LDA ;get-file JSR2
-
-	LDAk LIT '- EQU ,&invalid JCN
-	LDAk LIT '? EQU ,&invalid JCN
-
-	;open-text JSR2
-	;center-win JSR2
+	;open-text ,open-as JSR
 
 JMP2r
-	&invalid
-		#0005 ADD2 ;dict/open SWP2 ;add-err JSR2
-	JMP2r
 
 @open-as-pict ( -- )
 
-	;draw-item-text/sel LDA ;get-file JSR2
-
-	LDAk LIT '- EQU ,&invalid JCN
-	LDAk LIT '? EQU ,&invalid JCN
-
-	;open-pict JSR2
-	;center-win JSR2
+	;open-pict ,open-as JSR
 
 JMP2r
-	&invalid
-		#0005 ADD2 ;dict/open SWP2 ;add-err JSR2
-	JMP2r
 
 @open-as-font ( -- )
 
-	;draw-item-text/sel LDA ;get-file JSR2
-
-	LDAk LIT '- EQU ,&invalid JCN
-	LDAk LIT '? EQU ,&invalid JCN
-
-	;open-font JSR2
-	;center-win JSR2
+	;open-font ,open-as JSR
 
 JMP2r
-	&invalid
-		#0005 ADD2 ;dict/open SWP2 ;add-err JSR2
-	JMP2r
 
 @open-as-sound ( -- )
 
+	;open-sound ,open-as JSR
+
+JMP2r
+
+@open-as ( routine* -- )
+
+	,&routine STR2
 	;draw-item-text/sel LDA ;get-file JSR2
 
 	LDAk LIT '- EQU ,&invalid JCN
 	LDAk LIT '? EQU ,&invalid JCN
 
-	;open-sound JSR2
+	[ LIT2 &routine $2 ] JSR2
 	;center-win JSR2
 
 JMP2r
@@ -551,6 +531,18 @@ JMP2r
 	&fail POP2r #0005 ADD2 ;dict/rename SWP2 ;add-err JSR2 JMP2r
 
 ( etc )
+
+@play-note ( pitch -- )
+
+	( TODO: )
+	;buf/app .Audio0/addr DEO2
+	#2777 .Audio0/adsr DEO2
+	[ LIT2 &length 0100 ] .Audio0/length DEO2
+	#ff .Audio0/volume DEO
+	( TODO: set octave )
+	#40 ADD .Audio0/pitch DEO
+
+JMP2r
 
 @read-pict-size ( filename* -- size* )
 
