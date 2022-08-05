@@ -162,8 +162,7 @@ JMP2r
 	.Screen/x DEI2k STH2r SUB2 ROT DEO2
 	.Screen/y DEI2k #0004 ADD2 ROT DEO2
 
-	#0a ;draw-chr/color STA
-	;draw-str JSR2 POP2
+	#0a ;draw-text-color JSR2
 
 	( re-anchor )
 	[ LIT2 &x $2 ] .Screen/x DEO2
@@ -182,8 +181,7 @@ JMP2r
 	.Screen/x DEI2k STH2r SUB2 ROT DEO2
 	.Screen/y DEI2k #0004 ADD2 ROT DEO2
 
-	#0f ;draw-chr/color STA
-	;draw-str JSR2 POP2
+	#0f ;draw-text-color JSR2
 
 JMP2r
 
