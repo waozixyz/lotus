@@ -380,6 +380,8 @@ JMP2r
 
 @draw-knob ( x* y* value -- )
 
+	.Screen/x DEI2 ,&x STR2
+	.Screen/y DEI2 ,&y STR2
 	STH
 	OVR2 OVR2 .Screen/y DEO2 .Screen/x DEO2
 	( circle )
@@ -397,6 +399,10 @@ JMP2r
 	.Screen/y DEI2 #0010 SUB2 #00 #00 STHr ;knob-offsety ADD2 LDA ADD2 .Screen/y DEO2
 	;knob-icns #0020 ADD2 .Screen/addr DEO2
 	#0a .Screen/sprite DEO
+
+	[ LIT2 &x $2 ] #0010 ADD2 .Screen/x DEO2
+	[ LIT2 &y $2 ] .Screen/y DEO2
+
 
 JMP2r
 
@@ -457,6 +463,14 @@ JMP2r
 
 	.Screen/x DEI2k #0040 SUB2 ROT DEO2
 	.Screen/y DEI2k #0010 ADD2 ROT DEO2
+
+JMP2r
+
+@draw-flip ( bool -- )
+
+	#16 .Screen/auto DEO
+	#00 SWP #50 SFT2 ;flip-icns ADD2 .Screen/addr DEO2
+	#0e .Screen/sprite DEOk DEO
 
 JMP2r
 

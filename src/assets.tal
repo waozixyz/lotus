@@ -107,6 +107,17 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
 	000f 304f 5fbf bfbf bfbf bf5f 4f30 0f00
 	00ff 00ff ffff ffff ffff ffff ff00 ff00
 	00e0 18e4 f4fa fafa fafa faf4 e418 e000
+@flip-icns
+	( off )
+	3f40 8080 8080 809f
+	f804 0202 0202 02f2
+	bfbf bfbf 9f40 3f00
+	fafa fafa f204 f800
+	( on )
+	3f40 9fbf bfbf bf9f
+	f804 f2fa fafa faf2
+	8080 8080 8040 3f00
+	0202 0202 0204 f800
 @bigpixel-icn
 	7cfe fefe fefe 7c00
 	0000 0000 0000 0000

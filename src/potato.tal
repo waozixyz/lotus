@@ -348,7 +348,7 @@ JMP2r
 	[ LIT2 &length 0100 ] .Audio0/length DEO2
 	#ff .Audio0/volume DEO
 	( TODO: set octave )
-	#40 ADD .Audio0/pitch DEO
+	#40 ADD [ LIT &hit 00 ] BUGk #70 SFT ORA .Audio0/pitch DEO
 
 JMP2r
 

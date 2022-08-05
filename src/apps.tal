@@ -548,6 +548,8 @@ JMP2r
 		00 'h :app-play/notea "A $1
 		00 'u :app-play/noteas "A# $1
 		00 'j :app-play/noteb "B $1
+	01 "Mode $1
+		00 20 :app-play/toggle-loop "Hit/Loop $1
 	04 "View $1
 		10 00 :app-play/prev "Previous $1
 		20 00 :app-play/next "Next $1
@@ -576,6 +578,9 @@ JMP2r
 	OVR2 #0018 ADD2 OVR2 #07 ;draw-knob JSR2
 	OVR2 #0030 ADD2 OVR2 #06 ;draw-knob JSR2
 	OVR2 #0048 ADD2 OVR2 #0e ;draw-knob JSR2
+	( loop )
+	OVR2 #0060 ADD2 .Screen/x DEO2 DUP2 .Screen/y DEO2
+	;play-note/hit LDA ;draw-flip JSR2
 	( vol )
 	OVR2 #0078 ADD2 OVR2 #0f ;draw-knob JSR2
 	OVR2 #0090 ADD2 OVR2 #0f ;draw-knob JSR2
@@ -591,7 +596,7 @@ JMP2r
 	STH2
 	POP2
 	#03 SFT2
-	DUP2 #0008 GTH2 ,&no-oct JCN
+	DUP2 #0006 GTH2 ,&no-oct JCN
 		DUP2 ;&notes ADD2 LDA ;&press-key JSR2
 		&no-oct
 	POP2
@@ -635,6 +640,13 @@ JMP2r
 	INC
 		DUP ;draw-item-text/sel STA
 		;get-file JSR2 ;open-sound JSR2
+
+JMP2r
+
+&toggle-loop ( -- )
+
+	;play-note/hit LDA #00 EQU ;play-note/hit STA
+	;get-active-win JSR2 ;draw-win JSR2
 
 JMP2r
 
