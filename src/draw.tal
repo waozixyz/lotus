@@ -406,7 +406,7 @@ JMP2r
 	.Screen/y DEI2
 
 	#02 .Screen/auto DEO
-	OVR2 #0048 ADD2 .Screen/x DEO2
+	OVR2 #0040 ADD2 .Screen/x DEO2
 	;arrow-icns/v .Screen/addr DEO2
 	DUP2 .Screen/y DEO2
 	#0e .Screen/sprite DEO
@@ -426,8 +426,8 @@ JMP2r
 	DUP #04 EQU ;octave-icns/c ,&draw-key JSR
 	DUP #05 EQU ;octave-icns/a ,&draw-key JSR
 	DUP #07 EQU ;octave-icns/b ,&draw-key JSR
-	DUP #0a EQU ;octave-icns/b ,&draw-key JSR
-	#0c EQU ;octave-icns/c ,&draw-key JSR
+	DUP #09 EQU ;octave-icns/b ,&draw-key JSR
+	#0b EQU ;octave-icns/c ,&draw-key JSR
 	#00 ;octave-icns/d ,&draw-key JSR
 
 JMP2r
