@@ -5,8 +5,9 @@
 @draw-desktop ( -- )
 
 	;draw-wallpaper JSR2
-
 	;load-dir JSR2
+
+	( draw icons )
 	;get-rows JSR2 STH
 	LITr 00
 	;buf/dir
@@ -22,14 +23,14 @@
 	POP2r
 
 	( draw windows )
-	.length LDZ DUP #00 EQU ,&empty JCN #00
+	.length LDZ #00 EQUk ,&no-win JCN
 	&loop
 		DUP ;get-win JSR2 ;draw-win JSR2
 		INC GTHk ,&loop JCN
+	&no-win
 	POP2
 
 JMP2r
-	&empty POP JMP2r
 
 @draw-menu-bg ( -- )
 

@@ -56,11 +56,25 @@
 	;dict/home-ext ;set-dir JSR2
 	;untrap JSR2
 
-	;size-desktop-start BUG2
-
 BRK
 
 ( directory operations )
+
+@load-dir ( -- )
+
+	;dir .File/name DEO2
+	#0400 .File/length DEO2
+	;buf/dir
+		DUP2 .File/read DEO2
+	( remove linebreaks )
+	&w
+		LDAk #0a NEQ ,&no-lb JCN
+			STH2k #00 STH2r STA
+			&no-lb
+		INC2 LDAk ,&w JCN
+	POP2
+
+JMP2r
 
 @set-dir ( path* -- )
 

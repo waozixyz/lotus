@@ -278,7 +278,7 @@ JMP2r
 	.length LDZk INC SWP STZ
 	.length LDZ #01 SUB
 
-@sel-win ( id -- )
+@sel-win ( <id> -- )
 
 	DUP #ff EQU ;sel-desktop JCN2
 	DUP .length LDZ GTH ,&unchanged JCN
@@ -509,7 +509,8 @@ JMP2r
 	LITr 00
 	;buf/dir
 	&w
-		#0005 ADD2 DUP2 [ LIT2 &t $2 ] ;scmp JSR2 ,&found JCN
+		#0005 ADD2
+			DUP2 [ LIT2 &t $2 ] ;scmp JSR2 ,&found JCN
 		;scap JSR2
 		INCr
 		INC2 LDAk ,&w JCN
@@ -519,19 +520,3 @@ JMP2r
 
 JMP2r
 	&found POP2 STHr JMP2r
-
-@load-dir ( -- )
-
-	;dir .File/name DEO2
-	#0400 .File/length DEO2
-	;buf/dir
-		DUP2 .File/read DEO2
-	( remove linebreaks )
-	&w
-		LDAk #0a NEQ ,&no-lb JCN
-			STH2k #00 STH2r STA
-			&no-lb
-		INC2 LDAk ,&w JCN
-	POP2
-
-JMP2r

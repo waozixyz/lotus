@@ -232,7 +232,7 @@ JMP2r
 	[ LIT2 &manifest :manifest ]
 	&cat
 		menu-sel menu-def [ LIT &sel ff ] [ LIT &id $1 ] EQU [ JMP SWP POP ] ;draw-chr/color STA
-		INC2k ;draw-str JSR2 POP2 #20 ;draw-chr JSR2
+		INC2k ;draw-str JSR2 POP2 .Screen/x DEI2k #0008 ADD2 ROT DEO2
 		;skip-sub JSR2
 		,&id LDR INC ,&id STR
 		LDAk ,&cat JCN
