@@ -387,54 +387,6 @@ JMP2r
 JMP2r
 	&reselect ;sel-win JSR2 JMP2r
 
-( open file as )
-
-@open-as-data ( -- )
-
-	( TODO: )
-
-JMP2r
-
-@open-as-text ( -- )
-
-	;open-text ,open-as JSR
-
-JMP2r
-
-@open-as-pict ( -- )
-
-	;open-pict ,open-as JSR
-
-JMP2r
-
-@open-as-font ( -- )
-
-	;open-font ,open-as JSR
-
-JMP2r
-
-@open-as-sound ( -- )
-
-	;open-sound ,open-as JSR
-
-JMP2r
-
-@open-as ( routine* -- )
-
-	,&routine STR2
-	;draw-item-text/sel LDA ;get-file JSR2
-
-	LDAk LIT '- EQU ,&invalid JCN
-	LDAk LIT '? EQU ,&invalid JCN
-
-	[ LIT2 &routine $2 ] JSR2
-	;center-win JSR2
-
-JMP2r
-	&invalid
-		#0005 ADD2 ;dict/open SWP2 ;add-err JSR2
-	JMP2r
-
 ( path handlers )
 
 @make-dst ( file* -- abs* )
