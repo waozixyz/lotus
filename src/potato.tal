@@ -21,10 +21,6 @@
 
 %MOD { DIVk MUL SUB }
 %MOD2 { DIV2k MUL2 SUB2 }
-%LTS2 { #8000 STH2k ADD2 SWP2 STH2r ADD2 GTH2 }
-%GTS2 { #8000 STH2k ADD2 SWP2 STH2r ADD2 LTH2 }
-%POP? { JMP SWP POP }
-%POP2? { JMP SWP2 POP2 }
 
 ( debugger )
 
@@ -36,15 +32,12 @@
 
 |0000
 
-@size-system-start
-
-@cursor
-	&x $2 &y $2 &color $1
+@cursor &x $2 &y $2 &color $1
 @drag $1
 @length $1
 @dir $40
 
-|0100 ( -> )
+|0100 ( -> ) @size-system-start
 
 	( theme )
 	#500f .System/r DEO2
@@ -63,162 +56,9 @@
 	;dict/home-ext ;set-dir JSR2
 	;untrap JSR2
 
-BRK
-
-@exit ( -- )
-
-	#010f DEO
-
-JMP2r
-
-@untrap ( -- )
-
-	;on-mouse .Mouse/vector DEO2
-	;on-button .Controller/vector DEO2
-	;on-frame .Screen/vector DEO2
-	( release mouse ) #00 .Mouse/state DEO
-
-JMP2r
-
-@on-frame ( -> )
-
-	;update-clock JSR2
+	;size-desktop-start BUG2
 
 BRK
-
-@on-button ( -> )
-
-	.Controller/button DEI2 ;find-modkey JSR2
-	ORAk #00 EQU ,&skip JCN
-		( blocking ) JSR2 BRK
-		&skip
-	POP2
-
-	( send button to active win )
-	( win ) ;get-active-win JSR2
-	DUP2 #ffff EQU2 ,&no-win JCN
-		.Controller/button DEI2 SWP2 DUP2
-		( win/app ) #0006 ADD2 LDA2
-		( win/app/button ) #0006 ADD2 LDA2 JMP2
-	&no-win
-	POP2
-
-BRK
-
-@on-mouse ( -> )
-
-	.Mouse/y DEI2 #000c LTH2 ;trap-menu JCN2
-
-	#42 .Mouse/state DEI #00 NEQ SUB ;cursor-icn ;update-cursor JSR2
-
-	( handle drag )
-	.drag LDZ #ff NEQ ;on-drag JCN2
-	.Mouse/state DEI .Controller/button DEI #0102 EQU2 ;on-drag-start JCN2
-
-	( pick window )
-	.Mouse/state DEI #00 EQU ,&no-touch-win JCN
-		.Mouse/x DEI2 .Mouse/y DEI2 ;pick-win JSR2
-		DUP #ff EQU ,touch-desktop JCN
-		DUP ;sel-win JSR2
-		( pick dragbar )
-		;get-win JSR2
-		INC2 INC2 LDA2 .Mouse/y DEI2 SWP2 SUB2
-		#000a GTH2 ,&no-bar JCN
-			;set-drag JSR2
-			&no-bar
-		&no-touch-win
-
-	( send mouse to active win )
-	.Mouse/x DEI2 .Mouse/y DEI2 ;get-active-win JSR2
-		DUP2 #ffff EQU2 ,&skip JCN
-		ROT2k ROT2 ROT2 ;within-win JSR2 ,&send JCN
-	&skip
-
-	POP2 POP2 POP2
-
-BRK
-	&send
-		( win ) ;get-active-win JSR2
-		( win/app ) #0006 ADD2 LDA2
-		( win/app/mouse ) #0004 ADD2 LDA2 JMP2
-
-@touch-desktop ( -> )
-
-	.Mouse/x DEI2 .Mouse/y DEI2 ;pick-icon JSR2
-	.Mouse/state DEI #01 GTH ,&launch JCN
-	;sel-icon JSR2
-	;sel-desktop JSR2
-	#00 .Mouse/state DEO
-	POP
-
-BRK
-	&launch
-		;get-file JSR2 ;open-file JSR2
-		#00 .Mouse/state DEO
-		POP
-	BRK
-
-( drag )
-
-@on-drag ( -> )
-
-	.Mouse/state DEI #00 EQU ;on-drag-end JCN2
-
-	.drag LDZ ;get-win JSR2 STH2k
-
-	( clear )
-	DUP2 #40 ;draw-drag JSR2
-
-	( move window )
-	#0008 .Mouse/x DEI2 [ LIT2 &x $2 ] SUB2 STH2kr LDA2 ADD2
-		;clamp-win JSR2 STH2kr STA2
-	INC2r INC2r
-	#0018 .Mouse/y DEI2 [ LIT2 &y $2 ] SUB2 STH2kr LDA2 ADD2
-		;clamp-win JSR2
-		.Screen/height DEI2 #000a SUB2 LTH2k POP2?
-		STH2r STA2
-
-	( update )
-	.Mouse/x DEI2 .Mouse/y DEI2
-		;on-drag/y STA2 ;on-drag/x STA2
-
-	( draw )
-	#cf ;draw-drag JSR2
-
-BRK
-
-@clamp-win ( x* -- x* )
-
-	DUP2 ROT2 STH2k SUB2 #8000 GTH2 ,&gth JCN
-	POP2r
-
-JMP2r
-	&gth POP2 STH2r JMP2r
-
-@on-drag-end ( -> )
-
-	( clear )
-	.drag LDZ ;get-win JSR2 #40 ;draw-drag JSR2
-	#ff .drag STZ
-	;draw-desktop JSR2
-
-BRK
-
-@on-drag-start ( -> )
-
-	.Mouse/x DEI2 .Mouse/y DEI2 ;pick-win JSR2 DUP #ff EQU ,&no-win JCN
-		;sel-win JSR2 ;set-drag JSR2
-
-BRK
-	&no-win BRK
-
-@set-drag ( -- )
-
-	.length LDZ #01 SUB .drag STZ
-	.Mouse/x DEI2 ;on-drag/x STA2
-	.Mouse/y DEI2 ;on-drag/y STA2
-
-JMP2r
 
 ( directory operations )
 
@@ -269,123 +109,6 @@ JMP2r
 
 JMP2r
 	&busy POP2r NIP ;sel-win JSR2 ;center-win JSR2 POP2 JMP2r
-
-( open a file )
-
-@open-file ( file* -- )
-
-	DUP2 #ffff EQU2 ,&no-file JCN
-	LDAk LIT '- EQU ,open-folder JCN
-	DUP2 ;dict/icn-ext ;has-ext JSR2 ;open-pict JCN2
-	DUP2 ;dict/chr-ext ;has-ext JSR2 ;open-pict JCN2
-	DUP2 ;dict/uf2-ext ;has-ext JSR2 ;open-font JCN2
-	DUP2 ;dict/pcm-ext ;has-ext JSR2 ;open-sound JCN2
-	DUP2 ;dict/rom-ext ;has-ext JSR2 ;open-load JCN2
-	DUP2 #0005 ADD2 ;dict/theme-ext ;scmp JSR2 ,open-theme JCN
-	DUP2 #0005 ADD2 ;is-binary JSR2 ,open-hexa JCN
-	;open-text JSR2
-
-JMP2r
-	&no-file POP2 JMP2r
-
-@open-folder ( file* -- )
-
-	#0005 ADD2 ;push-dir JSR2
-
-JMP2r
-
-@open-hexa ( file* -- )
-
-	POP2
-
-JMP2r
-
-@open-text ( file* -- )
-
-	#0005 ADD2 ;app-text #3023 #001d #0034 ;add-win JSR2
-
-JMP2r
-
-@open-font ( file* -- )
-
-	#0005 ADD2 ;app-font #2222 #001d #0034 ;add-win JSR2
-	;center-win JSR2
-
-JMP2r
-
-@open-sound ( file* -- )
-
-	#0005 ADD2 ;app-play #220f #001d #0034 ;add-win JSR2
-	;center-win JSR2
-
-JMP2r
-
-@open-theme ( file* -- )
-
-	#0005 ADD2 ;make-src JSR2 ;load-theme JSR2
-	;open-tile JSR2
-	;open-color JSR2
-
-JMP2r
-
-@open-load ( file* -- )
-
-	#0005 ADD2 ;make-src JSR2 .File/name DEO2
-	#fe00 .File/length DEO2
-	;loader-rom #ffd5 #002a ;mcpy JSR2
-	;clear-screen JSR2
-	POP POP2r
-	#ffd5 JMP2
-
-JMP2r
-
-@open-pict ( file* -- )
-
-	#0005 ADD2
-	DUP2 ;read-pict-size JSR2
-	;app-pict SWP2 INC INC #0000 DUP2 ;add-win JSR2
-	;center-win JSR2
-
-JMP2r
-
-@open-about ( -- )
-
-	( unique )
-	;app-about ;find-win JSR2
-		DUP #ff NEQ ,&reselect JCN POP
-	;no-name ;app-about #1613 #0000 DUP2 ;add-win JSR2
-	;center-win JSR2
-
-JMP2r
-	&reselect ;sel-win JSR2 JMP2r
-
-@open-tile ( -- )
-
-	;patt-chr ;paint-patt/addr STA2
-	( unique )
-	;app-tile ;find-win JSR2
-		DUP #ff NEQ ,&reselect JCN POP
-	( create )
-	;no-name ;app-tile #0a0f
-	( y ) .Screen/height DEI2 #0088 SUB2
-	( x ) .Screen/width DEI2 #0060 SUB2
-		;add-win JSR2
-
-JMP2r
-	&reselect ;sel-win JSR2 JMP2r
-
-@open-color ( -- )
-
-	( unique )
-	;app-color ;find-win JSR2
-		DUP #ff NEQ ,&reselect JCN POP
-	;no-name ;app-color #0a0f
-	( y ) .Screen/height DEI2 #0088 SUB2
-	( x ) .Screen/width DEI2 #00c0 SUB2
-		;add-win JSR2
-
-JMP2r
-	&reselect ;sel-win JSR2 JMP2r
 
 ( path handlers )
 
@@ -481,6 +204,123 @@ JMP2r
 
 JMP2r
 	&fail POP2r #0005 ADD2 ;dict/rename SWP2 ;add-err JSR2 JMP2r
+
+( open a file )
+
+@open-file ( file* -- )
+
+	DUP2 #ffff EQU2 ,&no-file JCN
+	LDAk LIT '- EQU ,open-folder JCN
+	DUP2 ;dict/icn-ext ;has-ext JSR2 ;open-pict JCN2
+	DUP2 ;dict/chr-ext ;has-ext JSR2 ;open-pict JCN2
+	DUP2 ;dict/uf2-ext ;has-ext JSR2 ;open-font JCN2
+	DUP2 ;dict/pcm-ext ;has-ext JSR2 ;open-sound JCN2
+	DUP2 ;dict/rom-ext ;has-ext JSR2 ;open-load JCN2
+	DUP2 #0005 ADD2 ;dict/theme-ext ;scmp JSR2 ,open-theme JCN
+	DUP2 #0005 ADD2 ;is-binary JSR2 ,open-hexa JCN
+	;open-text JSR2
+
+JMP2r
+	&no-file POP2 JMP2r
+
+@open-folder ( file* -- )
+
+	#0005 ADD2 ;push-dir JSR2
+
+JMP2r
+
+@open-hexa ( file* -- )
+
+	( TODO: ) POP2
+
+JMP2r
+
+@open-text ( file* -- )
+
+	#0005 ADD2 ;app-text #3023 #001d #0034 ;add-win JSR2
+
+JMP2r
+
+@open-font ( file* -- )
+
+	#0005 ADD2 ;app-font #2222 #001d #0034 ;add-win JSR2
+	;center-win JSR2
+
+JMP2r
+
+@open-sound ( file* -- )
+
+	#0005 ADD2 ;app-play #220f #001d #0034 ;add-win JSR2
+	;center-win JSR2
+
+JMP2r
+
+@open-theme ( file* -- )
+
+	#0005 ADD2 ;make-src JSR2 ;load-theme JSR2
+	;open-tile JSR2
+	;open-color JSR2
+
+JMP2r
+
+@open-load ( file* -- )
+
+	#0005 ADD2 ;make-src JSR2 .File/name DEO2
+	#fe00 .File/length DEO2
+	;loader-rom #ffd5 #002a ;mcpy JSR2
+	;clear-screen JSR2
+	POP POP2r
+	#ffd5 JMP2
+
+JMP2r
+
+@open-pict ( file* -- )
+
+	#0005 ADD2
+	DUP2 ;read-pict-size JSR2
+	;app-pict SWP2 INC INC #0000 DUP2 ;add-win JSR2
+	;center-win JSR2
+
+JMP2r
+
+@open-about ( -- )
+
+	( unique )
+	;app-about ;find-win JSR2
+		DUP #ff NEQ ,&reselect JCN POP
+	;no-name ;app-about #1613 #0000 DUP2 ;add-win JSR2
+	;center-win JSR2
+
+JMP2r
+	&reselect ;sel-win JSR2 JMP2r
+
+@open-tile ( -- )
+
+	;patt-chr ;paint-patt/addr STA2
+	( unique )
+	;app-tile ;find-win JSR2
+		DUP #ff NEQ ,&reselect JCN POP
+	( create )
+	;no-name ;app-tile #0a0f
+	( y ) .Screen/height DEI2 #0088 SUB2
+	( x ) .Screen/width DEI2 #0060 SUB2
+		;add-win JSR2
+
+JMP2r
+	&reselect ;sel-win JSR2 JMP2r
+
+@open-color ( -- )
+
+	( unique )
+	;app-color ;find-win JSR2
+		DUP #ff NEQ ,&reselect JCN POP
+	;no-name ;app-color #0a0f
+	( y ) .Screen/height DEI2 #0088 SUB2
+	( x ) .Screen/width DEI2 #00c0 SUB2
+		;add-win JSR2
+
+JMP2r
+	&reselect ;sel-win JSR2 JMP2r
 
 ( etc )
 
@@ -684,6 +524,7 @@ JMP2r
 
 ~src/draw.tal
 ~src/manifest.tal
+
 @size-system-end
 
 @size-desktop-start
@@ -714,3 +555,5 @@ JMP2r
 	&page $100
 	&dir $400
 	&app
+
+@mem

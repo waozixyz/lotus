@@ -5,7 +5,22 @@
 @draw-desktop ( -- )
 
 	;draw-wallpaper JSR2
-	;draw-home JSR2
+
+	;load-dir JSR2
+	;get-rows JSR2 STH
+	LITr 00
+	;buf/dir
+	&w
+		#00 STHk2r SWP DIV #00a0 MUL2 #0010 ADD2 .Screen/x DEO2
+		#00 STHk2r SWP MOD #0018 MUL2 #0018 ADD2 .Screen/y DEO2
+		DUP2 ;draw-item-icon JSR2
+		DUP2 STHkr ;draw-item-text JSR2
+		;scap JSR2
+		INCr
+		INC2 LDAk ,&w JCN
+	POP2
+	POP2r
+
 	( draw windows )
 	.length LDZ DUP #00 EQU ,&empty JCN #00
 	&loop
@@ -252,6 +267,70 @@ JMP2r
 
 JMP2r
 
+@draw-icon-size ( size* name* icon* -- )
+
+	;draw-icon JSR2
+	.Screen/y DEI2k #0014 SUB2 ROT DEO2
+	.Screen/x DEI2k STH2k #0020 ADD2 ROT DEO2
+	[ LIT &c1 0a ] ;draw-chr/color STA
+	;draw-text JSR2
+	STH2r #0020 ADD2 .Screen/x DEO2
+	.Screen/y DEI2k #0009 ADD2 ROT DEO2
+	[ LIT &c2 05 ] ;draw-chr/color STA
+	;draw-dec JSR2
+	#20 ;draw-chr JSR2
+	;dict/bytes ;draw-text JSR2
+
+JMP2r
+
+@draw-item-icon ( ptr* -- ptr* )
+
+	LDAk LIT '- EQU ,&folder JCN
+	LDAk LIT '? EQU ,&unknown JCN
+	DUP2 #0005 ADD2 LDA LIT '. EQU ,&unknown JCN
+	DUP2 #0005 ADD2 ;dict/rom-ext ;has-ext JSR2 ,&rom JCN
+	DUP2 #0005 ADD2 ;dict/chr-ext ;has-ext JSR2 ,&picture JCN
+	DUP2 #0005 ADD2 ;dict/icn-ext ;has-ext JSR2 ,&picture JCN
+	DUP2 #0005 ADD2 ;dict/pcm-ext ;has-ext JSR2 ,&sound JCN
+	DUP2 #0005 ADD2 ;dict/uf2-ext ;has-ext JSR2 ,&font JCN
+	POP2 ;icons/text ;draw-icon JSR2
+
+JMP2r
+	&folder POP2 ;icons/folder ;draw-icon JSR2 JMP2r
+	&unknown POP2 ;icons/unknown ;draw-icon JSR2 JMP2r
+	&picture POP2 ;icons/picture ;draw-icon JSR2 JMP2r
+	&rom POP2 ;icons/application ;draw-icon JSR2 JMP2r
+	&sound POP2 ;icons/sound ;draw-icon JSR2 JMP2r
+	&font POP2 ;icons/font ;draw-icon JSR2 JMP2r
+
+@draw-item-text ( ptr* id -- ptr* )
+
+	[ LIT &sel 00 ] EQU #09 MUL INC INC ;draw-chr/color STA
+
+	LDAk LIT '- EQU ;&no-size JCN2
+	LDAk LIT '? EQU ;&no-size JCN2
+
+	.Screen/x DEI2k #0020 ADD2 STH2k ROT DEO2
+	.Screen/y DEI2k #0014 SUB2 ROT DEO2
+
+	#0005 ADD2 ;draw-text JSR2
+	STH2r .Screen/x DEO2
+	.Screen/y DEI2k #0009 ADD2 ROT DEO2
+
+	#01 ;draw-chr/color STA
+	DUP2 ;&buf #0004 ;mcpy JSR2
+	;&buf ;shex JSR2 ;draw-dec JSR2
+	#20 ;draw-chr JSR2
+	;dict/bytes ;draw-text JSR2
+
+JMP2r
+	&buf $5
+	&no-size
+		.Screen/y DEI2k #0010 SUB2 ROT DEO2
+		.Screen/x DEI2k #0020 ADD2 ROT DEO2
+		#0005 ADD2 ;draw-text JSR2
+	JMP2r
+
 @draw-swatches ( -- )
 
 	#05 .Screen/auto DEO
@@ -391,7 +470,7 @@ JMP2r
 	#00
 	&loop
 		DUP STHkr LTH STH
-		;vert-icn ;check-icn STHr POP2? .Screen/addr DEO2
+		;vert-icn ;check-icn STHr [ JMP SWP2 POP2 ] .Screen/addr DEO2
 		.Screen/x DEI2k INC2 INC2 ROT DEO2
 		#0a .Screen/sprite DEO
 		INC GTHk ,&loop JCN
@@ -450,8 +529,8 @@ JMP2r
 
 	DUP2 ;get-ext JSR2 ;dict/chr-ext ;scmp JSR2 STH
 	( toggle 1-bit/2-bit )
-	#0010 #0008 STHkr POP2? .File/length DEO2
-	[ LIT &2bit 81 ] [ LIT &1bit 0e ] STHr POP? ,&color STR
+	#0010 #0008 STHkr [ JMP SWP2 POP2 ] .File/length DEO2
+	[ LIT &2bit 81 ] [ LIT &1bit 0e ] STHr [ JMP SWP POP ] ,&color STR
 	DUP2 .File/name DEO2
 		;read-pict-size JSR2
 	,&height STR ,&width STR

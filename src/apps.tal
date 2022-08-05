@@ -17,12 +17,12 @@
 
 &on-draw ( win* -- )
 
-	#40 #0000 DUP2 ;buf/dir SUB2 #0100 SUB2 SUB2 #0400 DIV2 NIP ;draw-progbar JSR2
+	#40 #0000 DUP2 ;mem SUB2 #0100 SUB2 SUB2 #0400 DIV2 NIP ;draw-progbar JSR2
 
 	DUP2
 	LDA2k #0008 ADD2 .Screen/x DEO2 POP2
 	.Screen/y DEI2k #000c ADD2 ROT DEO2
-	;buf/dir ;draw-dec JSR2
+	;mem ;draw-dec JSR2
 	LIT '/ ;draw-chr JSR2
 	;&full ;draw-text JSR2
 	#20 ;draw-chr JSR2
@@ -397,7 +397,7 @@ JMP2r
 
 &invert ( -- )
 
-	#0e0b ;draw-pict/1bit LDA #0e NEQ POP? ;draw-pict/1bit STA
+	#0e0b ;draw-pict/1bit LDA #0e NEQ [ JMP SWP POP ] ;draw-pict/1bit STA
 
 	;get-active-win JSR2
 		DUP2 ;set-anchor-body JSR2 POP2
@@ -526,7 +526,6 @@ JMP2r
 		;get-file JSR2 ;open-font JSR2
 
 JMP2r
-
 
 ( ------------------------------------------------------------- )
 

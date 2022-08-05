@@ -57,6 +57,8 @@ Since this is designed to be used principally on a handheld devices without a wi
 - Swatch should show icon over selection
 - Catch maximum number of windows
 - Windows names shouldn't leave window bar bounds
+- Throw error when dir is longer than $400
+- Window resize
 
 ## Support
 
