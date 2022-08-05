@@ -421,23 +421,19 @@ JMP2r
 	.Screen/x DEO2
 	#25 .Screen/auto DEO
 	[ LIT &last ff ]
-	DUP #00 EQU ;octave-icns/a ,draw-key JSR
-	DUP #02 EQU ;octave-icns/b ,draw-key JSR
-	DUP #04 EQU ;octave-icns/c ,draw-key JSR
-	DUP #05 EQU ;octave-icns/a ,draw-key JSR
-	DUP #07 EQU ;octave-icns/b ,draw-key JSR
-	DUP #09 EQU ;octave-icns/b ,draw-key JSR
-	#0b EQU ;octave-icns/c ,draw-key JSR
-	#00 ;octave-icns/d ,draw-key JSR
+	DUP #00 EQU ;octave-icns/a ,&draw-key JSR
+	DUP #02 EQU ;octave-icns/b ,&draw-key JSR
+	DUP #04 EQU ;octave-icns/c ,&draw-key JSR
+	DUP #05 EQU ;octave-icns/a ,&draw-key JSR
+	DUP #07 EQU ;octave-icns/b ,&draw-key JSR
+	DUP #0a EQU ;octave-icns/b ,&draw-key JSR
+	#0c EQU ;octave-icns/c ,&draw-key JSR
+	#00 ;octave-icns/d ,&draw-key JSR
 
 JMP2r
-
-@draw-key ( color addr* -- )
-
-	.Screen/addr DEO2
-	#0b ADD .Screen/sprite DEO
-
-JMP2r
+	&draw-key ( color addr* -- )
+		.Screen/addr DEO2 #03 MUL #0b SWP SUB .Screen/sprite DEO
+	JMP2r
 
 @draw-slider ( value name* -- )
 

@@ -340,6 +340,8 @@ JMP2r
 
 @play-note ( pitch -- )
 
+	( store last key pressed )
+	DUP #0d MOD ;draw-octave/last STA
 	( TODO: )
 	;buf/app .Audio0/addr DEO2
 	#2777 .Audio0/adsr DEO2
