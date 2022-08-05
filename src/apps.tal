@@ -906,7 +906,7 @@ JMP2r
 
 ( defaults )
 
-@void-init ( win* -- ) POP2 JMP2r
+@void-init ( win* -- ) POP2 #000a BUG2 JMP2r
 @void-draw ( win* -- ) POP2 JMP2r
 @void-mouse ( x* y* win* -- ) POP2 POP2 POP2 BRK
 @void-button ( button key win* -- ) POP2 POP2 BRK

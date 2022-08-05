@@ -63,7 +63,7 @@ JMP2r
 	( body )
 	( x ) [ LIT2 &x $2 ] #0008 ADD2 .Screen/x DEO2
 	( y ) [ LIT2 &y $2 ] #0012 ADD2 .Screen/y DEO2
-	( win/draw ) [ LIT2 &app $2 ] #0004 ADD2 LDA2 JMP2
+	( app/on-draw ) [ LIT2 &app $2 ] #0004 ADD2 LDA2 JMP2
 
 JMP2r
 

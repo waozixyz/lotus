@@ -61,7 +61,7 @@ BRK
 	DUP2 #ffff EQU2 ,&no-win JCN
 		.Controller/button DEI2 SWP2 DUP2
 		( win/app ) #0006 ADD2 LDA2
-		( win/app/button ) #0008 ADD2 LDA2 JMP2
+		( win/app/on-button ) #0008 ADD2 LDA2 JMP2
 	&no-win
 	POP2
 
@@ -103,7 +103,7 @@ BRK
 		;rel-mouse JSR2
 		( win ) ;get-active-win JSR2
 		( win/app ) #0006 ADD2 LDA2
-		( win/app/mouse ) #0006 ADD2 LDA2 JMP2
+		( win/app/on-mouse ) #0006 ADD2 LDA2 JMP2
 
 @touch-desktop ( -> )
 
@@ -276,6 +276,12 @@ JMP2r
 	STH2kr STA2 INCr INCr
 	STH2kr STA2 INCr INCr
 	STH2r STA2
+
+	( init vector )
+	.length LDZ ;get-win JSR2
+		( win/app ) DUP2 #0006 ADD2 LDA2
+		( win/app/on-init ) INC2 INC2 LDA2 JSR2
+
 	.length LDZk INC SWP STZ
 	.length LDZ #01 SUB
 
