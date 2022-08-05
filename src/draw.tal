@@ -183,7 +183,7 @@ JMP2r
 	( button center )
 	#31 SFT #00 SWP STH2
 	( string center )
-	DUP2 ;slen JSR2 #30 SFT #01 SFT #0008 ADD2 STH2 ADD2r
+	DUP2 ;slen JSR2 INC2 [ #30 SFT #01 SFT ] STH2 ADD2r
 
 	.Screen/x DEI2k STH2r SUB2 ROT DEO2
 	.Screen/y DEI2k #0004 ADD2 ROT DEO2
@@ -563,7 +563,7 @@ JMP2r
 
 JMP2r
 	&parse
-		DIV2k DUP DUP [ LIT &z $1 ] EQU ,&skip JCN
+		DIV2k DUPk [ LIT &z $1 ] EQU ,&skip JCN
 		DUP #30 ADD ;draw-chr JSR2 #ff ,&z STR
 		&skip POP MUL2 SUB2
 	JMP2r
