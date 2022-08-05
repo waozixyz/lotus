@@ -35,6 +35,7 @@
 @cursor &x $2 &y $2 &color $1
 @drag $1
 @length $1
+@lock $2
 @dir $40
 
 |0100 ( -> ) @size-system-start
@@ -57,6 +58,8 @@
 	;untrap JSR2
 
 BRK
+
+( memory operations )
 
 ( directory operations )
 

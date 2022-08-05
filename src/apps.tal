@@ -11,6 +11,7 @@
 
 @app-about
 	:about-manifest
+	:void-init
 	:&on-draw
 	:void-mouse
 	:void-button
@@ -74,6 +75,7 @@ JMP2r
 
 @app-color
 	:color-manifest
+	:void-init
 	:&on-draw
 	:&on-mouse
 	:void-button
@@ -173,6 +175,7 @@ JMP2r
 
 @app-tile
 	:tile-manifest
+	:void-init
 	:&on-draw
 	:&on-mouse
 	:void-button
@@ -341,6 +344,7 @@ JMP2r
 
 @app-text
 	:text-manifest
+	:void-init
 	:&on-draw
 	:void-mouse
 	:void-button
@@ -380,6 +384,7 @@ JMP2r
 
 @app-pict
 	:pict-manifest
+	:void-init
 	:&on-draw
 	:void-mouse
 	:void-button
@@ -458,6 +463,7 @@ JMP2r
 
 @app-font
 	:font-manifest
+	:void-init
 	:&on-draw
 	:void-mouse
 	:void-button
@@ -559,6 +565,7 @@ JMP2r
 
 @app-play
 	:play-manifest
+	:void-init
 	:&on-draw
 	:&on-mouse
 	:void-button
@@ -698,6 +705,7 @@ JMP2r
 
 @app-form
 	:form-manifest
+	:void-init
 	:&on-draw
 	:&on-mouse
 	:&on-button
@@ -764,6 +772,7 @@ BRK
 
 @app-option
 	:option-manifest
+	:void-init
 	:&on-draw
 	:&on-mouse
 	:&on-button
@@ -816,6 +825,7 @@ BRK
 
 @app-error
 	:error-manifest
+	:void-init
 	:&on-draw
 	:&on-mouse
 	:&on-button
@@ -896,6 +906,7 @@ JMP2r
 
 ( defaults )
 
+@void-init ( win* -- ) POP2 JMP2r
 @void-draw ( win* -- ) POP2 JMP2r
 @void-mouse ( x* y* win* -- ) POP2 POP2 POP2 BRK
 @void-button ( button key win* -- ) POP2 POP2 BRK
