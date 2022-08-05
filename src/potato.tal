@@ -473,7 +473,7 @@ JMP2r
 
 @file-validate ( -- file* )
 
-	;draw-item-text/sel LDA ;get-file JSR2
+	;get-sel-file JSR2
 		DUP2 #ffff EQU2 ,&fail JCN
 		LDAk LIT '- EQU ,&fail JCN
 		LDAk LIT '? EQU ,&fail JCN
