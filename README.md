@@ -46,8 +46,6 @@ Since this is designed to be used principally on a handheld devices without a wi
 - Basic text viewer/editor?
     - Scrollbar
 - Clock widget
-- Wallpaper application?
-    - Select `.paper` image
 - Hex editor
 - Desktop
     - Display current location

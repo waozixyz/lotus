@@ -340,15 +340,17 @@ JMP2r
 
 @play-note ( pitch -- )
 
+	( TODO: )
+	#2777 .Audio0/adsr DEO2
+	#ff .Audio0/volume DEO
+
 	( store last key pressed )
 	DUP #0d MOD ;draw-octave/last STA
-	( TODO: )
-	;buf/app .Audio0/addr DEO2
-	#2777 .Audio0/adsr DEO2
-	[ LIT2 &length 0100 ] .Audio0/length DEO2
-	#ff .Audio0/volume DEO
+
 	( TODO: set octave )
-	#40 ADD [ LIT &hit 00 ] #70 SFT ORA .Audio0/pitch DEO
+	( octave ) #40 ADD
+	( hit/loop ) [ LIT &hit 00 ] #70 SFT ORA
+		.Audio0/pitch DEO
 
 JMP2r
 
@@ -570,6 +572,5 @@ JMP2r
 	&form $40 ( used by app-form )
 	&page $100
 	&dir $400
-	&app
 
 @mem
