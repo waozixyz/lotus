@@ -284,7 +284,7 @@ JMP2r
 
 JMP2r
 
-@draw-item-icon ( ptr* -- ptr* )
+@draw-item-icon ( file* -- file* )
 
 	LDAk LIT '- EQU ,&folder JCN
 	LDAk LIT '? EQU ,&unknown JCN
@@ -304,7 +304,7 @@ JMP2r
 	&sound POP2 ;icons/sound ;draw-icon JSR2 JMP2r
 	&font POP2 ;icons/font ;draw-icon JSR2 JMP2r
 
-@draw-item-text ( ptr* id -- ptr* )
+@draw-item-text ( file* id -- file* )
 
 	[ LIT &sel 00 ] EQU #09 MUL INC INC ;draw-chr/color STA
 
@@ -559,16 +559,13 @@ JMP2r
 	#03e8 ,&parse JSR
 	#0064 ,&parse JSR
 	#000a ,&parse JSR
-	#01 ,&z STR NIP
-	&emit
-		DUP [ LIT &z $1 ] EQU ,&skip JCN
-		#ff ,&z STR DUP #30 ADD ;draw-chr JSR2
-		&skip
-	POP
+	NIP #30 ADD ;draw-chr JSR2
 
 JMP2r
 	&parse
-		DIV2k DUP ,&emit JSR MUL2 SUB2
+		DIV2k DUP DUP [ LIT &z $1 ] EQU ,&skip JCN
+		DUP #30 ADD ;draw-chr JSR2 #ff ,&z STR
+		&skip POP MUL2 SUB2
 	JMP2r
 
 @draw-textarea ( str* w h -- )
