@@ -42,6 +42,7 @@
 	&x $2 &y $2 &color $1
 @drag $1
 @length $1
+@dir $40
 
 |0100 ( -> )
 
@@ -223,28 +224,27 @@ JMP2r
 
 @set-dir ( path* -- )
 
-	;validate-dir JSR2
-
-	;buf/loc ;scpy JSR2
+	,validate-dir JSR
+	;dir ;scpy JSR2
 	#00 ;sel-icon JSR2
 
 JMP2r
 
 @push-dir ( path* -- )
 
-	;validate-dir JSR2
+	,validate-dir JSR
 	DUP2 ;dict/parent-ext ;scmp JSR2 ,pop-dir JCN
-	LIT '/ ;buf/loc ;sput JSR2
-	;buf/loc ;scat JSR2
+	LIT '/ ;dir STH2k ;sput JSR2
+	STH2r ;scat JSR2
 	#00 ;sel-icon JSR2
 
 JMP2r
 
-@pop-dir ( -- )
+@pop-dir ( path* -- )
 
-	;validate-dir JSR2
-	;buf/loc ;dict/home-ext ;scmp JSR2 ,&skip JCN
-	;buf/loc ;buf/loc ;scap JSR2
+	,validate-dir JSR
+	;dir ;dict/home-ext ;scmp JSR2 ,&skip JCN
+	;dir DUP2 ;scap JSR2
 	&loop
 		LDAk LIT '/ EQU ,&found JCN
 		#0001 SUB2 LTH2k ,&loop JCN
@@ -261,7 +261,7 @@ JMP2r
 
 	.length LDZ #00 EQUk ,&skip JCN
 	&loop
-		DUP ;get-win JSR2
+		( win ) DUP ;get-win JSR2
 		( win/name ) #0008 ADD2 LDA2 ;no-name NEQ2 ,&busy JCN
 		INC GTHk ,&loop JCN
 	&skip
@@ -279,7 +279,7 @@ JMP2r
 	DUP2 ;dict/icn-ext ;has-ext JSR2 ;open-pict JCN2
 	DUP2 ;dict/chr-ext ;has-ext JSR2 ;open-pict JCN2
 	DUP2 ;dict/uf2-ext ;has-ext JSR2 ;open-font JCN2
-	DUP2 ;dict/pcm-ext ;has-ext JSR2 ;open-sample JCN2
+	DUP2 ;dict/pcm-ext ;has-ext JSR2 ;open-sound JCN2
 	DUP2 ;dict/rom-ext ;has-ext JSR2 ;open-load JCN2
 	DUP2 #0005 ADD2 ;dict/theme-ext ;scmp JSR2 ,open-theme JCN
 	DUP2 #0005 ADD2 ;is-binary JSR2 ,open-hexa JCN
@@ -313,7 +313,7 @@ JMP2r
 
 JMP2r
 
-@open-sample ( file* -- )
+@open-sound ( file* -- )
 
 	#0005 ADD2 ;app-play #220f #001d #0034 ;add-win JSR2
 	;center-win JSR2
@@ -345,52 +345,6 @@ JMP2r
 	DUP2 ;read-pict-size JSR2
 	;app-pict SWP2 INC INC #0000 DUP2 ;add-win JSR2
 	;center-win JSR2
-
-JMP2r
-
-@open-as-data ( -- )
-
-	( TODO: create hex editor )
-
-JMP2r
-
-@open-as-text ( -- )
-
-	;draw-item-text/sel LDA ;get-file JSR2 ;open-text JSR2
-
-JMP2r
-
-@open-as-pict ( -- )
-
-	;draw-item-text/sel LDA ;get-file JSR2
-
-	LDAk LIT '- EQU ,&invalid JCN
-	LDAk LIT '? EQU ,&invalid JCN
-
-	;open-pict JSR2
-	;center-win JSR2
-
-JMP2r
-	&invalid
-		#0005 ADD2 ;dict/open SWP2 ;add-err JSR2
-	JMP2r
-
-@open-as-font ( -- )
-
-	;draw-item-text/sel LDA ;get-file JSR2
-
-	LDAk LIT '- EQU ,&invalid JCN
-	LDAk LIT '? EQU ,&invalid JCN
-
-	;open-font JSR2
-	;center-win JSR2
-
-JMP2r
-	&invalid
-		#0005 ADD2 ;dict/open SWP2 ;add-err JSR2
-	JMP2r
-
-@open-as-sound ( -- )
 
 JMP2r
 
@@ -433,6 +387,76 @@ JMP2r
 JMP2r
 	&reselect ;sel-win JSR2 JMP2r
 
+( open file as )
+
+@open-as-data ( -- )
+
+	( TODO: create hex editor )
+
+JMP2r
+
+@open-as-text ( -- )
+
+	;draw-item-text/sel LDA ;get-file JSR2
+
+	LDAk LIT '- EQU ,&invalid JCN
+	LDAk LIT '? EQU ,&invalid JCN
+
+	;open-text JSR2
+	;center-win JSR2
+
+JMP2r
+	&invalid
+		#0005 ADD2 ;dict/open SWP2 ;add-err JSR2
+	JMP2r
+
+@open-as-pict ( -- )
+
+	;draw-item-text/sel LDA ;get-file JSR2
+
+	LDAk LIT '- EQU ,&invalid JCN
+	LDAk LIT '? EQU ,&invalid JCN
+
+	;open-pict JSR2
+	;center-win JSR2
+
+JMP2r
+	&invalid
+		#0005 ADD2 ;dict/open SWP2 ;add-err JSR2
+	JMP2r
+
+@open-as-font ( -- )
+
+	;draw-item-text/sel LDA ;get-file JSR2
+
+	LDAk LIT '- EQU ,&invalid JCN
+	LDAk LIT '? EQU ,&invalid JCN
+
+	;open-font JSR2
+	;center-win JSR2
+
+JMP2r
+	&invalid
+		#0005 ADD2 ;dict/open SWP2 ;add-err JSR2
+	JMP2r
+
+@open-as-sound ( -- )
+
+	;draw-item-text/sel LDA ;get-file JSR2
+
+	LDAk LIT '- EQU ,&invalid JCN
+	LDAk LIT '? EQU ,&invalid JCN
+
+	;open-sound JSR2
+	;center-win JSR2
+
+JMP2r
+	&invalid
+		#0005 ADD2 ;dict/open SWP2 ;add-err JSR2
+	JMP2r
+
+( path handlers )
+
 @make-dst ( file* -- abs* )
 
 	;buf/dst ,make-path JSR
@@ -446,20 +470,10 @@ JMP2r
 @make-path ( file* -- abs* )
 
 	STH2k #0040 ;mclr JSR2
-	;buf/loc STH2kr ;scat JSR2
+	;dir STH2kr ;scat JSR2
 	LIT '/ STH2kr ;sput JSR2
 	STH2kr ;scat JSR2
 	STH2r
-
-JMP2r
-
-@read-pict-size ( filename* -- size* )
-
-	;scap JSR2 #0009 SUB2 ;read-size JSR2
-
-	ORAk ,&continue JCN
-		POP2 #1010
-		&continue
 
 JMP2r
 
@@ -538,6 +552,25 @@ JMP2r
 
 ( etc )
 
+@read-pict-size ( filename* -- size* )
+
+	;scap JSR2 #0009 SUB2 ,read-size JSR
+
+	ORAk ,&continue JCN
+		POP2 #1010
+		&continue
+
+JMP2r
+
+@read-size ( 00x00* -- w h )
+
+	DUP2 ;sbyte JSR2 ,&w STR
+	INC2 INC2 LDAk LIT 'x NEQ ,&cancel JCN
+	INC2 ;sbyte JSR2 [ LIT &w $1 ] SWP
+
+JMP2r
+	&cancel POP2 #0000 JMP2r
+
 @is-binary ( file* -- flag )
 
 	.File/name DEO2
@@ -592,15 +625,6 @@ JMP2r
 	POP2 POP2
 
 JMP2r
-
-@read-size ( 00x00* -- w h )
-
-	DUP2 ,sbyte JSR ,&w STR
-	INC2 INC2 LDAk LIT 'x NEQ ,&cancel JCN
-	INC2 ,sbyte JSR [ LIT &w $1 ] SWP
-
-JMP2r
-	&cancel POP2 #0000 JMP2r
 
 @sbyte ( str* -- byte )
 
@@ -740,7 +764,6 @@ JMP2r
 	0a buf* )
 
 @buf
-	&loc '. $3f
 	&src $40 ( used by make-src )
 	&dst $40 ( used by make-dst )
 	&form $40 ( used by app-form )

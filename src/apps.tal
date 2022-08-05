@@ -567,6 +567,7 @@ JMP2r
 	( win/name ) #0008 ADD2 LDA2 ;make-src JSR2 .File/name DEO2
 	#8000 .File/length DEO2
 	;buf/app .File/read DEO2
+	.File/success DEI2 ;play-note/length STA2
 	;buf/app .File/success DEI2 [ LIT2 &zoom 0001 ] ;draw-waveform JSR2
 	;draw-octave JSR2
 	.Screen/x DEI2 #0020 ADD2
@@ -598,7 +599,7 @@ JMP2r
 	;close-win JSR2
 	#01 SUB
 		DUP ;draw-item-text/sel STA
-		;get-file JSR2 ;open-sample JSR2
+		;get-file JSR2 ;open-sound JSR2
 
 JMP2r
 
@@ -617,7 +618,7 @@ JMP2r
 	;close-win JSR2
 	INC
 		DUP ;draw-item-text/sel STA
-		;get-file JSR2 ;open-sample JSR2
+		;get-file JSR2 ;open-sound JSR2
 
 JMP2r
 
@@ -658,7 +659,7 @@ JMP2r
 
 	;buf/app .Audio0/addr DEO2
 	#2777 .Audio0/adsr DEO2
-	#0100 .Audio0/length DEO2
+	[ LIT2 &length 0100 ] .Audio0/length DEO2
 	#ff .Audio0/volume DEO
 	( TODO: set octave )
 	#40 ADD BUGk .Audio0/pitch DEO
