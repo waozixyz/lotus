@@ -143,12 +143,14 @@ JMP2r
 
 @draw-memory ( -- )
 
+	#01 .Screen/auto DEO
 	.Screen/x DEI2 ,&x STR2
 	;vert1-icn .Screen/addr DEO2
-	#ff00
+	#8000
 	&loop
-		#00 OVR [ LIT2 &x $2 ] ADD2 .Screen/x DEO2
-		#00 OVR #80 SFT2 ;mem-type JSR2 #05 MUL .Screen/sprite DEO
+		#00 OVR #10 SFT2 [ LIT2 &x $2 ] ADD2 .Screen/x DEO2
+		#00 OVR #90 SFT2 ;mem-type JSR2 #00 SWP #40 SFT2 ;prog-chrs ADD2 .Screen/addr DEO2
+		#81 .Screen/sprite DEO
 		INC GTHk ,&loop JCN
 	POP2
 

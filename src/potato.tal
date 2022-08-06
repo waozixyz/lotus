@@ -61,30 +61,39 @@
 	;dict/home-ext ;set-dir JSR2
 	;untrap JSR2
 
+	( auto-start with about )
+	;no-name ;app-about #2213 #0120 #0060 ;add-win JSR2
+
 BRK
 
 ( memory operations )
 
-@mem-req ( len* -- <addr*> )
+@mem-req ( len* -- <ptr*> )
 
-	( TODO: check for space )
-	.bounds LDZ2 ADD2 .bounds STZ2
-	;mem
+	( ptr ) ;mem .bounds LDZ2 ADD2 BUG2k
+	( update ) SWP2 .bounds LDZ2 ADD2 .bounds STZ2
+
+JMP2r
+
+@mem-rel ( ptr* len* -- )
+
+	( update bound )
+	.bounds LDZ2 OVR2 SUB2 .bounds STZ2
+
+	BUG2 BUG2
 
 JMP2r
 
 @mem-type ( addr* -- type )
 
 	DUP2 ;mem LTH2 ,&static JCN
-	DUP2 ;mem .bounds LDZ2 ADD2 LTH2 ,&dynamic JCN
-
-	.length LDZ #00 EQU ,&free JCN
-	POP2 #03
+	( DUP2 ;mem .bounds LDZ2 ADD2 LTH2 ,&dynamic JCN )
+	( free ) POP2 #02
 
 JMP2r
-	&static POP2 #02 JMP2r
+	&static POP2 #00 JMP2r
 	&dynamic POP2 #01 JMP2r
-	&free POP2 #01 JMP2r
+	&selected POP2 #02 JMP2r
 
 ( directory operations )
 

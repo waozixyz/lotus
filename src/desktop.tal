@@ -306,8 +306,13 @@ JMP2r
 @close-win ( -- )
 
 	.length LDZ ,&continue JCN
-		JMP2r
+		( nothing to close ) JMP2r
 		&continue
+
+	;get-active-win JSR2
+		( win/mem-ptr ) #000a ADD2 LDA2k SWP2
+		( win/mem-len ) INC2 INC2 LDA2 ;mem-rel JSR2
+
 	.length LDZk #01 SUB SWP STZ
 	;sel-desktop JSR2
 	;draw-desktop JSR2

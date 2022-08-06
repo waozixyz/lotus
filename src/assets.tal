@@ -276,6 +276,11 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
 @menu-chr
 	ffff ffff ffff ffff ffff ffff ffff ffff
 	ffff ffff ffff ff00 ffff ffff ffff ffff
+@prog-chrs
+	3f3f 3f3f 3f3f 3f3f ffff ffff ffff ffff
+	ffff ffff ffff ffff 3f3f 3f3f 3f3f 3f3f
+	3f3f 3f3f 3f3f 3f3f 3f3f 3f3f 3f3f 3f3f
+	7fbf 7fbf 7fbf 7fbf ffff ffff ffff ffff
 
 ( blobs )
 
