@@ -68,10 +68,12 @@ BRK
 
 ( memory operations )
 
-@mem-req ( len* -- <ptr*> )
+@mem-req ( len* -- ptr* )
 
-	( ptr ) ;mem .bounds LDZ2 ADD2 BUG2k
-	( update ) SWP2 .bounds LDZ2 ADD2 .bounds STZ2
+	( ptr )
+	;mem .bounds LDZ2 ADD2
+	( update )
+	SWP2 .bounds LDZ2 ADD2 .bounds STZ2
 
 JMP2r
 
@@ -86,14 +88,30 @@ JMP2r
 
 @mem-type ( addr* -- type )
 
-	DUP2 ;mem LTH2 ,&static JCN
-	( DUP2 ;mem .bounds LDZ2 ADD2 LTH2 ,&dynamic JCN )
-	( free ) POP2 #02
+	DUP2 ;mem LTH2 ,&a JCN
+	DUP2 ;get-mem-win JSR2 ;within-range JSR2 ,&c JCN
+	DUP2 ;mem .bounds LDZ2 ADD2 LTH2 ,&b JCN
+	POP2 #03
 
 JMP2r
-	&static POP2 #00 JMP2r
-	&dynamic POP2 #01 JMP2r
-	&selected POP2 #02 JMP2r
+	&a POP2 #00 JMP2r
+	&b POP2 #01 JMP2r
+	&c POP2 #02 JMP2r
+
+@within-range ( a* start* end* -- flag )
+
+	ROT2 GTH2k STH NIP2 LTH2 STHr AND
+
+JMP2r
+
+@get-mem-win ( -- a* b* )
+
+	( win ) ;get-active-win JSR2
+	( win/mem-ptr ) #000a ADD2 LDA2k STH2
+	( win/mem-len ) INC2 INC2 LDA2
+	STH2kr ADD2 STH2r SWP2
+
+JMP2r
 
 ( directory operations )
 
@@ -619,7 +637,6 @@ JMP2r
 	&src $40 ( used by make-src )
 	&dst $40 ( used by make-dst )
 	&form $40 ( used by app-form )
-	&page $100
 	&dir $400
 
 @mem
