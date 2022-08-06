@@ -301,7 +301,7 @@ JMP2r
 
 JMP2r
 	&desktop POP ;sel-desktop JSR2 JMP2r
-	&unchanged POP #1234 BUG2 JMP2r
+	&unchanged POP JMP2r
 
 @close-win ( -- )
 

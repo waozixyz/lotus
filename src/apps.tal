@@ -23,7 +23,7 @@
 	DUP2
 	LDA2k #0008 ADD2 .Screen/x DEO2 POP2
 	.Screen/y DEI2k #000c ADD2 ROT DEO2
-	;mem ;draw-dec JSR2
+	;mem .bounds LDZ2 ADD2 ;draw-dec JSR2
 	LIT '/ ;draw-chr JSR2
 	;&full ;draw-text JSR2
 	#20 ;draw-chr JSR2
@@ -910,7 +910,7 @@ JMP2r
 
 ( defaults )
 
-@void-init ( win* -- ) POP2 #000a BUG2 JMP2r
+@void-init ( win* -- ) POP2 JMP2r
 @void-draw ( win* -- ) POP2 JMP2r
 @void-mouse ( x* y* win* -- ) POP2 POP2 POP2 BRK
 @void-button ( button key win* -- ) POP2 POP2 BRK
