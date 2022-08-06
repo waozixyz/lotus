@@ -290,7 +290,7 @@ JMP2r
 	DUP #ff EQU ;sel-desktop JCN2
 	INCk .length LDZ EQU ,&unchanged JCN
 
-	;get-win JSR2 #000a SWP2 ;get-active-win JSR2 ;mswp JSR2
+	;get-win JSR2 #0010 SWP2 ;get-active-win JSR2 ;mswp JSR2
 
 	( draw menu )
 	;get-active-win JSR2

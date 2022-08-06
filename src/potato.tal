@@ -61,6 +61,13 @@ BRK
 
 ( memory operations )
 
+@mem-req ( len* -- <addr*> )
+
+	( TODO: check for space )
+	POP2 ;mem
+
+JMP2r
+
 @mem-type ( addr* -- type )
 
 	DUP2 ;mem LTH2 ,&static JCN
@@ -588,7 +595,8 @@ JMP2r
 	04 size*
 	06 app*
 	08 name*
-	0a buf* )
+	0a mem-ptr*
+	0c mem-len* )
 
 @buf
 	&src $40 ( used by make-src )
