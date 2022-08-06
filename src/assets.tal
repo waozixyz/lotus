@@ -123,6 +123,8 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
 	0000 0000 0000 0000
 @line-icn
 	00aa 0000 0000 0000
+@vert1-icn
+	8080 8080 8080 8080
 @vert-icn
 	c0c0 c0c0 c0c0 c0c0
 @cursor-icn

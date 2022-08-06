@@ -141,6 +141,19 @@ JMP2r
 
 JMP2r
 
+@draw-memory ( -- )
+
+	.Screen/x DEI2 ,&x STR2
+	;vert1-icn .Screen/addr DEO2
+	#ff00
+	&loop
+		#00 OVR [ LIT2 &x $2 ] ADD2 .Screen/x DEO2
+		#00 OVR #80 SFT2 ;mem-type JSR2 #05 MUL .Screen/sprite DEO
+		INC GTHk ,&loop JCN
+	POP2
+
+JMP2r
+
 @scroll-text ( str* w -- str* w )
 
 	STHk ROT ROT DUP2

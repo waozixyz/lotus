@@ -18,7 +18,7 @@
 
 &on-draw ( win* -- )
 
-	#40 #0000 DUP2 ;mem SUB2 #0100 SUB2 SUB2 #0400 DIV2 NIP ;draw-progbar JSR2
+	;draw-memory JSR2
 
 	DUP2
 	LDA2k #0008 ADD2 .Screen/x DEO2 POP2
@@ -32,7 +32,7 @@
 	DUP2
 	LDA2k .Screen/x DEO2 POP2
 	.Screen/y DEI2k #000c ADD2 ROT DEO2
-	#16 #0a ;draw-dotted JSR2
+	#22 #0a ;draw-dotted JSR2
 
 	LDA2k #0008 ADD2 ,&x STR2 INC2 INC2
 	LDA2k #0030 ADD2 ,&y STR2 POP2

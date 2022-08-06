@@ -61,6 +61,16 @@ BRK
 
 ( memory operations )
 
+@mem-type ( addr* -- type )
+
+	DUP2 ;mem LTH2 ,&static JCN
+	.length LDZ #00 EQU ,&free JCN
+	POP2 #03
+
+JMP2r
+	&static POP2 #02 JMP2r
+	&free POP2 #01 JMP2r
+
 ( directory operations )
 
 @load-dir ( -- )
@@ -305,7 +315,7 @@ JMP2r
 	( unique )
 	;app-about ;find-win JSR2
 		DUP #ff NEQ ,&reselect JCN POP
-	;no-name ;app-about #1613 #0000 DUP2 ;add-win JSR2
+	;no-name ;app-about #2213 #0000 DUP2 ;add-win JSR2
 	;center-win JSR2
 
 JMP2r
@@ -415,6 +425,17 @@ JMP2r
 	#01 .File/delete DEO
 
 JMP2r
+
+@flen ( src* -- len* )
+
+	.File/name DEO2
+	#0040 .File/length DEO2
+	;&buf .File/stat DEO2
+	#00 ;&buf #0004 ADD2 STA
+	;&buf ;shex JSR2
+
+JMP2r
+	&buf $40
 
 @mswp ( len* a* b* -- )
 
