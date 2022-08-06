@@ -83,9 +83,9 @@ BRK
 		DUP #ff EQU ,touch-desktop JCN
 		DUP ;sel-win JSR2
 		( pick dragbar )
-		;get-win JSR2
-		INC2 INC2 LDA2 .Mouse/y DEI2 SWP2 SUB2
-		#000a GTH2 ,&no-bar JCN
+		( win ) ;get-win JSR2
+		( win/y ) INC2 INC2 LDA2
+			.Mouse/y DEI2 SWP2 SUB2 #000a GTH2 ,&no-bar JCN
 			;set-drag JSR2
 			&no-bar
 		&no-touch-win
@@ -108,8 +108,8 @@ BRK
 @touch-desktop ( -> )
 
 	.Mouse/x DEI2 .Mouse/y DEI2 ;pick-icon JSR2
+	DUP ;sel-icon JSR2
 	.Mouse/state DEI #01 GTH ,&launch JCN
-	;sel-icon JSR2
 	;sel-desktop JSR2
 	#00 .Mouse/state DEO
 	POP
@@ -288,7 +288,7 @@ JMP2r
 @sel-win ( <id> -- )
 
 	DUP #ff EQU ;sel-desktop JCN2
-	DUP .length LDZ GTH ,&unchanged JCN
+	INCk .length LDZ EQU ,&unchanged JCN
 
 	;get-win JSR2 #000a SWP2 ;get-active-win JSR2 ;mswp JSR2
 
