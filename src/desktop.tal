@@ -193,7 +193,7 @@ JMP2r
 
 JMP2r
 
-@pick-win ( x* y* -- <id> )
+@pick-win ( x* y* -- id|ff )
 
 	,&y STR2 ,&x STR2
 	#00 .length LDZ DUP #00 EQU ,&skip JCN
@@ -219,7 +219,7 @@ JMP2r
 JMP2r
 	&fail POP2 POP2 POP2r #00 JMP2r
 
-@find-win ( app* -- <id> )
+@find-win ( app* -- id|ff )
 
 	,&a STR2
 	.length LDZ #00
@@ -280,7 +280,7 @@ JMP2r
 	.length LDZk INC SWP STZ
 	.length LDZ #01 SUB
 
-@sel-win ( <id> -- )
+@sel-win ( id -- )
 
 	DUP #ff EQU ,&desktop JCN
 	DUP .sel/win LDZ EQU ,&unchanged JCN
@@ -301,7 +301,7 @@ JMP2r
 
 JMP2r
 	&desktop POP ;sel-desktop JSR2 JMP2r
-	&unchanged POP JMP2r
+	&unchanged POP #1234 BUG2 JMP2r
 
 @close-win ( -- )
 
@@ -493,11 +493,11 @@ JMP2r
 
 JMP2r
 
-@get-sel-file ( -- <file*> )
+@get-sel-file ( -- file*|ffff )
 
 	;draw-item-text/sel LDA
 
-@get-file ( id -- <file*> )
+@get-file ( id -- file*|ffff )
 
 	STH
 	LITr 00
@@ -514,7 +514,7 @@ JMP2r
 JMP2r
 	&found POP2r JMP2r
 
-@find-name ( name* -- <id> )
+@find-name ( name* -- id|ff )
 
 	,&t STR2
 	LITr 00

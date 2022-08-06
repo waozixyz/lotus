@@ -893,6 +893,21 @@ JMP2r
 
 ( ------------------------------------------------------------- )
 
+@void-manifest
+
+	03 "Void $1
+		12 00 :expand-win "Expand $1
+		22 00 :tab-win "Tab $1
+		42 00 :close-win "Close $1
+	$1
+
+@app-void
+	:void-manifest
+	:void-init
+	:void-draw
+	:void-mouse
+	:void-button
+
 ( defaults )
 
 @void-init ( win* -- ) POP2 #000a BUG2 JMP2r
