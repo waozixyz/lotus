@@ -33,9 +33,12 @@
 |0000
 
 @cursor &x $2 &y $2 &color $1
+@sel
+	&win $1
 @drag $1
 @length $1
 @lock $2
+@bounds $2
 @dir $40
 
 |0100 ( -> ) @size-system-start
@@ -64,18 +67,22 @@ BRK
 @mem-req ( len* -- <addr*> )
 
 	( TODO: check for space )
-	POP2 ;mem
+	.bounds LDZ2 ADD2 .bounds STZ2
+	;mem
 
 JMP2r
 
 @mem-type ( addr* -- type )
 
 	DUP2 ;mem LTH2 ,&static JCN
+	DUP2 ;mem .bounds LDZ2 ADD2 LTH2 ,&dynamic JCN
+
 	.length LDZ #00 EQU ,&free JCN
 	POP2 #03
 
 JMP2r
 	&static POP2 #02 JMP2r
+	&dynamic POP2 #01 JMP2r
 	&free POP2 #01 JMP2r
 
 ( directory operations )

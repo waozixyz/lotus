@@ -351,18 +351,6 @@ JMP2r
 
 &on-draw ( win* -- )
 
-	( get path )
-	DUP2
-	#0008 ADD2 LDA2 ;make-src JSR2 .File/name DEO2
-	#0000 ;mem SUB2 .File/length DEO2
-	;mem .File/read DEO2
-	( cap )
-	#00 .File/success DEI2 ;mem ADD2 STA
-
-	DUP2 #0004 ADD2 LDA2
-		#05 SUB SWP #02 SUB SWP
-
-	;mem SWP2 ;draw-textarea JSR2
 
 	POP2
 
@@ -484,7 +472,7 @@ JMP2r
 
 	.Screen/x DEI2 ,&x STR2
 	.Screen/y DEI2 ,&y STR2
-	( win/mem-ptr ) #000a ADD2 LDA2 BUG2k
+	( win/mem-ptr ) #000a ADD2 LDA2
 		( skip widths ) #0100 ADD2 .Screen/addr DEO2
 	#15 .Screen/auto DEO
 	#0000

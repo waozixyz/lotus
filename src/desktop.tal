@@ -112,7 +112,7 @@ BRK
 	.Mouse/state DEI #01 GTH ,&launch JCN
 	;sel-desktop JSR2
 	#00 .Mouse/state DEO
-	POP
+	POP2
 
 BRK
 	&launch
@@ -287,13 +287,13 @@ JMP2r
 
 @sel-win ( <id> -- )
 
-	DUP #ff EQU ;sel-desktop JCN2
-	INCk .length LDZ EQU ,&unchanged JCN
+	DUP #ff EQU ,&desktop JCN
+	DUP .sel/win LDZ EQU ,&unchanged JCN
 
 	;get-win JSR2 #0010 SWP2 ;get-active-win JSR2 ;mswp JSR2
 
 	( draw menu )
-	;get-active-win JSR2
+	DUP ;get-active-win JSR2
 		DUP2 ;draw-win JSR2
 		#0006 ADD2 LDA2
 
@@ -302,8 +302,10 @@ JMP2r
 
 	;draw-menu-bg JSR2
 	;draw-menu JSR2
+	.sel/win STZ
 
 JMP2r
+	&desktop POP ;sel-desktop JSR2 JMP2r
 	&unchanged POP JMP2r
 
 @close-win ( -- )
@@ -319,11 +321,12 @@ JMP2r
 
 @sel-desktop ( -- )
 
-	;manifest ;draw-menu/manifest LDA2 EQU2 ,&skip JCN
+	.sel/win LDZ #ff EQU ,&skip JCN
 		;manifest ;draw-menu/manifest STA2
 		;draw-menu-bg JSR2
 		;draw-menu JSR2
 		&skip
+	#ff .sel/win STZ
 
 JMP2r
 
