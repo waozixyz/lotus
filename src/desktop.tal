@@ -105,21 +105,16 @@ BRK
 		( win/app ) #0006 ADD2 LDA2
 		( win/app/on-mouse ) #0006 ADD2 LDA2 JMP2
 
-@touch-desktop ( -> )
+@touch-desktop ( win -> )
 
-	.Mouse/x DEI2 .Mouse/y DEI2 ;pick-icon JSR2
-	DUP ;sel-icon JSR2
-	.Mouse/state DEI #01 GTH ,&launch JCN
-	;sel-desktop JSR2
+	POP
+	.Mouse/x DEI2 .Mouse/y DEI2 ;pick-icon JSR2 ;sel-icon JSR2
+	.Mouse/state DEI #02 LTH ,&no-launch JCN
+		;go-file JSR2
+		&no-launch
 	#00 .Mouse/state DEO
-	POP2
 
 BRK
-	&launch
-		;get-file JSR2 ;open-file JSR2
-		#00 .Mouse/state DEO
-		POP
-	BRK
 
 ( drag )
 
@@ -290,10 +285,10 @@ JMP2r
 	DUP #ff EQU ,&desktop JCN
 	DUP .sel/win LDZ EQU ,&unchanged JCN
 
-	;get-win JSR2 #0010 SWP2 ;get-active-win JSR2 ;mswp JSR2
+	DUP ;get-win JSR2 #0010 SWP2 ;get-active-win JSR2 ;mswp JSR2
 
 	( draw menu )
-	DUP ;get-active-win JSR2
+	;get-active-win JSR2
 		DUP2 ;draw-win JSR2
 		#0006 ADD2 LDA2
 
@@ -325,8 +320,8 @@ JMP2r
 		;manifest ;draw-menu/manifest STA2
 		;draw-menu-bg JSR2
 		;draw-menu JSR2
+		#ff .sel/win STZ
 		&skip
-	#ff .sel/win STZ
 
 JMP2r
 
@@ -477,6 +472,7 @@ JMP2r
 	( max ) ,desk-len JSR LTHk [ JMP SWP POP ]
 	;draw-item-text/sel STA
 	;draw-desktop JSR2
+	;sel-desktop JSR2
 
 JMP2r
 
@@ -492,7 +488,7 @@ JMP2r
 
 JMP2r
 
-@get-sel-file ( -- file* )
+@get-sel-file ( -- <file*> )
 
 	;draw-item-text/sel LDA
 

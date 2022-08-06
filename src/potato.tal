@@ -54,6 +54,7 @@
 	#0208 .Screen/height DEO2
 
 	#ff .drag STZ
+	#ff .sel/win STZ
 
 	;draw-menu-bg JSR2
 	;draw-menu JSR2
