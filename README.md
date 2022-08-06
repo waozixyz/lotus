@@ -56,6 +56,7 @@ Since this is designed to be used principally on a handheld devices without a wi
 - Catch maximum number of windows
 - Windows names shouldn't leave window bar bounds
 - Throw error when dir is longer than $400
+- Throw error when windows count is > #10
 - Window resize
 
 ## Support

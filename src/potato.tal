@@ -97,10 +97,22 @@ JMP2r
 
 @mem-rel ( ptr* len* -- )
 
+	( each window after ptr, subtract len )
+	DUP2 ,&offset STR2
+	OVR2 INC2 STH2
+	#1000
+	&loop
+		#00 OVR #40 SFT2 ;windows #000a ADD2 ADD2 LDA2k STH2kr LTH2 ,&continue JCN
+			DUP2 LDA2k [ LIT2 &offset $2 ] SUB2 SWP2 STA2
+			&continue
+			POP2
+		INC GTHk ,&loop JCN
+	POP2
+	POP2r
 	( update bound )
 	.bounds LDZ2 OVR2 SUB2 .bounds STZ2
-
-	BUG2 BUG2
+	( shift memory left from ptr, by length )
+	#fff0 SWP2 ;msfl JSR2
 
 JMP2r
 
@@ -621,6 +633,8 @@ JMP2r
 
 @scmp ( a* b* -- f ) STH2 &l LDAk LDAkr STHr ANDk #00 EQU ,&e JCN NEQk ,&e JCN POP2 INC2 INC2r ,&l JMP &e NIP2 POP2r EQU JMP2r
 @pstr ( str* -- ) &w LDAk #18 DEO INC2 LDAk ,&w JCN POP2 JMP2r
+@msfl ( a* b* len* -- ) STH2 SWP2 EQU2k ,&e JCN &l DUP2k STH2kr ADD2 LDA ROT ROT STA INC2 GTH2k ,&l JCN POP2 POP2 &e POP2r JMP2r
+@msfr ( a* b* len* -- ) STH2 EQU2k ,&e JCN &l DUP2 LDAk ROT ROT STH2kr ADD2 STA #0001 SUB2 LTH2k ,&l JCN POP2 POP2 &e POP2r JMP2r
 
 @no-name $1
 

@@ -313,6 +313,8 @@ JMP2r
 		( win/mem-ptr ) #000a ADD2 LDA2k SWP2
 		( win/mem-len ) INC2 INC2 LDA2 ;mem-rel JSR2
 
+	#00 .length LDZ #01 SUB #40 SFT2 ;windows ADD2 #0010 ;mclr JSR2
+
 	.length LDZk #01 SUB SWP STZ
 	;sel-desktop JSR2
 	;draw-desktop JSR2
