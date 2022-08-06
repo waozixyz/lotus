@@ -457,6 +457,14 @@ JMP2r
 
 &on-init ( win* -- )
 
+	( TODO: Catch memory overflow )
+	#ff00 ;mem .bounds LDZ2 ADD2 SUB2 #2100 GTH2 ,&space-ok JCN
+		POP2
+		;close-win JSR2
+		;dict/create ;dict/err-space ;add-err JSR2
+		JMP2r
+		&space-ok
+
 	( win/name ) STH2k #0008 ADD2 LDA2 ;make-src JSR2 .File/name DEO2
 	#2100
 		DUP2 .File/length DEO2

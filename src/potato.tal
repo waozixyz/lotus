@@ -37,7 +37,6 @@
 	&win $1
 @drag $1
 @length $1
-@lock $2
 @bounds $2
 @dir $40
 
@@ -61,32 +60,13 @@
 	;dict/home-ext ;set-dir JSR2
 	;untrap JSR2
 
-	( auto-start with a few windows )
-	;no-name ;app-void #0606 #0040 #0060 ;add-win JSR2
-	;no-name ;app-void #0606 #0050 #0070 ;add-win JSR2
-	;no-name ;app-void #0606 #0060 #0080 ;add-win JSR2
-	;no-name ;app-void #0606 #0070 #0090 ;add-win JSR2
-
-	( allocate some memory to win1 )
-	#2000 ;mem-req JSR2
-	;windows #000a ADD2 STA2
-	#2000 ;windows #000c ADD2 STA2
-	( allocate some memory to win2 )
-	#1000 ;mem-req JSR2
-	;windows #001a ADD2 STA2
-	#1000 ;windows #001c ADD2 STA2
-	( allocate some memory to win3 )
-	#3000 ;mem-req JSR2
-	;windows #002a ADD2 STA2
-	#3000 ;windows #002c ADD2 STA2
-
-	;no-name ;app-about #2213 #0120 #0060 ;add-win JSR2
-
 BRK
 
 ( memory operations )
 
-@mem-req ( len* -- ptr* )
+@mem-req ( len* -- ptr*|ffff )
+
+	( TODO: Catch memory overflow )
 
 	( ptr )
 	;mem .bounds LDZ2 ADD2
