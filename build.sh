@@ -7,14 +7,12 @@ mkdir bin
 if [ -e "$HOME/roms/uxnlin.rom" ]
 then
 	echo "Linting.."
-	uxncli $HOME/roms/uxnlin.rom src/potato.tal
-	uxncli $HOME/roms/uxnlin.rom src/draw.tal
-	uxncli $HOME/roms/uxnlin.rom src/apps.tal
-	uxncli $HOME/roms/uxnlin.rom src/desktop.tal
+	uxncli $HOME/roms/uxnlin.rom src/main.tal
 fi
 
 echo "Assembling.."
-uxnasm src/potato.tal bin/potato.rom
+cat src/main.tal src/manifest.tal src/assets.tal > bin/potato.tal
+uxncli $HOME/roms/drifblim.rom bin/potato.tal bin/potato.rom
 
 cp ~/roms/noodle.rom bin/noodle.rom
 
@@ -25,4 +23,4 @@ then
 fi
 
 echo "Running.."
-uxnemu bin/potato.rom
+uxn11 bin/potato.rom

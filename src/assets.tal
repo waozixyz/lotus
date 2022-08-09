@@ -1,3 +1,5 @@
+@size-assets-start
+
 @dict
 	&bytes "Bytes $1
 	&fontsicons "Font 20 "& 20 "Icons $1
@@ -298,3 +300,23 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
 @knob-offsety
 	07 06 05 03 02 01 00 00
 	00 00 01 02 03 05 06 07
+
+@size-assets-end
+
+@windows $100
+(
+	00 x*
+	02 y*
+	04 size*
+	06 app*
+	08 name*
+	0a mem-ptr*
+	0c mem-len* )
+
+@buf
+	&src $40 ( used by make-src )
+	&dst $40 ( used by make-dst )
+	&form $40 ( used by app-form )
+	&dir $400
+
+@mem
