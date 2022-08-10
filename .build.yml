@@ -9,7 +9,8 @@ tasks:
         curl -fsS https://rabbits.srht.site/uxn/uxn-lin64.tar.gz | tar -zx
     - build: |
         cd potato
-        ../uxn/uxnasm src/potato.tal ../potato.rom
+        cat src/main.tal src/manifest.tal src/desktop.tal src/apps.tal src/assets.tal > bin/potato.tal
+        ../uxn/uxnasm bin/potato.tal ../potato.rom
     - upload: |
         tar -czf out.tar.gz potato.rom
         acurl() {
