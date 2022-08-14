@@ -133,7 +133,7 @@ JMP2r
 
 	,validate-dir JSR
 	DUP2 ;dict/parent-ext ;scmp JSR2 ,pop-dir JCN
-	LIT '/ ;dir STH2k ;sput JSR2
+	LIT "/ ;dir STH2k ;sput JSR2
 	STH2r ;scat JSR2
 	#00 ;sel-icon JSR2
 
@@ -145,7 +145,7 @@ JMP2r
 	;dir ;dict/home-ext ;scmp JSR2 ,&skip JCN
 	;dir DUP2 ;scap JSR2
 	&loop
-		LDAk LIT '/ EQU ,&found JCN
+		LDAk LIT "/ EQU ,&found JCN
 		#0001 SUB2 LTH2k ,&loop JCN
 		&found
 	NIP2
@@ -185,7 +185,7 @@ JMP2r
 
 	STH2k #0040 ;mclr JSR2
 	;dir STH2kr ;scat JSR2
-	LIT '/ STH2kr ;sput JSR2
+	LIT "/ STH2kr ;sput JSR2
 	STH2kr ;scat JSR2
 	STH2r
 
@@ -257,8 +257,8 @@ JMP2r
 
 	;get-sel-file JSR2
 		DUP2 #ffff EQU2 ,&fail JCN
-		LDAk LIT '- EQU ,&fail JCN
-		LDAk LIT '? EQU ,&fail JCN
+		LDAk LIT "- EQU ,&fail JCN
+		LDAk LIT "? EQU ,&fail JCN
 	( -> do file operations )
 
 JMP2r
@@ -269,7 +269,7 @@ JMP2r
 @open-file ( file* -- )
 
 	DUP2 #ffff EQU2 ,&no-file JCN
-	LDAk LIT '- EQU ,open-folder JCN
+	LDAk LIT "- EQU ,open-folder JCN
 	DUP2 ;dict/icn-ext ;has-ext JSR2 ;open-pict JCN2
 	DUP2 ;dict/chr-ext ;has-ext JSR2 ;open-pict JCN2
 	DUP2 ;dict/uf2-ext ;has-ext JSR2 ;open-font JCN2
@@ -412,7 +412,7 @@ JMP2r
 @read-size ( 00x00* -- w h )
 
 	DUP2 ;sbyte JSR2 ,&w STR
-	INC2 INC2 LDAk LIT 'x NEQ ,&cancel JCN
+	INC2 INC2 LDAk LIT "x NEQ ,&cancel JCN
 	INC2 ;sbyte JSR2 [ LIT &w $1 ] SWP
 
 JMP2r
@@ -887,9 +887,9 @@ JMP2r
 
 @draw-item-icon ( file* -- file* )
 
-	LDAk LIT '- EQU ,&folder JCN
-	LDAk LIT '? EQU ,&unknown JCN
-	DUP2 #0005 ADD2 LDA LIT '. EQU ,&unknown JCN
+	LDAk LIT "- EQU ,&folder JCN
+	LDAk LIT "? EQU ,&unknown JCN
+	DUP2 #0005 ADD2 LDA LIT ". EQU ,&unknown JCN
 	DUP2 #0005 ADD2 ;dict/rom-ext ;has-ext JSR2 ,&rom JCN
 	DUP2 #0005 ADD2 ;dict/chr-ext ;has-ext JSR2 ,&picture JCN
 	DUP2 #0005 ADD2 ;dict/icn-ext ;has-ext JSR2 ,&picture JCN
@@ -909,8 +909,8 @@ JMP2r
 
 	[ LIT &sel 00 ] EQU #09 MUL INC INC ;draw-chr/color STA
 
-	LDAk LIT '- EQU ;&no-size JCN2
-	LDAk LIT '? EQU ;&no-size JCN2
+	LDAk LIT "- EQU ;&no-size JCN2
+	LDAk LIT "? EQU ;&no-size JCN2
 
 	.Screen/x DEI2k #0020 ADD2 STH2k ROT DEO2
 	.Screen/y DEI2k #0014 SUB2 ROT DEO2

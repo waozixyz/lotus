@@ -292,7 +292,7 @@ JMP2
 	POP2
 	( mix )
 	DUP #00 NEQ STHr #00 NEQ #0101 NEQ2 ,&no-mod JCN
-		LIT '+ ;&buf ;sput JSR2
+		LIT "+ ;&buf ;sput JSR2
 		&no-mod
 	( key )
 	DUP #08 NEQ ,&no-bsp JCN ;&bsp ,&cat JMP &no-bsp

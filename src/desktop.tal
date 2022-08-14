@@ -3,21 +3,21 @@
 @manifest
 
 	04 "Potato $1
-		01 '1 :open-about "About $1
-		01 'w :open-tile "Wallpaper $1
-		01 't :open-color "Theme $1
-		01 'q :exit "Exit $1
+		01 "1 :open-about "About $1
+		01 "w :open-tile "Wallpaper $1
+		01 "t :open-color "Theme $1
+		01 "q :exit "Exit $1
 	04 "File $1
-		01 'n :file-create "Create $1
-		01 'r :file-rename "Rename $1
-		01 'd :file-clone "Clone $1
+		01 "n :file-create "Create $1
+		01 "r :file-rename "Rename $1
+		01 "d :file-clone "Clone $1
 		01 08 :file-delete "Delete $1
 	05 "Open $1
-		01 'd :open-as-data "As 20 "Data $1
-		01 't :open-as-text "As 20 "Text $1
-		01 'p :open-as-pict "As 20 "Pict $1
-		01 'p :open-as-font "As 20 "Font $1
-		01 'p :open-as-sound "As 20 "Sound $1
+		01 "d :open-as-data "As 20 "Data $1
+		01 "t :open-as-text "As 20 "Text $1
+		01 "p :open-as-pict "As 20 "Pict $1
+		01 "p :open-as-font "As 20 "Font $1
+		01 "p :open-as-sound "As 20 "Sound $1
 	04 "Select $1
 		10 00 :sel-up "Up $1
 		20 00 :sel-down "Down $1
@@ -394,8 +394,8 @@ JMP2r
 	,&routine STR2
 	;get-sel-file JSR2
 
-	LDAk LIT '- EQU ,&invalid JCN
-	LDAk LIT '? EQU ,&invalid JCN
+	LDAk LIT "- EQU ,&invalid JCN
+	LDAk LIT "? EQU ,&invalid JCN
 
 	[ LIT2 &routine $2 ] JSR2
 	;center-win JSR2

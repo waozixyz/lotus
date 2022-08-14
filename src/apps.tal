@@ -26,7 +26,7 @@
 	LDA2k #0008 ADD2 .Screen/x DEO2 POP2
 	.Screen/y DEI2k #000c ADD2 ROT DEO2
 	;mem .bounds LDZ2 ADD2 ;draw-dec JSR2
-	LIT '/ ;draw-chr JSR2
+	LIT "/ ;draw-chr JSR2
 	;&full ;draw-text JSR2
 	#20 ;draw-chr JSR2
 	;dict/bytes ;draw-text JSR2
@@ -65,12 +65,12 @@ JMP2r
 		22 00 :tab-win "Tab $1
 		42 00 :close-win "Close $1
 	01 "File $1
-		01 's :save-theme "Save $1
+		01 "s :save-theme "Save $1
 	04 "Select $1
-		00 '1 :select-color1 "Background $1
-		00 '2 :select-color2 "Color1 $1
-		00 '3 :select-color3 "Color2 $1
-		00 '4 :select-color4 "Color3 $1
+		00 "1 :select-color1 "Background $1
+		00 "2 :select-color2 "Color1 $1
+		00 "3 :select-color3 "Color2 $1
+		00 "4 :select-color4 "Color3 $1
 	$1
 
 @app-color
@@ -154,18 +154,18 @@ JMP2r
 		22 00 :tab-win "Tab $1
 		42 00 :close-win "Close $1
 	01 "File $1
-		01 's :save-theme "Save $1
+		01 "s :save-theme "Save $1
 	05 "Edit $1
 		00 08 :clear-patt "Clear $1
 		40 00 :prev-tile "Prev $1
 		80 00 :next-tile "Next $1
-		01 'c :copy-patt "Copy $1
-		01 'v :paste-patt "Paste $1
+		01 "c :copy-patt "Copy $1
+		01 "v :paste-patt "Paste $1
 	04 "Color $1
-		00 '1 :select-color1 "Background $1
-		00 '2 :select-color2 "Color1 $1
-		00 '3 :select-color3 "Color2 $1
-		00 '4 :select-color4 "Color3 $1
+		00 "1 :select-color1 "Background $1
+		00 "2 :select-color2 "Color1 $1
+		00 "3 :select-color3 "Color2 $1
+		00 "4 :select-color4 "Color3 $1
 	02 "Mode $1
 		00 00 :mode-chr "2-bit $1
 		00 00 :mode-icn "1-bit $1
@@ -330,9 +330,9 @@ JMP2r
 		22 00 :tab-win "Tab $1
 		42 00 :close-win "Close $1
 	04 "Edit $1
-		01 'c :edit-copy "Copy $1
-		01 'v :edit-paste "Paste $1
-		01 'x :edit-cut "Cut $1
+		01 "c :edit-copy "Copy $1
+		01 "v :edit-paste "Paste $1
+		01 "x :edit-cut "Cut $1
 		00 08 :edit-erase "Erase $1
 	01 "View $1
 		02 00 :toggle-zoom "Zoom $1
@@ -358,7 +358,7 @@ JMP2r
 		22 00 :tab-win "Tab $1
 		42 00 :close-win "Close $1
 	03 "View $1
-		00 'i :app-pict/invert "Invert $1
+		00 "i :app-pict/invert "Invert $1
 		10 00 :app-pict/prev "Previous $1
 		20 00 :app-pict/next "Next $1
 	$1
@@ -529,25 +529,25 @@ JMP2r
 		22 00 :tab-win "Tab $1
 		42 00 :close-win "Close $1
 	0c "Keyboard $1
-		00 'a :app-play/notec "C $1
-		00 'w :app-play/notecs "C# $1
-		00 's :app-play/noted "D $1
-		00 'e :app-play/noteds "D# $1
-		00 'd :app-play/notee "E $1
-		00 'f :app-play/notef "F $1
-		00 't :app-play/notefs "F# $1
-		00 'g :app-play/noteg "G $1
-		00 'y :app-play/notegs "G# $1
-		00 'h :app-play/notea "A $1
-		00 'u :app-play/noteas "A# $1
-		00 'j :app-play/noteb "B $1
+		00 "a :app-play/notec "C $1
+		00 "w :app-play/notecs "C# $1
+		00 "s :app-play/noted "D $1
+		00 "e :app-play/noteds "D# $1
+		00 "d :app-play/notee "E $1
+		00 "f :app-play/notef "F $1
+		00 "t :app-play/notefs "F# $1
+		00 "g :app-play/noteg "G $1
+		00 "y :app-play/notegs "G# $1
+		00 "h :app-play/notea "A $1
+		00 "u :app-play/noteas "A# $1
+		00 "j :app-play/noteb "B $1
 	01 "Mode $1
 		00 20 :app-play/toggle-loop "Hit/Loop $1
 	04 "View $1
 		10 00 :app-play/prev "Previous $1
 		20 00 :app-play/next "Next $1
-		00 '[ :app-play/zoomin "Zoom 20 "In $1
-		00 '] :app-play/zoomout "Zoom 20 "Out $1
+		00 "[ :app-play/zoomin "Zoom 20 "In $1
+		00 "] :app-play/zoomout "Zoom 20 "Out $1
 	$1
 
 @app-play
@@ -865,14 +865,14 @@ BRK
 	.Screen/width DEI2 #0098 SUB2 #00 .DateTime/day DEI #0a LTH #30 SFT2 ADD2 .Screen/x DEO2
 
 	#00 .DateTime/dotw DEI #20 SFT ;dict/dotw ADD2 ;draw-text JSR2
-	LIT ', ;draw-chr JSR2
+	LIT ", ;draw-chr JSR2
 	#20 ;draw-chr JSR2
 	#00 .DateTime/day DEI ;draw-dec JSR2
 	#20 ;draw-chr JSR2
 	#00 .DateTime/month DEI #20 SFT ;dict/months ADD2 ;draw-text JSR2
 	#20 ;draw-chr JSR2
 	.DateTime/hour DEI ,&d JSR
-	LIT ': ;draw-chr JSR2
+	LIT ": ;draw-chr JSR2
 	.DateTime/minute DEI
 		DUP ;update-clock/last STA
 		,&d JSR
