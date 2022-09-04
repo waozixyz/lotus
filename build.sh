@@ -1,28 +1,36 @@
 #!/bin/sh -e
 
-echo "Cleaning.."
+# cat src/main.tal src/manifest.tal src/desktop.tal src/apps.tal src/assets.tal > bin/potato.tal
+
+ASM="uxncli $HOME/roms/drifblim.rom"
+EMU="uxnemu"
+LIN="uxncli $HOME/roms/uxnlin.rom"
+
+SRC="src/potato.tal"
+DST="bin/potato.rom"
+
+CPY="$HOME/roms"
+ETC=""
+ARG=""
+
+echo ">> Cleaning"
 rm -rf bin
 mkdir bin
 
-if [ -e "$HOME/roms/uxnlin.rom" ]
+if [[ "$*" == *"--lint"* ]]
 then
-	echo "Linting.."
-	uxncli $HOME/roms/uxnlin.rom src/main.tal
-	uxncli $HOME/roms/uxnlin.rom src/desktop.tal
-	uxncli $HOME/roms/uxnlin.rom src/apps.tal
+    echo ">> Linting $SRC"
+	$LIN $SRC $ETC
 fi
 
-echo "Assembling.."
-cat src/main.tal src/manifest.tal src/desktop.tal src/apps.tal src/assets.tal > bin/potato.tal
-uxncli $HOME/roms/drifblim.rom bin/potato.tal bin/potato.rom
+echo ">> Assembling $SRC"
+$ASM $SRC $DST
 
-cp ~/roms/noodle.rom bin/noodle.rom
-
-if [ -d "$HOME/roms" ] && [ -e ./bin/potato.rom ]
+if [[ "$*" == *"--save"* ]]
 then
-	cp ./bin/potato.rom $HOME/roms
-    echo "Installed in $HOME/roms" 
+    echo ">> Saving $DST"
+	cp $DST $CPY
 fi
 
-echo "Running.."
-uxnemu bin/potato.rom
+echo ">> Running $DST"
+$EMU $DST $ARG

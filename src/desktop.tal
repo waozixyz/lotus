@@ -531,3 +531,5 @@ JMP2r
 	&found POP2 STHr JMP2r
 
 @size-desktop-end
+
+~src/apps.tal
