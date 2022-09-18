@@ -45,6 +45,24 @@ BRK
 (
 @|memory )
 
+@mem-try ( len* -- len* )
+
+	( TODO: Return only maximum available memory )
+
+JMP2r
+
+@mem-ptr ( -- ptr* )
+
+	;mem .bounds LDZ2 ADD2
+
+JMP2r
+
+@mem-pad ( len* -- )
+
+	.bounds STHk LDZ2 ADD2 STHr STZ2
+
+JMP2r
+
 @mem-req ( len* -- ptr*|ffff )
 
 	;mem .bounds LDZ2 ADD2 ADD2k

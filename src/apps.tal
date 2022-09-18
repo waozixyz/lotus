@@ -465,12 +465,13 @@ JMP2r
 	STH2k ( win/name ) #0008 ADD2 LDA2
 		;make-src JSR2 .File/name DEO2
 
-	#2100
-		DUP2 .File/length DEO2
-		DUP2 STH2kr ( win/mem-len ) #000c ADD2 STA2
-		;mem-req JSR2
-			DUP2 .File/read DEO2
-			STH2r ( win/mem-ptr ) #000a ADD2 STA2
+	#2100 ;mem-try JSR2 .File/length DEO2
+	;mem-ptr JSR2
+		DUP2 .File/read DEO2
+		STH2kr ( win/mem-ptr ) #000a ADD2 STA2
+	.File/success DEI2
+		DUP2 ;mem-pad JSR2
+		STH2r ( win/mem-len ) #000c ADD2 STA2
 
 JMP2r
 
