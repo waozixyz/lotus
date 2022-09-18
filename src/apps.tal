@@ -90,10 +90,10 @@ JMP2r
 	.Mouse/state DEI ,&on-click JCN
 		POP2 POP2 POP2 BRK
 		&on-click
+
 	DUP2 ,&win STR2
 	POP2
 	#03 SFT2 NIP ROT ROT #02 SFT2 NIP SWP
-
 	OVR #0f GTH ,&skip JCN
 	DUP #01 NEQ ,&no-r JCN
 		OVR .System/r STHk ,&set-color JSR STHr ,&set-nibble JSR
@@ -113,20 +113,29 @@ JMP2r
 	POP2
 
 BRK
-	&release #00 .Mouse/state DEO POP2 BRK
-	&set-nibble ( -- )
-		.cursor/color LDZ #01 SFT ADD DEO
-		;get-active-win JSR2 ;draw-win JSR2
-	JMP2r
-	&set-color ( value color -- )
-		SWP ,&v STR
-		.cursor/color LDZ STHk #01 SFT ADD DEI
-		STHr #01 AND STHk
-		#0f SWP [ #60 SFT SFT ] AND
-		STHr #00 EQU
-		[ LIT &v $1 ]
-		SWP [ #60 SFT SFT ] ADD
-	JMP2r
+
+&release ( -> )
+	#00 .Mouse/state DEO POP2
+BRK
+
+&set-nibble ( -- )
+
+	.cursor/color LDZ #01 SFT ADD DEO
+	;get-active-win JSR2 ;draw-win JSR2
+
+JMP2r
+
+&set-color ( value color -- )
+
+	SWP ,&v STR
+	.cursor/color LDZ STHk #01 SFT ADD DEI
+	STHr #01 AND STHk
+	#0f SWP [ #60 SFT SFT ] AND
+	STHr #00 EQU
+	[ LIT &v $1 ]
+	SWP [ #60 SFT SFT ] ADD
+
+JMP2r
 
 &on-draw ( win* -- )
 
@@ -137,7 +146,9 @@ BRK
 		;draw-slider JSR2
 	[ .System/b ,&get-color JSR ] ;dict/blue
 		;draw-slider JSR2
+
 	( swatches )
+
 	;draw-swatches JSR2
 
 	.System/r ,&get-color JSR ;draw-hex JSR2
@@ -146,9 +157,10 @@ BRK
 
 JMP2r
 
-&get-color
+&get-color ( system -- hex )
 
-	.cursor/color LDZ STHk #01 SFT ADD DEI #01 STHr #01 AND SUB #20 SFT SFT #0f AND
+	.cursor/color LDZ STHk #01 SFT ADD DEI
+		#01 STHr #01 AND SUB #20 SFT SFT #0f AND
 
 JMP2r
 
@@ -164,19 +176,16 @@ JMP2r
 	01 "File $1
 		01 "s :save-theme "Save $1
 	05 "Edit $1
-		00 08 :clear-patt "Clear $1
-		40 00 :prev-tile "Prev $1
-		80 00 :next-tile "Next $1
-		01 "c :copy-patt "Copy $1
-		01 "v :paste-patt "Paste $1
+		00 08 :app-tile/clear-patt "Clear $1
+		40 00 :app-tile/prev-tile "Prev $1
+		80 00 :app-tile/next-tile "Next $1
+		01 "c :app-tile/copy-patt "Copy $1
+		01 "v :app-tile/paste-patt "Paste $1
 	04 "Color $1
 		00 "1 :select-color1 "Background $1
 		00 "2 :select-color2 "Color1 $1
 		00 "3 :select-color3 "Color2 $1
 		00 "4 :select-color4 "Color3 $1
-	02 "Mode $1
-		00 00 :mode-chr "2-bit $1
-		00 00 :mode-icn "1-bit $1
 	$1
 
 @app-tile
@@ -237,11 +246,11 @@ JMP2r
 		,&release JMP
 		&no-swatch
 	DUP2 #000b NEQ2 ,&no-l JCN
-		;prev-tile JSR2
+		;app-tile/prev-tile JSR2
 		,&release JMP
 		&no-l
 	DUP2 #070b NEQ2 ,&no-r JCN
-		;next-tile JSR2
+		;app-tile/next-tile JSR2
 		,&release JMP
 		&no-r
 	&skip
@@ -250,15 +259,7 @@ JMP2r
 BRK
 	&release #00 .Mouse/state DEO POP2 BRK
 
-@select-color1 ( -- ) #00 .cursor/color STZ JMP2r
-@select-color2 ( -- ) #01 .cursor/color STZ JMP2r
-@select-color3 ( -- ) #02 .cursor/color STZ JMP2r
-@select-color4 ( -- ) #03 .cursor/color STZ JMP2r
-
-@mode-chr ( -- ) ( TODO ) JMP2r
-@mode-icn ( -- ) ( TODO ) JMP2r
-
-@copy-patt ( -- )
+&copy-patt ( -- )
 
 	;dict/snarf-ext .File/name DEO2
 	#0010 .File/length DEO2
@@ -266,7 +267,7 @@ BRK
 
 JMP2r
 
-@paste-patt ( -- )
+&paste-patt ( -- )
 
 	;dict/snarf-ext .File/name DEO2
 	#0010 .File/length DEO2
@@ -275,23 +276,23 @@ JMP2r
 
 JMP2r
 
-@prev-tile ( -- )
+&prev-tile ( -- )
 
-	;paint-patt/addr LDA2 #0010 SUB2 ,sel-tile JSR
+	;paint-patt/addr LDA2 #0010 SUB2 ,&sel-tile JSR
 
 JMP2r
 
-@next-tile ( -- )
+&next-tile ( -- )
 
 	;paint-patt/addr LDA2 #0010 ADD2
 
-@sel-tile ( addr* -- )
+&sel-tile ( addr* -- )
 
 	;paint-patt/addr STA2 ;draw-desktop JSR2
 
 JMP2r
 
-@clear-patt ( -- )
+&clear-patt ( -- )
 
 	;paint-patt/addr LDA2 #0010 ;mclr JSR2 ;draw-desktop JSR2
 
@@ -938,6 +939,15 @@ JMP2r
 @edit-cut ( -- ) JMP2r
 @edit-erase ( -- ) JMP2r
 @toggle-zoom ( -- ) JMP2r
+
+(
+@|globals )
+
+( used in tile/patt apps )
+@select-color1 ( -- ) #00 .cursor/color STZ JMP2r
+@select-color2 ( -- ) #01 .cursor/color STZ JMP2r
+@select-color3 ( -- ) #02 .cursor/color STZ JMP2r
+@select-color4 ( -- ) #03 .cursor/color STZ JMP2r
 
 @size-apps-end
 
