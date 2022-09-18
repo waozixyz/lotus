@@ -1,8 +1,6 @@
 #!/bin/sh -e
 
-# cat src/main.tal src/manifest.tal src/desktop.tal src/apps.tal src/assets.tal > bin/potato.tal
-
-ASM="uxncli $HOME/roms/drifblim.rom"
+ASM="uxnasm"
 EMU="uxnemu"
 LIN="uxncli $HOME/roms/uxnlin.rom"
 

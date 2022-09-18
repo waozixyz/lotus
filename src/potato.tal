@@ -538,6 +538,27 @@ JMP2r
 
 JMP2r
 
+@wlen ( str* -- len* )
+
+	LIT2r 0000
+	&w
+		INC2r
+		INC2 LDAk ,is-alphanum JSR ,&w JCN
+	POP2
+	STH2r
+
+JMP2r
+
+@is-alphanum ( char -- bool )
+
+	( num ) DUP #2f GTH OVR #3a LTH AND ,&pass JCN
+	( uc ) DUP #40 GTH OVR #5b LTH AND ,&pass JCN
+	( lc ) DUP #60 GTH OVR #7b LTH AND ,&pass JCN
+	POP #00
+
+JMP2r
+	&pass POP #01 JMP2r
+
 @get-chr ( addr* pixel -- color )
 
 	STH DUP2 STHkr ,get-icn JSR

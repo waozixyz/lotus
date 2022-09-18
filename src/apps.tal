@@ -379,12 +379,13 @@ JMP2r
 
 	( win/mem-ptr ) #000a ADD2 LDA2
 	&w
+		.Screen/y DEI2 [ LIT2 &bound-y $2 ] GTH2 ,&end JCN
 		LDAk #0a NEQ ,&no-lb JCN
 			[ LIT2 &anchor $2 ] .Screen/x DEO2
 			.Screen/y DEI2k #0008 ADD2 ROT DEO2
 			,&resume JMP
 			&no-lb
-		.Screen/x DEI2 [ LIT2 &bound-x $2 ] LTH2 ,&no-wrap JCN
+		DUP2 ;wlen JSR2 #30 SFT2 .Screen/x DEI2 ADD2 [ LIT2 &bound-x $2 ] LTH2 ,&no-wrap JCN
 			#0c ;draw-chr/color STA
 			#0b ;draw-chr JSR2
 			,&anchor LDR2 .Screen/x DEO2
@@ -394,7 +395,6 @@ JMP2r
 			#0e ;draw-chr/color STA
 			&no-wrap
 		LDAk ;draw-chr JSR2
-		.Screen/y DEI2 [ LIT2 &bound-y $2 ] GTH2 ,&end JCN
 		&resume
 		INC2 LDAk ,&w JCN
 	&end
