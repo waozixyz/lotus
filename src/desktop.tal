@@ -29,6 +29,9 @@
 		82 00 :go-file "Open $1
 	$1
 
+(
+@|vectors )
+
 @untrap ( -- )
 
 	;on-mouse .Mouse/vector DEO2
@@ -174,7 +177,8 @@ BRK
 
 JMP2r
 
-( window management )
+(
+@|window )
 
 @get-active-win ( -- addr* )
 
@@ -357,7 +361,8 @@ JMP2r
 
 JMP2r
 
-( open file as )
+(
+@|open-as )
 
 @open-as-data ( -- )
 
@@ -405,7 +410,8 @@ JMP2r
 		#0005 ADD2 ;dict/open SWP2 ;add-err JSR2
 	JMP2r
 
-( go menu )
+(
+@|go )
 
 @go-active ( -- )
 
@@ -428,7 +434,8 @@ JMP2r
 
 JMP2r
 
-( icon picking )
+(
+@|icon-picking )
 
 @pick-icon ( x* y* -- id )
 

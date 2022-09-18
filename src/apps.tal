@@ -1,5 +1,8 @@
 @size-apps-start
 
+(
+@|about )
+
 @about-manifest
 
 	03 "Disk $1
@@ -57,6 +60,8 @@ JMP2r
 		:size-apps-end :size-apps-start :dict/applications :icons/application
 		:size-system-end :size-system-start :dict/system :icons/potato
 	&full "65536 $1
+(
+@|color )
 
 @color-manifest
 
@@ -146,6 +151,9 @@ JMP2r
 	.cursor/color LDZ STHk #01 SFT ADD DEI #01 STHr #01 AND SUB #20 SFT SFT #0f AND
 
 JMP2r
+
+(
+@|tile )
 
 @tile-manifest
 
@@ -323,6 +331,9 @@ JMP2r
 
 JMP2r
 
+(
+@|text )
+
 @text-manifest
 
 	03 "Text $1
@@ -350,6 +361,10 @@ JMP2r
 	POP2
 
 JMP2r
+
+
+(
+@|pict )
 
 @pict-manifest
 
@@ -428,6 +443,9 @@ JMP2r
 		;get-file JSR2 ;open-pict JSR2
 
 JMP2r
+
+(
+@|font )
 
 @font-manifest
 
@@ -521,6 +539,9 @@ JMP2r
 		;get-file JSR2 ;open-font JSR2
 
 JMP2r
+
+(
+@|play )
 
 @play-manifest
 
@@ -682,6 +703,9 @@ JMP2r
 
 JMP2r
 
+(
+@|form )
+
 @form-manifest
 
 	01 "Form $1
@@ -747,6 +771,9 @@ BRK
 
 BRK
 
+(
+@|option )
+
 @option-manifest
 
 	01 "Option $1
@@ -797,6 +824,9 @@ BRK
 	;close-win JSR2
 
 BRK
+
+(
+@|error )
 
 @error-manifest
 
