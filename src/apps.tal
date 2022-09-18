@@ -347,13 +347,57 @@ JMP2r
 
 @app-text
 	:text-manifest
-	:void-init
+	:&on-init
 	:&on-draw
 	:void-mouse
 	:void-button
 
+&on-init ( win* -- )
+
+	STH2k ( win/name ) #0008 ADD2 LDA2
+		;make-src JSR2 .File/name DEO2
+
+	#2100 ;mem-try JSR2 .File/length DEO2
+	;mem-ptr JSR2
+		DUP2 .File/read DEO2
+		STH2kr ( win/mem-ptr ) #000a ADD2 STA2
+	.File/success DEI2
+		DUP2 ;mem-pad JSR2
+		STH2r ( win/mem-len ) #000c ADD2 STA2
+
+JMP2r
+
 &on-draw ( win* -- )
 
+	.Screen/x DEI2 ,&anchor STR2
+
+	DUP2 ( win/size ) #0004 ADD2 LDA2
+		( x2 ) #00 ROT #02 SUB #30 SFT2 .Screen/x DEI2 ADD2 ,&bound-x STR2
+		( y2 ) #00 SWP #03 SUB #30 SFT2 .Screen/y DEI2 ADD2 ,&bound-y STR2
+
+	#0e ;draw-chr/color STA
+
+	( win/mem-ptr ) #000a ADD2 LDA2
+	&w
+		LDAk #0a NEQ ,&no-lb JCN
+			[ LIT2 &anchor $2 ] .Screen/x DEO2
+			.Screen/y DEI2k #0008 ADD2 ROT DEO2
+			,&resume JMP
+			&no-lb
+		.Screen/x DEI2 [ LIT2 &bound-x $2 ] LTH2 ,&no-wrap JCN
+			#0c ;draw-chr/color STA
+			#0b ;draw-chr JSR2
+			,&anchor LDR2 .Screen/x DEO2
+			.Screen/y DEI2k #0008 ADD2 ROT DEO2
+			#0c ;draw-chr/color STA
+			#06 ;draw-chr JSR2
+			#0e ;draw-chr/color STA
+			&no-wrap
+		LDAk ;draw-chr JSR2
+		.Screen/y DEI2 [ LIT2 &bound-y $2 ] GTH2 ,&end JCN
+		&resume
+		INC2 LDAk ,&w JCN
+	&end
 	POP2
 
 JMP2r
