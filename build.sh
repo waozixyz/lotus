@@ -8,7 +8,6 @@ SRC="src/potato.tal"
 DST="bin/potato.rom"
 
 CPY="$HOME/roms"
-ETC=""
 ARG=""
 
 echo ">> Cleaning"
@@ -18,7 +17,7 @@ mkdir bin
 if [[ "$*" == *"--lint"* ]]
 then
     echo ">> Linting $SRC"
-	$LIN $SRC $ETC
+	$LIN $SRC
 fi
 
 echo ">> Assembling $SRC"
