@@ -47,12 +47,13 @@ BRK
 
 @mem-req ( len* -- ptr*|ffff )
 
-	( TODO: Catch memory overflow )
-
-	( ptr )
-	;mem .bounds LDZ2 ADD2
-	( update )
-	SWP2 .bounds LDZ2 ADD2 .bounds STZ2
+	;mem .bounds LDZ2 ADD2 ADD2k
+	( catch overflow )
+	LTH2k ,&valid JCN
+		POP2 POP2 POP2 #ffff JMP2r
+		&valid
+	( update mem )
+	ROT2 .bounds LDZ2 ADD2 .bounds STZ2 POP2
 
 JMP2r
 

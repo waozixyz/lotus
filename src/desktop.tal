@@ -233,7 +233,8 @@ JMP2r
 JMP2r
 	&found NIP JMP2r
 
-( open windows )
+(
+@|modals )
 
 @add-err ( action* target* -- )
 
@@ -273,9 +274,16 @@ JMP2r
 	STH2r STA2
 
 	( init vector )
-	.length LDZ ;get-win JSR2
+	.length LDZ ;get-win JSR2 STH2k
 		( win/app ) DUP2 #0006 ADD2 LDA2
 		( win/app/on-init ) INC2 INC2 LDA2 JSR2
+
+	( check if mem succeeded )
+	STH2kr #000a ADD2 LDA2 #ffff NEQ2 ,&mem-ok JCN
+		#0000 STH2kr #000a ADD2 STA2
+		STH2r LDA2 ;dict/memory ;add-err JSR2 JMP2r
+		&mem-ok
+	POP2r
 
 	.length LDZk INC SWP STZ
 	.length LDZ #01 SUB
