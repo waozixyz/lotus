@@ -378,12 +378,10 @@ JMP2r
 	DUP2 ( win/size ) #0004 ADD2 LDA2
 		( x2 ) #00 ROT #02 SUB #30 SFT2 .Screen/x DEI2 ADD2 ,&bound-x STR2
 		( y2 ) #00 SWP #03 SUB #30 SFT2 .Screen/y DEI2 ADD2 ,&bound-y STR2
-
-	DUP2 #000e ADD2 LDA2 ;print JSR2 #0a18 DEO
-
 	#0e ;draw-chr/color STA
 
-	DUP2 ( win/mem-ptr ) #000a ADD2 LDA2
+	DUP2 ( win/scroll ) #000e ADD2 LDA2
+	OVR2 ( win/mem-ptr ) #000a ADD2 LDA2 ;find-line JSR2
 	&w
 		.Screen/y DEI2 [ LIT2 &bound-y $2 ] GTH2 ,&end JCN
 		LDAk #0a NEQ ,&no-lb JCN
@@ -396,7 +394,6 @@ JMP2r
 			#0b ;draw-chr JSR2
 			,&anchor LDR2 .Screen/x DEO2
 			.Screen/y DEI2k #0008 ADD2 ROT DEO2
-			#0c ;draw-chr/color STA
 			#06 ;draw-chr JSR2
 			#0e ;draw-chr/color STA
 			&no-wrap
@@ -405,7 +402,6 @@ JMP2r
 		INC2 LDAk ,&w JCN
 	&end
 	POP2
-
 	( scrollbar )
 	LDA2k .Screen/x DEO2
 	DUP2 #0002 ADD2 LDA2 #0012 ADD2 .Screen/y DEO2
@@ -421,16 +417,18 @@ JMP2r
 		POP2 POP2 POP2 BRK
 		&on-click
 
-	SWP2 ;print JSR2 #2018 DEO
-	;print JSR2 #2018 DEO
-	POP2
+	POP2 POP2 POP2
 
 BRK
 
 &on-scroll ( x* y* win* scroll* -> )
 
 	STH2
-	DUP2 ( app/misc ) #000e ADD2 LDA2k STH2r ADD2 SWP2 STA2
+	DUP2 ( app/misc ) #000e ADD2 LDA2k STH2r ADD2
+		DUP2 #ffff NEQ2 ,&valid JCN
+			POP2 POP2 POP2 POP2 POP2 BRK
+			&valid
+		SWP2 STA2
 	NIP2 NIP2 ;draw-win JSR2
 
 BRK
@@ -980,6 +978,25 @@ BRK
 
 (
 @|globals )
+
+@find-line ( line* text* -- text* )
+
+	OVR2 #0000 NEQ2 ,&no-first JCN
+		NIP2 JMP2r
+		&no-first
+	SWP2 STH2
+	LIT2r 0000
+	&w
+		LDAk #0a NEQ ,&no-lb JCN
+			INC2r
+			&no-lb
+		EQU2kr STHr ,&end JCN
+		INC2 LDAk ,&w JCN
+	&end
+	POP2r POP2r
+	INC2
+
+JMP2r
 
 ( used in tile/patt apps )
 @select-color1 ( -- ) #00 .cursor/color STZ JMP2r
