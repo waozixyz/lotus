@@ -317,7 +317,7 @@ JMP2r
 
 @open-text ( file* -- )
 
-	#0005 ADD2 ;app-text #3023 #001d #0034 ;add-win JSR2
+	#0005 ADD2 ;app-text #5823 #001d #0034 ;add-win JSR2
 
 JMP2r
 
@@ -1117,7 +1117,10 @@ JMP2r
 
 JMP2r
 
-@draw-scrollbar ( h -- )
+@draw-scrollbar ( pos h -- )
+
+	.Screen/x DEI2 ;&x STA2
+	.Screen/y DEI2 ;&y STA2
 
 	#01 SUB
 	#06 .Screen/auto DEO
@@ -1136,6 +1139,15 @@ JMP2r
 	( recover y )
 	INC #00 SWP #30 SFT2 STH2
 	.Screen/y DEI2k STH2r SUB2 ROT DEO2
+
+	( marker )
+	.Screen/y DEI2 ,&y STR2
+	,&x LDR2 .Screen/x DEO2
+	;fill-icn .Screen/addr DEO2
+	#00 SWP #10 SFT2 .Screen/y DEI2 ADD2 #0008 ADD2 .Screen/y DEO2
+	#06 .Screen/sprite DEO
+	[ LIT2 &x $2 ] #0008 ADD2 .Screen/y DEO2
+	[ LIT2 &y $2 ] .Screen/y DEO2
 
 JMP2r
 
@@ -1208,38 +1220,6 @@ JMP2r
 		DUP #30 ADD ;draw-chr JSR2 #ff ,&z STR
 		&skip POP MUL2 SUB2
 	JMP2r
-
-@draw-textarea ( str* w h -- )
-
-	.Screen/x DEI2k #0008 SUB2 ROT DEO2
-	#20 ;draw-scrollbar JSR2
-	.Screen/x DEI2k #0008 ADD2 ROT DEO2
-
-	#00 SWP #30 SFT2 .Screen/y DEI2 ADD2 ,&y-bound STR2
-	#01 SUB #00 SWP #30 SFT2 .Screen/x DEI2 ADD2 ,&x-bound STR2
-	.Screen/x DEI2 ,&x STR2
-
-	LDAk #00 EQU ,&end JCN
-	#01 .Screen/auto DEO
-	&while
-		( lb )
-		LDAk #0a NEQ ,&no-lb JCN
-			[ LIT2 &x $2 ] .Screen/x DEO2
-			;draw-lb JSR2
-			,&resume JMP
-			&no-lb
-		( x )
-		.Screen/x DEI2 [ LIT2 &x-bound $2 ] GTH2 ,&ok-x JCN
-			LDAk ,draw-chr JSR
-			&ok-x
-		.Screen/y DEI2 [ LIT2 &y-bound $2 ] GTH2 ,&end JCN
-		&resume
-		INC2 LDAk ,&while JCN
-	&end
-	POP2
-
-JMP2r
-
 
 @get-strw ( str* -- width* )
 

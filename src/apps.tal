@@ -405,7 +405,9 @@ JMP2r
 	( scrollbar )
 	LDA2k .Screen/x DEO2
 	DUP2 #0002 ADD2 LDA2 #0012 ADD2 .Screen/y DEO2
-	#0005 ADD2 LDA #03 SUB ;draw-scrollbar JSR2
+	( scroll, height )
+	DUP2 #000e ADD2 LDA2 NIP
+	ROT ROT #0005 ADD2 LDA #03 SUB ;draw-scrollbar JSR2
 
 JMP2r
 
