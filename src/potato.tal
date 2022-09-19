@@ -30,7 +30,7 @@
 
 	( 800x520 | 64:41 )
 	#0320 .Screen/width DEO2
-	#0208 .Screen/height DEO2
+	#01f0 ( #0208 ) .Screen/height DEO2
 
 	#ff .drag STZ
 	#ff .sel/win STZ

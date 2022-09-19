@@ -361,7 +361,7 @@ JMP2r
 	;mem-ptr JSR2
 		DUP2 .File/read DEO2
 		STH2kr ( win/mem-ptr ) #000a ADD2 STA2
-	.File/success DEI2
+	.File/success DEI2 ( eof ) INC2
 		DUP2 ;mem-pad JSR2
 		STH2r ( win/mem-len ) #000c ADD2 STA2
 
@@ -369,7 +369,9 @@ JMP2r
 
 &on-draw ( win* -- )
 
-	.Screen/x DEI2 ,&anchor STR2
+	.Screen/x DEI2 #0008 ADD2
+		DUP2 ,&anchor STR2
+		.Screen/x DEO2
 
 	DUP2 ( win/size ) #0004 ADD2 LDA2
 		( x2 ) #00 ROT #02 SUB #30 SFT2 .Screen/x DEI2 ADD2 ,&bound-x STR2
@@ -377,7 +379,7 @@ JMP2r
 
 	#0e ;draw-chr/color STA
 
-	( win/mem-ptr ) #000a ADD2 LDA2
+	DUP2 ( win/mem-ptr ) #000a ADD2 LDA2
 	&w
 		.Screen/y DEI2 [ LIT2 &bound-y $2 ] GTH2 ,&end JCN
 		LDAk #0a NEQ ,&no-lb JCN
@@ -399,6 +401,11 @@ JMP2r
 		INC2 LDAk ,&w JCN
 	&end
 	POP2
+
+	( scrollbar )
+	LDA2k .Screen/x DEO2
+	DUP2 #0002 ADD2 LDA2 #0012 ADD2 .Screen/y DEO2
+	#0005 ADD2 LDA #03 SUB ;draw-scrollbar JSR2
 
 JMP2r
 
