@@ -526,15 +526,11 @@ JMP2r
 
 JMP2r
 
-@chex ( char -- hex )
+@chex ( c -- val|ff )
 
-	DUP #2f GTH OVR #3a LTH AND ,&number JCN
-	DUP #60 GTH OVR #67 LTH AND ,&lc JCN
-	DUP #40 GTH OVR #47 LTH AND ,&uc JCN
-		POP #00 JMP2r
-	&number #30 SUB JMP2r
-	&uc #37 SUB JMP2r
-	&lc #57 SUB
+	LIT "0 SUB DUP #09 GTH JMP JMP2r
+	#27 SUB DUP #0f GTH JMP JMP2r
+	POP #ff
 
 JMP2r
 
