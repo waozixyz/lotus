@@ -6,17 +6,17 @@
 @about-manifest
 
 	03 "Disk $1
-		12 00 :expand-win "Expand $1
-		22 00 :tab-win "Tab $1
-		42 00 :close-win "Close $1
+		12 00 =expand-win "Expand $1
+		22 00 =tab-win "Tab $1
+		42 00 =close-win "Close $1
 	$1
 
 @app-about
-	:about-manifest
-	:void-init
-	:&on-draw
-	:void-mouse
-	:void-button
+	=about-manifest
+	=void-init
+	=&on-draw
+	=void-mouse
+	=void-button
 
 &on-draw ( win* -- )
 
@@ -52,10 +52,10 @@
 
 JMP2r
 	&items
-		:size-assets-end :size-assets-start :dict/fontsicons :icons/font
-		:size-desktop-end :size-desktop-start :dict/desktop :icons/desktop
-		:size-apps-end :size-apps-start :dict/applications :icons/application
-		:size-system-end :size-system-start :dict/system :icons/potato
+		=size-assets-end =size-assets-start =dict/fontsicons =icons/font
+		=size-desktop-end =size-desktop-start =dict/desktop =icons/desktop
+		=size-apps-end =size-apps-start =dict/applications =icons/application
+		=size-system-end =size-system-start =dict/system =icons/potato
 	&full "65536 $1
 (
 @|color )
@@ -63,24 +63,24 @@ JMP2r
 @color-manifest
 
 	03 "Color $1
-		12 00 :expand-win "Expand $1
-		22 00 :tab-win "Tab $1
-		42 00 :close-win "Close $1
+		12 00 =expand-win "Expand $1
+		22 00 =tab-win "Tab $1
+		42 00 =close-win "Close $1
 	01 "File $1
-		01 "s :save-theme "Save $1
+		01 "s =save-theme "Save $1
 	04 "Select $1
-		00 "1 :select-color1 "Background $1
-		00 "2 :select-color2 "Color1 $1
-		00 "3 :select-color3 "Color2 $1
-		00 "4 :select-color4 "Color3 $1
+		00 "1 =select-color1 "Background $1
+		00 "2 =select-color2 "Color1 $1
+		00 "3 =select-color3 "Color2 $1
+		00 "4 =select-color4 "Color3 $1
 	$1
 
 @app-color
-	:color-manifest
-	:void-init
-	:&on-draw
-	:&on-mouse
-	:void-button
+	=color-manifest
+	=void-init
+	=&on-draw
+	=&on-mouse
+	=void-button
 
 &on-mouse ( x* y* win* -> )
 
@@ -167,30 +167,30 @@ JMP2r
 @tile-manifest
 
 	03 "Tile $1
-		12 00 :expand-win "Expand $1
-		22 00 :tab-win "Tab $1
-		42 00 :close-win "Close $1
+		12 00 =expand-win "Expand $1
+		22 00 =tab-win "Tab $1
+		42 00 =close-win "Close $1
 	01 "File $1
-		01 "s :save-theme "Save $1
+		01 "s =save-theme "Save $1
 	05 "Edit $1
-		00 08 :app-tile/clear-patt "Clear $1
-		40 00 :app-tile/prev-tile "Prev $1
-		80 00 :app-tile/next-tile "Next $1
-		01 "c :app-tile/copy-patt "Copy $1
-		01 "v :app-tile/paste-patt "Paste $1
+		00 08 =app-tile/clear-patt "Clear $1
+		40 00 =app-tile/prev-tile "Prev $1
+		80 00 =app-tile/next-tile "Next $1
+		01 "c =app-tile/copy-patt "Copy $1
+		01 "v =app-tile/paste-patt "Paste $1
 	04 "Color $1
-		00 "1 :select-color1 "Background $1
-		00 "2 :select-color2 "Color1 $1
-		00 "3 :select-color3 "Color2 $1
-		00 "4 :select-color4 "Color3 $1
+		00 "1 =select-color1 "Background $1
+		00 "2 =select-color2 "Color1 $1
+		00 "3 =select-color3 "Color2 $1
+		00 "4 =select-color4 "Color3 $1
 	$1
 
 @app-tile
-	:tile-manifest
-	:void-init
-	:&on-draw
-	:&on-mouse
-	:void-button
+	=tile-manifest
+	=void-init
+	=&on-draw
+	=&on-mouse
+	=void-button
 
 &on-draw ( win* -- )
 
@@ -303,7 +303,7 @@ JMP2r
 
 	DUP2 ,&last STR2
 
-	#00 SWP [ LIT2 &addr :patt-chr ] ADD2
+	#00 SWP [ LIT2 &addr =patt-chr ] ADD2
 	ROT #00 SWP
 	SWP2
 	OVR2 OVR2
@@ -337,22 +337,22 @@ JMP2r
 @text-manifest
 
 	03 "Text $1
-		12 00 :expand-win "Expand $1
-		22 00 :tab-win "Tab $1
-		42 00 :close-win "Close $1
+		12 00 =expand-win "Expand $1
+		22 00 =tab-win "Tab $1
+		42 00 =close-win "Close $1
 	04 "Edit $1
-		01 "c :edit-copy "Copy $1
-		01 "v :edit-paste "Paste $1
-		01 "x :edit-cut "Cut $1
-		00 08 :edit-erase "Erase $1
+		01 "c =edit-copy "Copy $1
+		01 "v =edit-paste "Paste $1
+		01 "x =edit-cut "Cut $1
+		00 08 =edit-erase "Erase $1
 	$1
 
 @app-text
-	:text-manifest
-	:&on-init
-	:&on-draw
-	:&on-mouse
-	:void-button
+	=text-manifest
+	=&on-init
+	=&on-draw
+	=&on-mouse
+	=void-button
 
 &on-init ( win* -- )
 
@@ -441,21 +441,21 @@ BRK
 @pict-manifest
 
 	03 "Picture $1
-		12 00 :expand-win "Expand $1
-		22 00 :tab-win "Tab $1
-		42 00 :close-win "Close $1
+		12 00 =expand-win "Expand $1
+		22 00 =tab-win "Tab $1
+		42 00 =close-win "Close $1
 	03 "View $1
-		00 "i :app-pict/invert "Invert $1
-		10 00 :app-pict/prev "Previous $1
-		20 00 :app-pict/next "Next $1
+		00 "i =app-pict/invert "Invert $1
+		10 00 =app-pict/prev "Previous $1
+		20 00 =app-pict/next "Next $1
 	$1
 
 @app-pict
-	:pict-manifest
-	:void-init
-	:&on-draw
-	:void-mouse
-	:void-button
+	=pict-manifest
+	=void-init
+	=&on-draw
+	=void-mouse
+	=void-button
 
 &on-draw ( win* -- )
 
@@ -522,20 +522,20 @@ JMP2r
 @font-manifest
 
 	03 "Font $1
-		12 00 :expand-win "Expand $1
-		22 00 :tab-win "Tab $1
-		42 00 :close-win "Close $1
+		12 00 =expand-win "Expand $1
+		22 00 =tab-win "Tab $1
+		42 00 =close-win "Close $1
 	02 "View $1
-		10 00 :app-font/prev "Previous $1
-		20 00 :app-font/next "Next $1
+		10 00 =app-font/prev "Previous $1
+		20 00 =app-font/next "Next $1
 	$1
 
 @app-font
-	:font-manifest
-	:&on-init
-	:&on-draw
-	:void-mouse
-	:void-button
+	=font-manifest
+	=&on-init
+	=&on-draw
+	=void-mouse
+	=void-button
 
 &on-init ( win* -- )
 
@@ -613,37 +613,37 @@ JMP2r
 @play-manifest
 
 	03 "Play $1
-		12 00 :expand-win "Expand $1
-		22 00 :tab-win "Tab $1
-		42 00 :close-win "Close $1
+		12 00 =expand-win "Expand $1
+		22 00 =tab-win "Tab $1
+		42 00 =close-win "Close $1
 	0c "Keyboard $1
-		00 "a :app-play/notec "C $1
-		00 "w :app-play/notecs "C# $1
-		00 "s :app-play/noted "D $1
-		00 "e :app-play/noteds "D# $1
-		00 "d :app-play/notee "E $1
-		00 "f :app-play/notef "F $1
-		00 "t :app-play/notefs "F# $1
-		00 "g :app-play/noteg "G $1
-		00 "y :app-play/notegs "G# $1
-		00 "h :app-play/notea "A $1
-		00 "u :app-play/noteas "A# $1
-		00 "j :app-play/noteb "B $1
+		00 "a =app-play/notec "C $1
+		00 "w =app-play/notecs "C# $1
+		00 "s =app-play/noted "D $1
+		00 "e =app-play/noteds "D# $1
+		00 "d =app-play/notee "E $1
+		00 "f =app-play/notef "F $1
+		00 "t =app-play/notefs "F# $1
+		00 "g =app-play/noteg "G $1
+		00 "y =app-play/notegs "G# $1
+		00 "h =app-play/notea "A $1
+		00 "u =app-play/noteas "A# $1
+		00 "j =app-play/noteb "B $1
 	01 "Mode $1
-		00 20 :app-play/toggle-loop "Hit/Loop $1
+		00 20 =app-play/toggle-loop "Hit/Loop $1
 	04 "View $1
-		10 00 :app-play/prev "Previous $1
-		20 00 :app-play/next "Next $1
-		00 "[ :app-play/zoomin "Zoom 20 "In $1
-		00 "] :app-play/zoomout "Zoom 20 "Out $1
+		10 00 =app-play/prev "Previous $1
+		20 00 =app-play/next "Next $1
+		00 "[ =app-play/zoomin "Zoom 20 "In $1
+		00 "] =app-play/zoomout "Zoom 20 "Out $1
 	$1
 
 @app-play
-	:play-manifest
-	:void-init
-	:&on-draw
-	:&on-mouse
-	:void-button
+	=play-manifest
+	=void-init
+	=&on-draw
+	=&on-mouse
+	=void-button
 
 &on-draw ( win* -- )
 
@@ -776,15 +776,15 @@ JMP2r
 @form-manifest
 
 	01 "Form $1
-		42 00 :close-win "Cancel $1
+		42 00 =close-win "Cancel $1
 	$1
 
 @app-form
-	:form-manifest
-	:void-init
-	:&on-draw
-	:&on-mouse
-	:&on-button
+	=form-manifest
+	=void-init
+	=&on-draw
+	=&on-mouse
+	=&on-button
 
 &on-draw ( win* -- )
 
@@ -844,15 +844,15 @@ BRK
 @option-manifest
 
 	01 "Option $1
-		42 00 :close-win "Cancel $1
+		42 00 =close-win "Cancel $1
 	$1
 
 @app-option
-	:option-manifest
-	:void-init
-	:&on-draw
-	:&on-mouse
-	:&on-button
+	=option-manifest
+	=void-init
+	=&on-draw
+	=&on-mouse
+	=&on-button
 
 &on-draw ( win* -- )
 
@@ -898,15 +898,15 @@ BRK
 @error-manifest
 
 	01 "Error $1
-		42 00 :close-win "Cancel $1
+		42 00 =close-win "Cancel $1
 	$1
 
 @app-error
-	:error-manifest
-	:void-init
-	:&on-draw
-	:&on-mouse
-	:&on-button
+	=error-manifest
+	=void-init
+	=&on-draw
+	=&on-mouse
+	=&on-button
 
 &on-draw ( win* -- )
 
@@ -954,17 +954,17 @@ BRK
 @void-manifest
 
 	03 "Void $1
-		12 00 :expand-win "Expand $1
-		22 00 :tab-win "Tab $1
-		42 00 :close-win "Close $1
+		12 00 =expand-win "Expand $1
+		22 00 =tab-win "Tab $1
+		42 00 =close-win "Close $1
 	$1
 
 @app-void
-	:void-manifest
-	:void-init
-	:void-draw
-	:void-mouse
-	:void-button
+	=void-manifest
+	=void-init
+	=void-draw
+	=void-mouse
+	=void-button
 
 ( defaults )
 

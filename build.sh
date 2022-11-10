@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-ASM="uxnasm"
+ASM="uxncli $HOME/roms/drifblim.rom"
 EMU="uxnemu"
 LIN="uxncli $HOME/roms/uxnlin.rom"
 
