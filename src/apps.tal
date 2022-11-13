@@ -355,15 +355,17 @@ JMP2r
 		DEOk DEOk DEOk DEOk
 		DEOk DEOk DEOk DEO
 
-	.Screen/y DEI2k #0034 SUB2 ROT DEO2
+	.Screen/y DEI2k #0030 SUB2 ROT DEO2
 	.Screen/x DEI2k #0050 ADD2 ROT DEO2
 
 	.Screen/x DEI2 STH2
 	;get-meta/buffer
+	;draw-str JSR2
+	.Screen/x DEI2k #0010 ADD2 ROT DEO2
+	#05 ;draw-chr/color STA
 	;draw-str JSR2 ;draw-lb JSR2
 	STH2kr .Screen/x DEO2
-	;draw-str JSR2 ;draw-lb JSR2
-	STH2kr .Screen/x DEO2
+	#0a ;draw-chr/color STA
 	;draw-str JSR2 ;draw-lb JSR2
 	STH2kr .Screen/x DEO2
 	;draw-str JSR2 ;draw-lb JSR2
