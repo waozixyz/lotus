@@ -405,30 +405,6 @@ JMP2r
 (
 @|helpers )
 
-@get-meta ( path* -- )
-
-	( setup )
-	.Disk/name DEO2
-	( read start )
-	#0003 .Disk/length DEO2
-	;&header .Disk/read DEO2
-	( body )
-	,&start LDR2 #0100 SUB2 ;seek JSR2
-	#0004 .Disk/length DEO2
-	;&end
-		DUP2 .Disk/read DEO2
-		LDA2 ,&start LDR2 SUB2 .Disk/length DEO2
-	;&buffer .Disk/read DEO2
-	( icon )
-	,&icon LDR2 #0100 SUB2 ;seek JSR2
-	#0200 .Disk/length DEO2
-	;&pict .Disk/read DEO2
-
-JMP2r
-	&header $1 &start $2 &end $2 &icon $2
-	&buffer $40
-	&pict $200
-
 @seek ( length* -- )
 
 	.Disk/name DEI2k ROT  DEO2

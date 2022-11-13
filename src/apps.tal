@@ -347,34 +347,50 @@ JMP2r
 
 &on-draw ( win* -- )
 
-	#0008 ADD2 LDA2 ;make-src JSR2
-		;get-meta JSR2
+	#0008 ADD2 LDA2 ;make-src JSR2 .Disk/name DEO2
 
-	;get-meta/pict .Screen/addr DEO2
-	#76 .Screen/auto DEO
-	#0c .Screen/sprite
-		DEOk DEOk DEOk DEOk
-		DEOk DEOk DEOk DEO
+	( read start )
+	#0003 .Disk/length DEO2
+	;&header .Disk/read DEO2
+	( body )
+	;&start LDA2 #0100 SUB2 ;seek JSR2
+	#0004 .Disk/length DEO2
+	;&end
+		DUP2 .Disk/read DEO2
+		LDA2 ;&start LDA2 SUB2 .Disk/length DEO2
+	;mem-ptr JSR2
+		DUP2 .Disk/read DEO2
 
-	.Screen/y DEI2k #0030 SUB2 ROT DEO2
-	.Screen/x DEI2k #0050 ADD2 ROT DEO2
-
-	.Screen/x DEI2 STH2
-	;get-meta/buffer
+	.Screen/x DEI2 STH2 DUP2r LIT2r 0040 ADD2r
+	( body )
+	STH2kr .Screen/x DEO2
 	;draw-str JSR2
-	.Screen/x DEI2k #0010 ADD2 ROT DEO2
+	#20 ;draw-chr JSR2
 	#05 ;draw-chr/color STA
 	;draw-str JSR2 ;draw-lb JSR2
 	STH2kr .Screen/x DEO2
 	#0a ;draw-chr/color STA
 	;draw-str JSR2 ;draw-lb JSR2
-	STH2kr .Screen/x DEO2
+	STH2r .Screen/x DEO2
 	;draw-str JSR2 ;draw-lb JSR2
 	POP2
-
+	( icon )
 	STH2r .Screen/x DEO2
+	.Screen/y DEI2k #0018 SUB2 ROT DEO2
+	;&icon LDA2 #0100 SUB2 ;seek JSR2
+	#0200 .Disk/length DEO2
+	;mem-ptr JSR2
+		DUP2 .Disk/read DEO2
+		.Screen/addr DEO2
+	#76 .Screen/auto DEO
+	#0c .Screen/sprite 
+		DEOk DEOk DEOk DEOk
+		DEOk DEOk DEOk DEO
+
+	#01 .Screen/auto DEO
 
 JMP2r
+	&header $1 &start $2 &end $2 &icon $2
 
 (
 @|text )
