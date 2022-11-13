@@ -330,7 +330,7 @@ JMP2r
 JMP2r
 
 (
-@|hexa )
+@|info )
 
 @info-manifest
 
@@ -347,10 +347,21 @@ JMP2r
 
 &on-draw ( win* -- )
 
-	#0008 ADD2 LDA2 ;pstr JSR2
+	#0008 ADD2 LDA2 ;get-meta JSR2
+
+	.Screen/x DEI2 STH2
+	;get-meta/buffer #0002 ADD2 
+	;draw-str JSR2 ;draw-lb JSR2
+	STH2kr .Screen/x DEO2
+	;draw-str JSR2 ;draw-lb JSR2
+	STH2kr .Screen/x DEO2
+	;draw-str JSR2 ;draw-lb JSR2
+	STH2kr .Screen/x DEO2
+	;draw-str JSR2 ;draw-lb JSR2
+	POP2 POP2r
 
 	( POP2
-	[ LIT2 &target $2 ] ;draw-line JSR2
+	[ LIT2 &target $2 ] 
 	;draw-lb JSR2
 	.Screen/x DEI2k #0030 ADD2 ROT DEO2
 	[ LIT2 &action $2 ] #08 ;draw-button JSR2 )

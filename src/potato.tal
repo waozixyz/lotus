@@ -297,7 +297,7 @@ JMP2r
 	DUP2 ;dict/pcm-ext ;has-ext JSR2 ;open-sound JCN2
 	DUP2 ;dict/rom-ext ;has-ext JSR2 ;open-load JCN2
 	DUP2 #0005 ADD2 ;dict/theme-ext ;scmp JSR2 ,open-theme JCN
-	DUP2 #0005 ADD2 ;is-binary JSR2 ,open-hexa JCN
+	( DUP2 #0005 ADD2 ;is-binary JSR2 ,open-hexa JCN )
 	;open-text JSR2
 
 JMP2r
@@ -404,6 +404,42 @@ JMP2r
 
 (
 @|helpers )
+
+@get-meta ( path* -- )
+
+	( setup )
+	DUP2 ;pstr JSR2 #0a18 DEO
+	.Disk/name DEO2
+	( read start )
+	#0003 .Disk/length DEO2
+	;&header .Disk/read DEO2
+	,&start LDR2 ;print JSR2 #0a18 DEO
+	( seek )
+	,&start LDR2 #0103 SUB2 ;seek JSR2
+	( read end )
+	#0002 .Disk/length DEO2
+	;&end .Disk/read DEO2
+	,&end LDR2 ;print JSR2 #0a18 DEO
+
+	,&end LDR2 ,&start LDR2 SUB2 .Disk/length DEO2
+	;&buffer .Disk/read DEO2
+
+JMP2r
+	&header $1 &start $2 &end $2
+	&buffer $100
+
+@seek ( length* -- )
+
+	#0001 .Disk/length DEO2
+	#0000
+	&l
+		;&b .Disk/read DEO2
+		( ;&b LDA ;print/byte JSR2 #2018 DEO )
+		INC2 GTH2k ,&l JCN
+	POP2 POP2
+	
+JMP2r
+	&b $1
 
 @play-note ( pitch -- )
 
