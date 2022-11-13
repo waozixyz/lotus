@@ -347,7 +347,8 @@ JMP2r
 
 &on-draw ( win* -- )
 
-	#0008 ADD2 LDA2 ;get-meta JSR2
+	#0008 ADD2 LDA2 ;make-src JSR2
+		;get-meta JSR2
 
 	;get-meta/pict .Screen/addr DEO2
 	#76 .Screen/auto DEO
