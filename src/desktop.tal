@@ -13,7 +13,7 @@
 		01 "d =file-clone "Clone $1
 		01 08 =file-delete "Delete $1
 	05 "Open $1
-		01 "d =open-as-data "As 20 "Data $1
+		01 "d =open-as-meta "As 20 "Meta $1
 		01 "t =open-as-text "As 20 "Text $1
 		01 "p =open-as-pict "As 20 "Pict $1
 		01 "p =open-as-font "As 20 "Font $1
@@ -365,9 +365,9 @@ JMP2r
 (
 @|open-as )
 
-@open-as-data ( -- )
+@open-as-meta ( -- )
 
-	;open-hexa ,open-as JSR
+	;open-meta ,open-as JSR
 
 JMP2r
 

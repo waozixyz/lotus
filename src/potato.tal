@@ -309,9 +309,9 @@ JMP2r
 
 JMP2r
 
-@open-hexa ( file* -- )
+@open-meta ( file* -- )
 
-	#0005 ADD2 ;app-info #240a #0010 #0008 ;add-win JSR2
+	#0005 ADD2 ;app-meta #240a #0010 #0008 ;add-win JSR2
 
 JMP2r
 

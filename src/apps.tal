@@ -330,16 +330,16 @@ JMP2r
 JMP2r
 
 (
-@|info )
+@|meta )
 
-@info-manifest
+@meta-manifest
 
-	01 "Info $1
+	01 "Meta $1
 		42 00 =close-win "Close $1
 	$1
 
-@app-info
-	=info-manifest
+@app-meta
+	=meta-manifest
 	=void-init
 	=&on-draw
 	=void-mouse
