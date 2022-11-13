@@ -334,8 +334,8 @@ JMP2r
 
 @info-manifest
 
-	01 "Option $1
-		42 00 =close-win "Cancel $1
+	01 "Info $1
+		42 00 =close-win "Close $1
 	$1
 
 @app-info
@@ -349,22 +349,27 @@ JMP2r
 
 	#0008 ADD2 LDA2 ;get-meta JSR2
 
-	.Screen/x DEI2 STH2
-	;get-meta/buffer #0002 ADD2 
-	;draw-str JSR2 ;draw-lb JSR2
-	STH2kr .Screen/x DEO2
-	;draw-str JSR2 ;draw-lb JSR2
-	STH2kr .Screen/x DEO2
-	;draw-str JSR2 ;draw-lb JSR2
-	STH2kr .Screen/x DEO2
-	;draw-str JSR2 ;draw-lb JSR2
-	POP2 POP2r
+	;get-meta/pict .Screen/addr DEO2
+	#76 .Screen/auto DEO
+	#0c .Screen/sprite
+		DEOk DEOk DEOk DEOk
+		DEOk DEOk DEOk DEO
 
-	( POP2
-	[ LIT2 &target $2 ] 
-	;draw-lb JSR2
-	.Screen/x DEI2k #0030 ADD2 ROT DEO2
-	[ LIT2 &action $2 ] #08 ;draw-button JSR2 )
+	.Screen/y DEI2k #0034 SUB2 ROT DEO2
+	.Screen/x DEI2k #0050 ADD2 ROT DEO2
+
+	.Screen/x DEI2 STH2
+	;get-meta/buffer
+	;draw-str JSR2 ;draw-lb JSR2
+	STH2kr .Screen/x DEO2
+	;draw-str JSR2 ;draw-lb JSR2
+	STH2kr .Screen/x DEO2
+	;draw-str JSR2 ;draw-lb JSR2
+	STH2kr .Screen/x DEO2
+	;draw-str JSR2 ;draw-lb JSR2
+	POP2
+
+	STH2r .Screen/x DEO2
 
 JMP2r
 
