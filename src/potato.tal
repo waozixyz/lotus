@@ -311,7 +311,7 @@ JMP2r
 
 @open-hexa ( file* -- )
 
-	( TODO: ) POP2
+	#0005 ADD2 ;app-info #2010 #0010 #0008 ;add-win JSR2
 
 JMP2r
 

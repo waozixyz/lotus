@@ -367,7 +367,7 @@ JMP2r
 
 @open-as-data ( -- )
 
-	( TODO: )
+	;open-hexa ,open-as JSR
 
 JMP2r
 
