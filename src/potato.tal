@@ -349,7 +349,7 @@ JMP2r
 	#fe00 .File/length DEO2
 	;loader-rom #ffd5 #002a ;mcpy JSR2
 	;clear-screen JSR2
-	POP POP2r
+	POP2r POP2r
 	#ffd5 JMP2
 
 JMP2r
