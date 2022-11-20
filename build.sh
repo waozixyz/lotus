@@ -1,33 +1,41 @@
-#!/bin/sh -e
+#!/bin/sh
 
-ASM="uxncli $HOME/roms/drifblim.rom"
-EMU="uxnemu"
-LIN="uxncli $HOME/roms/uxnlin.rom"
+set -o nounset # This will make the script fail when accessing an unset variable. To use a variable that may or may not have been set, use "${varname-}" instead of "${varname}".
+set -o errexit # Exit immediately if a command exits with a non-zero status.
 
-SRC="src/potato.tal"
-DST="bin/potato.rom"
+roms_dir=${UXN_ROMS_DIR-"$HOME/roms"}
 
-CPY="$HOME/roms"
-ARG=""
+asm="uxncli $roms_dir/drifblim.rom"
+emu="uxnemu"
+lin="uxncli $roms_dir/uxnlin.rom"
+
+src="src/potato.tal"
+dst="bin/potato.rom"
+
+cpy="$roms_dir"
+arg=""
 
 echo ">> Cleaning"
 rm -rf bin
 mkdir bin
 
-if [[ "$*" == *"--lint"* ]]
-then
-    echo ">> Linting $SRC"
-	$LIN $SRC
-fi
+case "$*" in
+  *--lint*)
+    echo ">> Linting $src"
+    $lin $src
+    ;;
+esac
 
-echo ">> Assembling $SRC"
-$ASM $SRC $DST
+echo ">> Assembling $src"
+$asm $src $dst
 
-if [[ "$*" == *"--save"* ]]
-then
-    echo ">> Saving $DST"
-	cp $DST $CPY
-fi
+case "$*" in
+  *--save*)
+    echo ">> Saving $dst"
+    cp $dst $cpy
+    ;;
+esac
 
-echo ">> Running $DST"
-$EMU $DST $ARG
+echo ">> Running $dst"
+$emu $dst $arg
+
