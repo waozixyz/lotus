@@ -92,9 +92,9 @@ JMP2r
 	( update bound )
 	.bounds LDZ2 OVR2 SUB2 .bounds STZ2
 	( shift memory left from ptr, by length )
-	#fff0 SWP2 ;msfl JSR2
+	#fff0 SWP2 ;msfl ( .. )
 
-JMP2r
+JMP2
 
 @mem-type ( addr* -- type )
 
@@ -242,9 +242,9 @@ JMP2
 	( b* ) ;buf/form ;make-dst JSR2
 		;fcpy JSR2
 	( a* ) ,&src LDR2 ;make-src JSR2
-		;fdel JSR2
+		;fdel ( .. )
 
-JMP2r
+JMP2
 
 @file-clone ( -- )
 
@@ -283,7 +283,7 @@ JMP2
 	( -> do file operations )
 
 JMP2r
-	&fail POP2r #0005 ADD2 ;dict/rename SWP2 ;add-err JSR2 JMP2r
+	&fail POP2r #0005 ADD2 ;dict/rename SWP2 ;add-err JMP2
 
 ( open a file )
 
@@ -298,50 +298,50 @@ JMP2r
 	DUP2 ;dict/rom-ext ;has-ext JSR2 ;open-load JCN2
 	DUP2 #0005 ADD2 ;dict/theme-ext ;scmp JSR2 ,open-theme JCN
 	( DUP2 #0005 ADD2 ;is-binary JSR2 ,open-hexa JCN )
-	;open-text JSR2
+	;open-text ( .. )
 
-JMP2r
+JMP2
 	&no-file POP2 JMP2r
 
 @open-folder ( file* -- )
 
-	#0005 ADD2 ;push-dir JSR2
+	#0005 ADD2 ;push-dir ( .. )
 
-JMP2r
+JMP2
 
 @open-meta ( file* -- )
 
-	#0005 ADD2 ;app-meta #240a #0010 #0008 ;add-win JSR2
+	#0005 ADD2 ;app-meta #240a #0010 #0008 ;add-win ( .. )
 
-JMP2r
+JMP2
 
 @open-text ( file* -- )
 
-	#0005 ADD2 ;app-text #5823 #001d #0034 ;add-win JSR2
+	#0005 ADD2 ;app-text #5823 #001d #0034 ;add-win ( .. )
 
-JMP2r
+JMP2
 
 @open-font ( file* -- )
 
 	#0005 ADD2 ;app-font #2222 #001d #0034 ;add-win JSR2
-	;center-win JSR2
+	;center-win ( .. )
 
-JMP2r
+JMP2
 
 @open-sound ( file* -- )
 
 	#0005 ADD2 ;app-play #220f #001d #0034 ;add-win JSR2
-	;center-win JSR2
+	;center-win ( .. )
 
-JMP2r
+JMP2
 
 @open-theme ( file* -- )
 
 	#0005 ADD2 ;make-src JSR2 ;load-theme JSR2
 	;open-tile JSR2
-	;open-color JSR2
+	;open-color ( .. )
 
-JMP2r
+JMP2
 
 @open-load ( file* -- )
 
@@ -359,9 +359,9 @@ JMP2r
 	#0005 ADD2
 	DUP2 ;read-pict-size JSR2
 	;app-pict SWP2 INC INC #0000 DUP2 ;add-win JSR2
-	;center-win JSR2
+	;center-win ( .. )
 
-JMP2r
+JMP2
 
 @open-about ( -- )
 
@@ -369,10 +369,10 @@ JMP2r
 	;app-about ;find-win JSR2
 		DUP #ff NEQ ,&reselect JCN POP
 	;no-name ;app-about #2213 #0000 DUP2 ;add-win JSR2
-	;center-win JSR2
+	;center-win ( .. )
 
-JMP2r
-	&reselect ;sel-win JSR2 JMP2r
+JMP2
+	&reselect ;sel-win JMP2
 
 @open-tile ( -- )
 
@@ -384,10 +384,10 @@ JMP2r
 	;no-name ;app-tile #0a0f
 	( y ) .Screen/height DEI2 #0088 SUB2
 	( x ) .Screen/width DEI2 #0060 SUB2
-		;add-win JSR2
+		;add-win ( .. )
 
-JMP2r
-	&reselect ;sel-win JSR2 JMP2r
+JMP2
+	&reselect ;sel-win JMP2
 
 @open-color ( -- )
 
@@ -397,10 +397,10 @@ JMP2r
 	;no-name ;app-color #0a0f
 	( y ) .Screen/height DEI2 #0088 SUB2
 	( x ) .Screen/width DEI2 #00c0 SUB2
-		;add-win JSR2
+		;add-win ( .. )
 
-JMP2r
-	&reselect ;sel-win JSR2 JMP2r
+JMP2
+	&reselect ;sel-win JMP2
 
 (
 @|helpers )
@@ -499,9 +499,9 @@ JMP2r
 	#0040 .File/length DEO2
 	;&buf .File/stat DEO2
 	#00 ;&buf #0004 ADD2 STA
-	;&buf ;shex JSR2
+	;&buf ;shex ( .. )
 
-JMP2r
+JMP2
 	&buf $40
 
 @mswp ( len* a* b* -- )
@@ -604,17 +604,17 @@ JMP2r
 	OVR2 ;slen JSR2 [ LIT2 &len $2 ] LTH2 ,&ok JCN
 		POP2 POP JMP2r
 		&ok
-	;sput JSR2
+	;sput ( .. )
 
-JMP2r
+JMP2
 	&erase POP ;spop JSR2 POP JMP2r
 	&invalid POP2 POP2 JMP2r
 
 @has-ext ( str* ext* -- flag )
 
-	SWP2 ,get-ext JSR ;scmp JSR2
+	SWP2 ,get-ext JSR ;scmp ( .. )
 
-JMP2r
+JMP2
 
 @get-ext ( str* -- ext* )
 
@@ -631,9 +631,9 @@ JMP2r
 	.System/b DEI2 ,&w JSR
 	#0010 .File/length DEO2
 	;patt-chr .File/write DEO2
-	;draw-desktop JSR2
+	;draw-desktop ( .. )
 
-JMP2r
+JMP2
 	&w ,&b STR2 ;&b .File/write DEO2 JMP2r
 	&b $2
 
@@ -693,9 +693,9 @@ JMP2r
 		#81 .Screen/sprite DEO
 		INC GTHk ,&l JCN
 	POP2
-	;draw-clock JSR2
+	;draw-clock ( .. )
 
-JMP2r
+JMP2
 
 @draw-win ( win* -- )
 
@@ -713,9 +713,9 @@ JMP2r
 	( body )
 	( x ) [ LIT2 &x $2 ] #0008 ADD2 .Screen/x DEO2
 	( y ) [ LIT2 &y $2 ] #0012 ADD2 .Screen/y DEO2
-	( app/on-draw ) [ LIT2 &app $2 ] #0004 ADD2 LDA2 JMP2
+	( app/on-draw ) [ LIT2 &app $2 ] #0004 ADD2 LDA2 ( .. )
 
-JMP2r
+JMP2
 
 @draw-win-decor ( w h -- )
 
@@ -842,9 +842,9 @@ JMP2r
 	DUP2 ;slen JSR2 #20 SFT2 STH2 ADD2r
 	.Screen/x DEI2k STH2r SUB2 ROT DEO2
 	.Screen/y DEI2k #0004 ADD2 ROT DEO2
-	#0f ;draw-text-color JSR2
+	#0f ;draw-text-color ( .. )
 
-JMP2r
+JMP2
 
 @draw-capped ( w sprite* -- )
 
@@ -932,9 +932,9 @@ JMP2r
 	[ LIT &c2 05 ] ;draw-chr/color STA
 	;draw-dec JSR2
 	#20 ;draw-chr JSR2
-	;dict/bytes ;draw-text JSR2
+	;dict/bytes ;draw-text ( .. )
 
-JMP2r
+JMP2
 
 @draw-item-icon ( file* -- file* )
 
@@ -946,15 +946,15 @@ JMP2r
 	DUP2 #0005 ADD2 ;dict/icn-ext ;has-ext JSR2 ,&picture JCN
 	DUP2 #0005 ADD2 ;dict/pcm-ext ;has-ext JSR2 ,&sound JCN
 	DUP2 #0005 ADD2 ;dict/uf2-ext ;has-ext JSR2 ,&font JCN
-	POP2 ;icons/text ;draw-icon JSR2
+	POP2 ;icons/text ;draw-icon ( .. )
 
-JMP2r
-	&folder POP2 ;icons/folder ;draw-icon JSR2 JMP2r
-	&unknown POP2 ;icons/unknown ;draw-icon JSR2 JMP2r
-	&picture POP2 ;icons/picture ;draw-icon JSR2 JMP2r
-	&rom POP2 ;icons/application ;draw-icon JSR2 JMP2r
-	&sound POP2 ;icons/sound ;draw-icon JSR2 JMP2r
-	&font POP2 ;icons/font ;draw-icon JSR2 JMP2r
+JMP2
+	&folder POP2 ;icons/folder ;draw-icon JMP2
+	&unknown POP2 ;icons/unknown ;draw-icon JMP2
+	&picture POP2 ;icons/picture ;draw-icon JMP2
+	&rom POP2 ;icons/application ;draw-icon JMP2
+	&sound POP2 ;icons/sound ;draw-icon JMP2
+	&font POP2 ;icons/font ;draw-icon JMP2
 
 @draw-item-text ( file* id -- file* )
 
@@ -974,15 +974,15 @@ JMP2r
 	DUP2 ;&buf #0004 ;mcpy JSR2
 	;&buf ;shex JSR2 ;draw-dec JSR2
 	#20 ;draw-chr JSR2
-	;dict/bytes ;draw-text JSR2
+	;dict/bytes ;draw-text ( .. )
 
-JMP2r
+JMP2
 	&buf $5
 	&no-size
 		.Screen/y DEI2k #0010 SUB2 ROT DEO2
 		.Screen/x DEI2k #0020 ADD2 ROT DEO2
-		#0005 ADD2 ;draw-text JSR2
-	JMP2r
+		#0005 ADD2 ;draw-text ( .. )
+	JMP2
 
 @draw-swatches ( -- )
 
@@ -1164,9 +1164,9 @@ JMP2r
 
 	;draw-frame/color STA
 	,set-anchor JSR
-	INC2 INC2 LDA2 ;frame2-chr ;draw-frame JSR2
+	INC2 INC2 LDA2 ;frame2-chr ;draw-frame ( .. )
 
-JMP2r
+JMP2
 
 @set-anchor ( win* -- win/size* )
 
@@ -1221,9 +1221,9 @@ JMP2r
 	#03e8 ,&parse JSR
 	#0064 ,&parse JSR
 	#000a ,&parse JSR
-	NIP #30 ADD ;draw-chr JSR2
+	NIP #30 ADD ;draw-chr ( .. )
 
-JMP2r
+JMP2
 	&parse
 		DIV2k DUPk [ LIT &z $1 ] EQU ,&skip JCN
 		DUP #30 ADD ;draw-chr JSR2 #ff ,&z STR
@@ -1298,9 +1298,9 @@ JMP2r
 
 @draw-hex ( char -- )
 
-	#0f AND DUP #09 GTH #07 MUL ADD #30 ADD ;draw-chr JSR2
+	#0f AND DUP #09 GTH #07 MUL ADD #30 ADD ;draw-chr ( .. )
 
-JMP2r
+JMP2
 
 @clear-screen ( -- )
 
