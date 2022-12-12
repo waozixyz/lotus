@@ -1,5 +1,8 @@
 ( manifest )
 
+(
+@|vectors )
+
 @trap-menu ( -> )
 
 	;on-mouse-menu .Mouse/vector DEO2
@@ -21,6 +24,7 @@ BRK
 	( when touch cat )
 	.Mouse/state DEI #00 EQU ,&no-touch-cat JCN
 	.Mouse/y DEI2 #000c GTH2 ,&no-touch-cat JCN
+	.Mouse/x DEI2 .Screen/width DEI2 #0098 SUB2 GTH2 ;on-touch-clock JCN2
 		.Mouse/x DEI2 ;get-xcat JSR2 ;menu-select JSR2
 		( release ) #00 .Mouse/state DEO
 		BRK
@@ -48,6 +52,15 @@ BRK
 		&no-leave
 
 BRK
+
+@on-touch-clock ( -> )
+
+	#1234 ;phex JSR2 #0a18 DEO
+
+BRK
+
+(
+@|controls )
 
 @menu-close ( -- )
 

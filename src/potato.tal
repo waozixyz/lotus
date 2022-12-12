@@ -558,6 +558,15 @@ JMP2r
 
 JMP2r
 
+@phex ( short* -- )
+
+	SWP ,&b JSR
+	&b ( byte -- ) DUP #04 SFT ,&c JSR
+	&c ( char -- ) #0f AND DUP #09 GTH #27 MUL ADD #30 ADD #18 DEO
+
+JMP2r
+
+
 @is-alphanum ( char -- bool )
 
 	( num ) DUP #2f GTH OVR #3a LTH AND ,&pass JCN
