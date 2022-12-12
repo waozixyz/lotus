@@ -57,6 +57,36 @@ JMP2r
 		=size-apps-end =size-apps-start =dict/applications =icons/application
 		=size-system-end =size-system-start =dict/system =icons/potato
 	&full "65536 $1
+
+(
+@|calendar )
+
+@calendar-manifest
+	03 "Calendar $1
+		12 00 =expand-win "Expand $1
+		22 00 =tab-win "Tab $1
+		42 00 =close-win "Close $1
+	$1
+
+@app-calendar
+	=calendar-manifest
+	=void-init
+	=&on-draw
+	=&on-mouse
+	=void-button
+
+&on-mouse ( x* y* win* -> )
+
+	POP2 POP2 POP2
+
+BRK
+
+&on-draw ( win* -- )
+
+	POP2
+
+JMP2r
+
 (
 @|color )
 

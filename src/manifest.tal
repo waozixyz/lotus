@@ -55,9 +55,16 @@ BRK
 
 @on-touch-clock ( -> )
 
-	#1234 ;phex JSR2 #0a18 DEO
+	( unique )
+	;app-calendar ;find-win JSR2
+		DUP #ff NEQ ,&reselect JCN POP
+	;no-name ;app-calendar #120f
+	( y ) #0030
+	( x ) #0030
+		;add-win JSR2
 
 BRK
+	&reselect ;sel-win JSR2 BRK
 
 (
 @|controls )
