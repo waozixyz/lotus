@@ -468,192 +468,6 @@ JMP2r
 JMP2r
 	&true #01 JMP2r
 
-( helpers )
-
-@fcpy ( src* dst* -- )
-
-	.Disk/name DEO2 #0001 .Disk/length DEO2
-	.File/name DEO2 #0001 .File/length DEO2
-	;&b
-	&stream
-		DUP2 .File/read DEO2
-		.File/success DEI2 ORA ,&continue JCN
-			POP2 JMP2r
-			&continue
-		DUP2 .Disk/write DEO2
-		,&stream JMP
-
-JMP2r
-	&b $1
-
-@fdel ( src* -- )
-
-	.File/name DEO2
-	#01 .File/delete DEO
-
-JMP2r
-
-@flen ( src* -- len* )
-
-	.File/name DEO2
-	#0040 .File/length DEO2
-	;&buf .File/stat DEO2
-	#00 ;&buf #0004 ADD2 STA
-	;&buf ;shex ( .. )
-
-JMP2
-	&buf $40
-
-@mswp ( len* a* b* -- )
-
-	,&b STR2 ,&a STR2
-	#0000
-	&l
-		DUP2 [ LIT2 &a $2 ] ADD2 LDAk STH
-		OVR2 [ LIT2 &b $2 ] ADD2 LDAk STH
-		SWPr
-		STHr ROT ROT STA
-		STHr ROT ROT STA
-		INC2 GTH2k ,&l JCN
-	POP2 POP2
-
-JMP2r
-
-@sbyte ( str* -- byte )
-
-	LDAk ,chex JSR #40 SFT STH
-	INC2 LDA ,chex JSR STHr ADD
-
-JMP2r
-
-@shex ( str* -- val* )
-
-	LIT2r 0000
-	&w
-		LITr 40 SFT2r
-		LITr 00
-		LDAk ,chex JSR STH ADD2r
-		INC2 LDAk ,&w JCN
-	POP2
-	STH2r
-
-JMP2r
-
-@chex ( c -- val|ff )
-
-	LIT "0 SUB DUP #09 GTH JMP JMP2r
-	#27 SUB DUP #0f GTH JMP JMP2r
-	POP #ff
-
-JMP2r
-
-@wlen ( str* -- len* )
-
-	LIT2r 0000
-	&w
-		INC2r
-		INC2 LDAk ,is-alphanum JSR ,&w JCN
-	POP2
-	STH2r
-
-JMP2r
-
-@phex ( short* -- )
-
-	SWP ,&b JSR
-	&b ( byte -- ) DUP #04 SFT ,&c JSR
-	&c ( char -- ) #0f AND DUP #09 GTH #27 MUL ADD #30 ADD #18 DEO
-
-JMP2r
-
-
-@is-alphanum ( char -- bool )
-
-	( num ) DUP #2f GTH OVR #3a LTH AND ,&pass JCN
-	( uc ) DUP #40 GTH OVR #5b LTH AND ,&pass JCN
-	( lc ) DUP #60 GTH OVR #7b LTH AND ,&pass JCN
-	POP #00
-
-JMP2r
-	&pass POP #01 JMP2r
-
-@get-chr ( addr* pixel -- color )
-
-	STH DUP2 STHkr ,get-icn JSR
-	ROT ROT #0008 ADD2 STHr ,get-icn JSR DUP ADD ORA
-
-JMP2r
-
-@get-icn ( addr* pixel -- color )
-
-	( y ) STHk #00 SWP #03 SFT2 ADD2 LDA
-	( x ) STHr #07 AND #07 SWP SUB SFT #01 AND
-
-JMP2r
-
-@rel-mouse ( x* y* win* -- x* y* win* )
-
-	STH2k
-	( y ) INC2 INC2 LDA2 SUB2 #0012 SUB2
-	SWP2
-	( x ) STH2kr LDA2 SUB2 #0008 SUB2
-	SWP2
-	STH2r
-
-JMP2r
-
-@skey ( key buf* len* -- )
-
-	,&len STR2
-	STH2 DUP STH2r ROT
-	DUP #08 EQU ,&erase JCN
-	DUP #20 LTH ,&invalid JCN
-	DUP #7e GTH ,&invalid JCN
-	POP
-	OVR2 ;slen JSR2 [ LIT2 &len $2 ] LTH2 ,&ok JCN
-		POP2 POP JMP2r
-		&ok
-	;sput ( .. )
-
-JMP2
-	&erase POP ;spop JSR2 POP JMP2r
-	&invalid POP2 POP2 JMP2r
-
-@has-ext ( str* ext* -- flag )
-
-	SWP2 ,get-ext JSR ;scmp ( .. )
-
-JMP2
-
-@get-ext ( str* -- ext* )
-
-	;scap JSR2 #0004 SUB2
-
-JMP2r
-
-@save-theme ( -- )
-
-	;dict/theme-ext ;make-src JSR2 .File/name DEO2
-	#0002 .File/length DEO2
-	.System/r DEI2 ,&w JSR
-	.System/g DEI2 ,&w JSR
-	.System/b DEI2 ,&w JSR
-	#0010 .File/length DEO2
-	;patt-chr .File/write DEO2
-	;draw-desktop ( .. )
-
-JMP2
-	&w ,&b STR2 ;&b .File/write DEO2 JMP2r
-	&b $2
-
-@scmp ( a* b* -- f ) STH2 &l LDAk LDAkr STHr ANDk #00 EQU ,&e JCN NEQk ,&e JCN POP2 INC2 INC2r ,&l JMP &e NIP2 POP2r EQU JMP2r
-@pstr ( str* -- ) &w LDAk #18 DEO INC2 LDAk ,&w JCN POP2 JMP2r
-@msfl ( a* b* len* -- ) STH2 SWP2 EQU2k ,&e JCN &l DUP2k STH2kr ADD2 LDA ROT ROT STA INC2 GTH2k ,&l JCN POP2 POP2 &e POP2r JMP2r
-@msfr ( a* b* len* -- ) STH2 EQU2k ,&e JCN &l DUP2 LDAk ROT ROT STH2kr ADD2 STA #0001 SUB2 LTH2k ,&l JCN POP2 POP2 &e POP2r JMP2r
-@mcpy ( src* dst* len* -- ) SWP2 STH2 OVR2 ADD2 SWP2 &loop LDAk STH2kr STA INC2r INC2 GTH2k ,&loop JCN POP2 POP2 POP2r JMP2r
-
-@no-name $1
-
 (
 @|drawing )
 
@@ -1330,6 +1144,255 @@ JMP2
 
 JMP2r
 
-@size-system-end
+(
+@|stdlib )
+
+@scmp ( a* b* -- f ) STH2 &l LDAk LDAkr STHr ANDk #00 EQU ,&e JCN NEQk ,&e JCN POP2 INC2 INC2r ,&l JMP &e NIP2 POP2r EQU JMP2r
+@pstr ( str* -- ) &w LDAk #18 DEO INC2 LDAk ,&w JCN POP2 JMP2r
+@msfl ( a* b* len* -- ) STH2 SWP2 EQU2k ,&e JCN &l DUP2k STH2kr ADD2 LDA ROT ROT STA INC2 GTH2k ,&l JCN POP2 POP2 &e POP2r JMP2r
+@msfr ( a* b* len* -- ) STH2 EQU2k ,&e JCN &l DUP2 LDAk ROT ROT STH2kr ADD2 STA #0001 SUB2 LTH2k ,&l JCN POP2 POP2 &e POP2r JMP2r
+@mcpy ( src* dst* len* -- ) SWP2 STH2 OVR2 ADD2 SWP2 &loop LDAk STH2kr STA INC2r INC2 GTH2k ,&loop JCN POP2 POP2 POP2r JMP2r
+
+@fcpy ( src* dst* -- )
+
+	.Disk/name DEO2 #0001 .Disk/length DEO2
+	.File/name DEO2 #0001 .File/length DEO2
+	;&b
+	&stream
+		DUP2 .File/read DEO2
+		.File/success DEI2 ORA ,&continue JCN
+			POP2 JMP2r
+			&continue
+		DUP2 .Disk/write DEO2
+		,&stream JMP
+
+JMP2r
+	&b $1
+
+@fdel ( src* -- )
+
+	.File/name DEO2
+	#01 .File/delete DEO
+
+JMP2r
+
+@flen ( src* -- len* )
+
+	.File/name DEO2
+	#0040 .File/length DEO2
+	;&buf .File/stat DEO2
+	#00 ;&buf #0004 ADD2 STA
+	;&buf ;shex ( .. )
+
+JMP2
+	&buf $40
+
+@mswp ( len* a* b* -- )
+
+	,&b STR2 ,&a STR2
+	#0000
+	&l
+		DUP2 [ LIT2 &a $2 ] ADD2 LDAk STH
+		OVR2 [ LIT2 &b $2 ] ADD2 LDAk STH
+		SWPr
+		STHr ROT ROT STA
+		STHr ROT ROT STA
+		INC2 GTH2k ,&l JCN
+	POP2 POP2
+
+JMP2r
+
+@sbyte ( str* -- byte )
+
+	LDAk ,chex JSR #40 SFT STH
+	INC2 LDA ,chex JSR STHr ADD
+
+JMP2r
+
+@shex ( str* -- val* )
+
+	LIT2r 0000
+	&w
+		LITr 40 SFT2r
+		LITr 00
+		LDAk ,chex JSR STH ADD2r
+		INC2 LDAk ,&w JCN
+	POP2
+	STH2r
+
+JMP2r
+
+@chex ( c -- val|ff )
+
+	LIT "0 SUB DUP #09 GTH JMP JMP2r
+	#27 SUB DUP #0f GTH JMP JMP2r
+	POP #ff
+
+JMP2r
+
+@wlen ( str* -- len* )
+
+	LIT2r 0000
+	&w
+		INC2r
+		INC2 LDAk ,is-alphanum JSR ,&w JCN
+	POP2
+	STH2r
+
+JMP2r
+
+@phex ( short* -- )
+
+	SWP ,&b JSR
+	&b ( byte -- ) DUP #04 SFT ,&c JSR
+	&c ( char -- ) #0f AND DUP #09 GTH #27 MUL ADD #30 ADD #18 DEO
+
+JMP2r
+
+@is-alphanum ( char -- bool )
+
+	( num ) DUP #2f GTH OVR #3a LTH AND ,&pass JCN
+	( uc ) DUP #40 GTH OVR #5b LTH AND ,&pass JCN
+	( lc ) DUP #60 GTH OVR #7b LTH AND ,&pass JCN
+	POP #00
+
+JMP2r
+	&pass POP #01 JMP2r
+
+@get-chr ( addr* pixel -- color )
+
+	STH DUP2 STHkr ,get-icn JSR
+	ROT ROT #0008 ADD2 STHr ,get-icn JSR DUP ADD ORA
+
+JMP2r
+
+@get-icn ( addr* pixel -- color )
+
+	( y ) STHk #00 SWP #03 SFT2 ADD2 LDA
+	( x ) STHr #07 AND #07 SWP SUB SFT #01 AND
+
+JMP2r
+
+@rel-mouse ( x* y* win* -- x* y* win* )
+
+	STH2k
+	( y ) INC2 INC2 LDA2 SUB2 #0012 SUB2
+	SWP2
+	( x ) STH2kr LDA2 SUB2 #0008 SUB2
+	SWP2
+	STH2r
+
+JMP2r
+
+@skey ( key buf* len* -- )
+
+	,&len STR2
+	STH2 DUP STH2r ROT
+	DUP #08 EQU ,&erase JCN
+	DUP #20 LTH ,&invalid JCN
+	DUP #7e GTH ,&invalid JCN
+	POP
+	OVR2 ;slen JSR2 [ LIT2 &len $2 ] LTH2 ,&ok JCN
+		POP2 POP JMP2r
+		&ok
+	;sput ( .. )
+
+JMP2
+	&erase POP ;spop JSR2 POP JMP2r
+	&invalid POP2 POP2 JMP2r
+
+@has-ext ( str* ext* -- flag )
+
+	SWP2 ,get-ext JSR ;scmp ( .. )
+
+JMP2
+
+@get-ext ( str* -- ext* )
+
+	;scap JSR2 #0004 SUB2
+
+JMP2r
+
+@save-theme ( -- )
+
+	;dict/theme-ext ;make-src JSR2 .File/name DEO2
+	#0002 .File/length DEO2
+	.System/r DEI2 ,&w JSR
+	.System/g DEI2 ,&w JSR
+	.System/b DEI2 ,&w JSR
+	#0010 .File/length DEO2
+	;patt-chr .File/write DEO2
+	;draw-desktop ( .. )
+
+JMP2
+	&w ,&b STR2 ;&b .File/write DEO2 JMP2r
+	&b $2
+
+@no-name $1
+
+@is-today ( year* month day -- bool )
+
+	.DateTime/month DEI2 EQU2 STH
+	.DateTime/year DEI2 EQU2 STHr AND
+
+JMP2r
+
+@is-month ( year* month -- bool )
+
+	.DateTime/month DEI EQU STH
+	.DateTime/year DEI2 EQU2 STHr AND
+
+JMP2r
+
+@dotw ( y* m d -- dotw )
+
+	( y -= m < 3; )
+	OVR STH SWP2 #00 STHr #02 LTH SUB2
+	STH2
+	( t[m-1] + d )
+	#00 ROT ;&t ADD2 LDA #00 SWP
+	ROT #00 SWP ADD2
+	( y  + y/4 - y/100 + y/400 )
+	STH2kr
+	STH2kr #02 SFT2 ADD2
+	STH2kr #0064 DIV2 SUB2
+	STH2r #0190 DIV2 ADD2
+	ADD2
+	( % 7 )
+	#0007 DIV2k MUL2 SUB2 NIP
+
+JMP2r
+	&t 00 03 02 05 00 03 05 01 04 06 02 04
+
+@diam ( year* month -- days )
+
+	#00 OVR ;&m ADD2 LDA
+
+	SWP #01 NEQ ,&no-feb JCN
+		STH DUP2 ;is-leap-year JSR2 STHr ADD
+		&no-feb
+	NIP NIP
+
+JMP2r
+	&m 1f 1c 1f 1e 1f 1e 1f 1f 1e 1f 1e 1f
+
+@is-leap-year ( year* -- bool )
+
+	( leap year if perfectly divisible by 400 )
+	DUP2 #0190 ( MOD2 ) DIV2k MUL2 SUB2 #0000 EQU2 ,&leap JCN
+	( not a leap year if divisible by 100 )
+	( but not divisible by 400 )
+	DUP2 #0064 ( MOD2 ) DIV2k MUL2 SUB2 #0000 EQU2 ,&not-leap JCN
+	( leap year if not divisible by 100 )
+	( but divisible by 4 )
+	DUP2 #0003 AND2 #0000 EQU2 ,&leap JCN
+	( all other years are not leap years )
+	&not-leap
+	POP2 #00
+
+JMP2r
+&leap POP2 #01 JMP2r
+
+( do not remove ) @size-system-end
 
 ~src/desktop.tal
