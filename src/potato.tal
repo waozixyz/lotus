@@ -20,6 +20,9 @@
 @bounds $2
 @dir $40
 
+( calendar )
+@year $2  @month $1
+
 |0100 ( -> ) @size-system-start
 
 	( theme )
@@ -1141,6 +1144,94 @@ JMP2
 		INC GTHk ,&h JCN
 	POP2
 	#15 .Screen/auto DEO
+
+JMP2r
+
+( calendar )
+
+@draw-page ( -- )
+
+	( start day )
+	.year LDZ2 .month LDZ #01 ;dotw JSR2 ;draw-cell/offset STA
+
+@draw-month ( -- )
+
+	#0000
+		DUP2 .Screen/x DEO2
+		.Screen/y DEO2
+	#21 .Screen/auto DEO
+	;fill-icn .Screen/addr DEO2
+	.Screen/width DEI2 #03 SFT2 NIP #00
+	&l
+		#02 .Screen/sprite DEO
+		INC GTHk ,&l JCN
+	POP2
+	( name )
+	#0010 .Screen/x DEO2
+	#0008 .Screen/y DEO2
+	#05 ;draw-chr/color STA
+	#00 .month LDZ #20 SFT2 ;dict/months ADD2 ;draw-str JSR2
+	.Screen/x DEI2k #0008 ADD2 ROT DEO2
+	.year LDZ2 ;draw-dec JSR2
+	( arrows )
+	#01 .Screen/auto DEO
+	.Screen/width DEI2 #0028 SUB2 .Screen/x DEO2
+	;arrow-icn .Screen/addr DEO2
+	#05 .Screen/sprite DEO
+	;current-icn .Screen/addr DEO2
+	#05 .year LDZ2 .month LDZ ;is-month JSR2 #0a MUL ADD .Screen/sprite DEO
+	;arrow-icn .Screen/addr DEO2
+	#15 .Screen/sprite DEO
+
+@draw-week ( -- )
+
+	#01 ;draw-chr/color STA
+	#0020 .Screen/y DEO2
+	#0700
+	&ld
+		#00 OVR #003f MUL2 #0010 ADD2 .Screen/x DEO2
+		DUP .DateTime/dotw DEI EQU
+		.year LDZ2 .month LDZ ;is-month JSR2 AND DUP ADD INC ;draw-chr/color STA
+		#00 OVR #20 SFT2 ;dict/dotw ADD2 ;draw-str JSR2
+		INC GTHk ,&ld JCN
+	POP2
+
+@draw-days ( -- )
+
+	#04 ;draw-chr/color STA
+	#2a00
+	&l
+		DUP ,draw-cell JSR
+		INC GTHk ,&l JCN
+	POP2
+
+JMP2r
+
+@draw-cell ( id -- )
+
+	( background )
+	#00 OVR #07 DIVk MUL SUB #003f MUL2 #0010 ADD2 .Screen/x DEO2
+	#00 OVR #07 DIV #0027 MUL2 #0030 ADD2 .Screen/y DEO2
+	#76 .Screen/auto DEO
+	;cell-icn .Screen/addr DEO2
+	#01 .Screen/sprite DEOk DEO
+	;cell-icn/middle .Screen/addr DEO2
+	#01 .Screen/sprite DEO
+	;cell-icn/middle .Screen/addr DEO2
+	#01 .Screen/sprite DEOk DEO
+	( id )
+	#01 ;draw-chr/color STA
+	.Screen/x DEI2k #0003 ADD2 ROT DEO2
+	.Screen/y DEI2k #0024 SUB2 ROT DEO2
+	#01 .Screen/auto DEO
+	[ LIT &offset $1 ] SUB
+		DUP #80 GTH ,&skip JCN
+		INCk .year LDZ2 .month LDZ ;diam JSR2 GTH ,&skip JCN
+		STHk .year LDZ2 .month LDZ STHr INC ;is-today JSR2 DUP ADD INC
+			;draw-chr/color STA
+		#00 OVR INC ;draw-dec JSR2
+	&skip
+	POP
 
 JMP2r
 

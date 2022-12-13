@@ -84,6 +84,7 @@ BRK
 &on-draw ( win* -- )
 
 	POP2
+	( ;draw-page JSR2 )
 
 JMP2r
 
