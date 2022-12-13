@@ -1149,9 +1149,7 @@ JMP2r
 
 ( calendar )
 
-@draw-month ( year* month -- )
-
-	.month STZ .year STZ2
+@draw-month ( -- )
 
 	( start day )
 	.year LDZ2 .month LDZ #01 ;dotw JSR2 ;&offset STA

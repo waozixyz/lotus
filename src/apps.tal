@@ -66,17 +66,26 @@ JMP2r
 		1200 =expand-win "Expand $1
 		2200 =tab-win "Tab $1
 		4200 =close-win "Close $1
-	02 "View $1
+	03 "View $1
+		0000 =current-month "Today $1
 		4000 =prev-month "Prev 20 "Month $1
 		8000 =next-month "Next 20 "Month $1
 	$1
 
 @app-calendar
 	=calendar-manifest
-	=void-init
+	=&on-init
 	=&on-draw
 	=&on-mouse
 	=void-button
+
+&on-init ( win* -- )
+
+	POP2
+	.DateTime/year DEI2 .year STZ2
+	.DateTime/month DEI .month STZ
+
+JMP2r
 
 &on-mouse ( x* y* win* -> )
 
@@ -87,23 +96,51 @@ BRK
 &on-draw ( win* -- )
 
 	POP2
-	.DateTime/year DEI2 .DateTime/month DEI ;draw-month JSR2
+	;draw-month JSR2
+
+JMP2r
+
+@current-month ( -- )
+
+	.DateTime/year DEI2
+	.DateTime/month DEI
+
+@select-month ( year* m -- )
+
+	.month STZ .year STZ2
+	;get-active-win JSR2 ;draw-win JSR2
 
 JMP2r
 
 @prev-month ( -- )
 
-	#0001 ;phex JSR2 #0a18 DEO
-	;get-active-win JSR2 ;draw-win JSR2
+	.month LDZ
+		DUP #00 EQU ,&year JCN
+		#01 SUB .year LDZ2 ROT ;select-month ( .. )
 
-JMP2r
+JMP2
+
+&year ( m -- )
+
+	.year LDZ2k #0001 SUB2 ROT STZ2
+	POP #0b .year LDZ2 ROT ;select-month ( .. )
+
+JMP2
 
 @next-month ( -- )
 
-	#0002 ;phex JSR2 #0a18 DEO
-	;get-active-win JSR2 ;draw-win JSR2
+	.month LDZ
+		DUP #0b EQU ,&year JCN
+		INC .year LDZ2 ROT ;select-month ( .. )
 
-JMP2r
+JMP2
+
+&year ( m -- )
+
+	.year LDZ2k INC2 ROT STZ2
+	POP #00 .year LDZ2 ROT ;select-month ( .. )
+
+JMP2
 
 (
 @|color )
