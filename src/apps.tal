@@ -84,7 +84,9 @@ BRK
 &on-draw ( win* -- )
 
 	POP2
-	( ;draw-page JSR2 )
+	.DateTime/year DEI2 .year STZ2
+	.DateTime/month DEI .month STZ
+	;draw-page JSR2
 
 JMP2r
 

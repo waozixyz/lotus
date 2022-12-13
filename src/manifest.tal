@@ -58,7 +58,7 @@ BRK
 	( unique )
 	;app-calendar ;find-win JSR2
 		DUP #ff NEQ ,&reselect JCN POP
-	;no-name ;app-calendar #120f
+	;no-name ;app-calendar #1d0f
 	( y ) #0030
 	( x ) #0030
 		;add-win JSR2
