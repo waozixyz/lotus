@@ -1149,7 +1149,9 @@ JMP2r
 
 ( calendar )
 
-@draw-page ( -- )
+@draw-month ( year* month -- )
+
+	.month STZ .year STZ2
 
 	( start day )
 	.year LDZ2 .month LDZ #01 ;dotw JSR2 ;&offset STA
@@ -1161,31 +1163,27 @@ JMP2r
 	.Screen/x DEI2k #0008 ADD2 ROT DEO2
 	.year LDZ2 ;draw-dec JSR2
 	( week )
-	#01 ;draw-chr/color STA
 	STH2kr .Screen/y DEO2
 	#0700
 	&lw
 		#00 OVR #0020 MUL2 OVR2r STH2r ADD2 .Screen/x DEO2
 		DUP .DateTime/dotw DEI EQU
-		.year LDZ2 .month LDZ ;is-month JSR2 AND DUP ADD INC ;draw-chr/color STA
+		.year LDZ2 .month LDZ ;is-month JSR2 AND STH
+			#050c STHr JMP SWP POP ;draw-chr/color STA
 		#00 OVR #20 SFT2 ;dict/dotw ADD2 ;draw-str JSR2 POP2
 		INC GTHk ,&lw JCN
 	POP2
 	( days )
 	LIT2r 0010 ADD2r
-	#04 ;draw-chr/color STA
 	#2a00
 	&l
-		( background )
 		#00 OVR #07 DIVk MUL SUB #0020 MUL2 OVR2r STH2r ADD2 .Screen/x DEO2
 		#00 OVR #07 DIV #0010 MUL2 STH2kr ADD2 .Screen/y DEO2
-		DUP
-		( id )
-		[ LIT &offset $1 ] SUB
+		DUP [ LIT &offset $1 ] SUB
 			DUP #80 GTH ,&skip JCN
 			INCk .year LDZ2 .month LDZ ;diam JSR2 GTH ,&skip JCN
-			STHk .year LDZ2 .month LDZ STHr INC ;is-today JSR2 DUP ADD INC
-				;draw-chr/color STA
+			STHk .year LDZ2 .month LDZ STHr INC ;is-today JSR2 STH
+				#0c0e STHr JMP SWP POP ;draw-chr/color STA
 		#00 OVR INC ;draw-dec JSR2
 		&skip
 		POP

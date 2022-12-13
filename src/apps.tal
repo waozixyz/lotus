@@ -63,9 +63,12 @@ JMP2r
 
 @calendar-manifest
 	03 "Calendar $1
-		12 00 =expand-win "Expand $1
-		22 00 =tab-win "Tab $1
-		42 00 =close-win "Close $1
+		1200 =expand-win "Expand $1
+		2200 =tab-win "Tab $1
+		4200 =close-win "Close $1
+	02 "View $1
+		4000 =prev-month "Prev 20 "Month $1
+		8000 =next-month "Next 20 "Month $1
 	$1
 
 @app-calendar
@@ -84,9 +87,21 @@ BRK
 &on-draw ( win* -- )
 
 	POP2
-	.DateTime/year DEI2 .year STZ2
-	.DateTime/month DEI .month STZ
-	;draw-page JSR2
+	.DateTime/year DEI2 .DateTime/month DEI ;draw-month JSR2
+
+JMP2r
+
+@prev-month ( -- )
+
+	#0001 ;phex JSR2 #0a18 DEO
+	;get-active-win JSR2 ;draw-win JSR2
+
+JMP2r
+
+@next-month ( -- )
+
+	#0002 ;phex JSR2 #0a18 DEO
+	;get-active-win JSR2 ;draw-win JSR2
 
 JMP2r
 
