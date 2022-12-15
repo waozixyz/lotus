@@ -96,9 +96,9 @@ BRK
 &on-draw ( win* -- )
 
 	POP2
-	;draw-month JSR2
+	;draw-month ( .. )
 
-JMP2r
+JMP2
 
 @current-month ( -- )
 
@@ -108,9 +108,9 @@ JMP2r
 @select-month ( year* m -- )
 
 	.month STZ .year STZ2
-	;get-active-win JSR2 ;draw-win JSR2
+	;get-active-win JSR2 ;draw-win ( .. )
 
-JMP2r
+JMP2
 
 @prev-month ( -- )
 
@@ -203,9 +203,9 @@ BRK
 &set-nibble ( -- )
 
 	.cursor/color LDZ #01 SFT ADD DEO
-	;get-active-win JSR2 ;draw-win JSR2
+	;get-active-win JSR2 ;draw-win ( .. )
 
-JMP2r
+JMP2
 
 &set-color ( value color -- )
 
@@ -354,9 +354,9 @@ JMP2r
 	;dict/snarf-ext .File/name DEO2
 	#0010 .File/length DEO2
 	;patt-chr .File/read DEO2
-	;draw-desktop JSR2
+	;draw-desktop ( .. )
 
-JMP2r
+JMP2
 
 &prev-tile ( -- )
 
@@ -370,15 +370,15 @@ JMP2r
 
 &sel-tile ( addr* -- )
 
-	;paint-patt/addr STA2 ;draw-desktop JSR2
+	;paint-patt/addr STA2 ;draw-desktop ( .. )
 
-JMP2r
+JMP2
 
 &clear-patt ( -- )
 
-	;paint-patt/addr LDA2 #0010 ;mclr JSR2 ;draw-desktop JSR2
+	;paint-patt/addr LDA2 #0010 ;mclr JSR2 ;draw-desktop ( .. )
 
-JMP2r
+JMP2
 
 @paint-patt ( x y -- )
 
@@ -394,9 +394,9 @@ JMP2r
 	OVR2 OVR2
 	( ch1 ) .cursor/color LDZ #00 ,toggle-pixel JSR
 	( ch2 ) #0008 ADD2 .cursor/color LDZ #01 ,toggle-pixel JSR
-	;draw-desktop JSR2
+	;draw-desktop ( .. )
 
-JMP2r
+JMP2
 
 @toggle-pixel ( x* addr* color index -- )
 
@@ -555,9 +555,9 @@ JMP2r
 	DUP2 #0002 ADD2 LDA2 #0012 ADD2 .Screen/y DEO2
 	( scroll, height )
 	DUP2 #000e ADD2 LDA2 NIP
-	ROT ROT #0005 ADD2 LDA #03 SUB ;draw-scrollbar JSR2
+	ROT ROT #0005 ADD2 LDA #03 SUB ;draw-scrollbar ( .. )
 
-JMP2r
+JMP2
 
 &on-mouse ( x* y* win* -> )
 
@@ -612,9 +612,9 @@ BRK
 	.Screen/y DEI2k #0002 SUB2 ROT DEO2
 
 	( image )
-	#0008 ADD2 LDA2 ;make-src JSR2 ;draw-pict JSR2
+	#0008 ADD2 LDA2 ;make-src JSR2 ;draw-pict ( .. )
 
-JMP2r
+JMP2
 
 &invert ( -- )
 
@@ -622,9 +622,9 @@ JMP2r
 
 	;get-active-win JSR2
 		DUP2 ;set-anchor-body JSR2 POP2
-	;app-pict/on-draw JSR2
+	;app-pict/on-draw ( .. )
 
-JMP2r
+JMP2
 
 &prev ( -- )
 
@@ -641,9 +641,9 @@ JMP2r
 	;close-win JSR2
 	#01 SUB
 		DUP ;draw-item-text/sel STA
-		;get-file JSR2 ;open-pict JSR2
+		;get-file JSR2 ;open-pict ( .. )
 
-JMP2r
+JMP2
 
 &next ( -- )
 
@@ -660,9 +660,9 @@ JMP2r
 	;close-win JSR2
 	INC
 		DUP ;draw-item-text/sel STA
-		;get-file JSR2 ;open-pict JSR2
+		;get-file JSR2 ;open-pict ( .. )
 
-JMP2r
+JMP2
 
 (
 @|font )
@@ -732,9 +732,9 @@ JMP2r
 	;close-win JSR2
 	#01 SUB
 		DUP ;draw-item-text/sel STA
-		;get-file JSR2 ;open-font JSR2
+		;get-file JSR2 ;open-font ( .. )
 
-JMP2r
+JMP2
 
 &next ( -- )
 
@@ -751,9 +751,9 @@ JMP2r
 	;close-win JSR2
 	INC
 		DUP ;draw-item-text/sel STA
-		;get-file JSR2 ;open-font JSR2
+		;get-file JSR2 ;open-font ( .. )
 
-JMP2r
+JMP2
 
 (
 @|play )
@@ -850,9 +850,9 @@ BRK
 	;close-win JSR2
 	#01 SUB
 		DUP ;draw-item-text/sel STA
-		;get-file JSR2 ;open-sound JSR2
+		;get-file JSR2 ;open-sound ( .. )
 
-JMP2r
+JMP2
 
 &next ( -- )
 
@@ -869,16 +869,16 @@ JMP2r
 	;close-win JSR2
 	INC
 		DUP ;draw-item-text/sel STA
-		;get-file JSR2 ;open-sound JSR2
+		;get-file JSR2 ;open-sound ( .. )
 
-JMP2r
+JMP2
 
 &toggle-loop ( -- )
 
 	;play-note/hit LDA #00 EQU ;play-note/hit STA
-	;get-active-win JSR2 ;draw-win JSR2
+	;get-active-win JSR2 ;draw-win ( .. )
 
-JMP2r
+JMP2
 
 &notec ( -- ) #00 ,&press-key JSR JMP2r
 &notecs ( -- ) #01 ,&press-key JSR JMP2r
@@ -914,9 +914,9 @@ JMP2r
 &zoomout ( -- )
 
 	;&zoom LDA2 INC2 ;&zoom STA2
-	;get-active-win JSR2 ;draw-win JSR2
+	;get-active-win JSR2 ;draw-win ( .. )
 
-JMP2r
+JMP2
 
 (
 @|form )
@@ -939,9 +939,9 @@ JMP2r
 	POP2
 	;buf/form #14 ;draw-input JSR2
 	.Screen/x DEI2k #0030 ADD2 ROT DEO2
-	[ LIT2 &action $2 ] #08 ;draw-button JSR2
+	[ LIT2 &action $2 ] #08 ;draw-button ( .. )
 
-JMP2r
+JMP2
 
 &on-mouse ( x* y* win* -> )
 
@@ -1008,9 +1008,9 @@ BRK
 	[ LIT2 &target $2 ] ;draw-line JSR2
 	;draw-lb JSR2
 	.Screen/x DEI2k #0030 ADD2 ROT DEO2
-	[ LIT2 &action $2 ] #08 ;draw-button JSR2
+	[ LIT2 &action $2 ] #08 ;draw-button ( .. )
 
-JMP2r
+JMP2
 
 &on-mouse ( x* y* win* -> )
 
@@ -1064,9 +1064,9 @@ BRK
 	[ LIT2 &target $2 ] ;draw-line JSR2
 	;draw-lb JSR2
 	.Screen/x DEI2k #0030 ADD2 ROT DEO2
-	;dict/ok #08 ;draw-button JSR2
+	;dict/ok #08 ;draw-button ( .. )
 
-JMP2r
+JMP2
 	&invalid-txt "Invalid 20 "Target: $1
 
 &on-mouse ( x* y* win* -> )
