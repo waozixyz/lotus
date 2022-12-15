@@ -12,6 +12,7 @@
 	&delete "Delete $1
 	&clone "Clone $1
 	&open "Open $1
+	&no-meta "No 20 "Metadata $1
 	&ok "OK $1
 	&red "Red $1
 	&green "Green $1

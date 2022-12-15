@@ -13,11 +13,11 @@
 		01 "d =file-clone "Clone $1
 		01 08 =file-delete "Delete $1
 	05 "Open $1
-		01 "d =open-as-meta "As 20 "Meta $1
-		01 "t =open-as-text "As 20 "Text $1
-		01 "p =open-as-pict "As 20 "Pict $1
-		01 "p =open-as-font "As 20 "Font $1
-		01 "p =open-as-sound "As 20 "Sound $1
+		05 "D =open-as-meta "As 20 "Meta $1
+		05 "T =open-as-text "As 20 "Text $1
+		05 "P =open-as-pict "As 20 "Pict $1
+		05 "F =open-as-font "As 20 "Font $1
+		05 "S =open-as-sound "As 20 "Sound $1
 	04 "Select $1
 		10 00 =sel-up "Up $1
 		20 00 =sel-down "Down $1
@@ -240,9 +240,9 @@ JMP2r
 
 	;app-error/target STA2
 	;app-error #1809 #0000 DUP2 ;add-win JSR2
-	;center-win JSR2
+	;center-win ( .. )
 
-JMP2r
+JMP2
 
 @add-form ( action* target* callback* -- )
 
@@ -250,9 +250,9 @@ JMP2r
 	;buf/form ;scpy JSR2
 	DUP2 ;app-form/action STA2
 		;app-form #1808 #0000 DUP2 ;add-win JSR2
-	;center-win JSR2
+	;center-win ( .. )
 
-JMP2r
+JMP2
 
 @add-option ( action* target* callback* -- )
 
@@ -260,9 +260,9 @@ JMP2r
 	;app-option/target STA2
 	DUP2 ;app-option/action STA2
 		;app-option #1807 #0000 DUP2 ;add-win JSR2
-	;center-win JSR2
+	;center-win ( .. )
 
-JMP2r
+JMP2
 
 @add-win ( name* app* h w y* x* -- )
 
@@ -318,9 +318,9 @@ JMP2r
 
 	.length LDZk #01 SUB SWP STZ
 	;sel-desktop JSR2
-	;draw-desktop JSR2
+	;draw-desktop ( .. )
 
-JMP2r
+JMP2
 
 @sel-desktop ( -- )
 
@@ -338,17 +338,17 @@ JMP2r
 	.Screen/height DEI2 #000a SUB2
 		( win/y ) ;get-active-win JSR2 INC2 INC2 STA2
 	;sel-desktop JSR2
-	;draw-desktop JSR2
+	;draw-desktop ( .. )
 
-JMP2r
+JMP2
 
 @expand-win ( -- )
 
 	#0018
 		( win/y ) ;get-active-win JSR2 INC2 INC2 STA2
-	;draw-desktop JSR2
+	;draw-desktop ( .. )
 
-JMP2r
+JMP2
 
 @center-win ( -- )
 
@@ -358,16 +358,25 @@ JMP2r
 	( -x ) LDAk #00 SWP #31 SFT2 .Screen/width DEI2 #01 SFT2 SWP2 SUB2 STH2kr STA2
 	( /h ) INC2 INC2r INC2r
 	( -y ) LDA #00 SWP #31 SFT2 .Screen/height DEI2 #01 SFT2 SWP2 SUB2 STH2r STA2
-	;draw-desktop JSR2
+	;draw-desktop ( .. )
 
-JMP2r
+JMP2
 
 (
 @|open-as )
 
 @open-as-meta ( -- )
 
-	;open-meta ,open-as JSR
+	( check )
+	;get-sel-file JSR2 #0005 ADD2
+		DUP2 ;make-src JSR2 ;has-meta JSR2 ,&valid JCN
+		;dict/no-meta SWP2 ;add-err ( .. )
+
+JMP2
+
+&valid ( name* -- )
+
+	POP2 ;open-meta ,open-as JSR
 
 JMP2r
 
@@ -404,9 +413,9 @@ JMP2r
 	LDAk LIT "? EQU ,&invalid JCN
 
 	[ LIT2 &routine $2 ] JSR2
-	;center-win JSR2
+	;center-win ( .. )
 
-JMP2r
+JMP2
 	&invalid
 		#0005 ADD2 ;dict/open SWP2 ;add-err JSR2
 	JMP2r
@@ -425,15 +434,15 @@ JMP2r
 
 @go-home ( -- )
 
-	;dict/parent-ext ;push-dir JSR2
+	;dict/parent-ext ;push-dir ( .. )
 
-JMP2r
+JMP2
 
 @go-file ( -- )
 
-	;get-sel-file JSR2 ;open-file JSR2
+	;get-sel-file JSR2 ;open-file ( .. )
 
-JMP2r
+JMP2
 
 (
 @|icon-picking )
@@ -483,9 +492,9 @@ JMP2r
 	( max ) ,desk-len JSR LTHk [ JMP SWP POP ]
 	;draw-item-text/sel STA
 	;draw-desktop JSR2
-	;sel-desktop JSR2
+	;sel-desktop ( .. )
 
-JMP2r
+JMP2
 
 @desk-len ( -- len )
 

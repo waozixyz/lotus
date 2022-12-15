@@ -1361,7 +1361,7 @@ JMP2
 	&erase POP ;spop JSR2 POP JMP2r
 	&invalid POP2 POP2 JMP2r
 
-@has-ext ( str* ext* -- flag )
+@has-ext ( str* ext* -- bool )
 
 	SWP2 ,get-ext JSR ;scmp ( .. )
 
@@ -1372,6 +1372,17 @@ JMP2
 	;scap JSR2 #0004 SUB2
 
 JMP2r
+
+@has-meta ( filename* -- bool )
+
+	.Disk/name DEO2
+	#0006 .Disk/length DEO2
+	;&b .Disk/read DEO2
+	,&litport LDR2 #80f0 EQU2
+	,&deo2 LDR #37 EQU AND
+
+JMP2r
+	&b $3 &litport $2 &deo2 $1
 
 @save-theme ( -- )
 
