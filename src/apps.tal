@@ -438,7 +438,7 @@ JMP2r
 	( read start )
 	#0003 .Disk/length DEO2
 	;&header .Disk/read DEO2
-	( body )
+	( read body )
 	;&start LDA2 #0100 SUB2 ;seek JSR2
 	#0004 .Disk/length DEO2
 	;&end
@@ -447,9 +447,9 @@ JMP2r
 	;mem-ptr JSR2
 		DUP2 .Disk/read DEO2
 
+	( draw body )
 	.Screen/x DEI2 STH2 DUP2r LIT2r 0040 ADD2r
 	;draw-lb JSR2
-	( body )
 	STH2kr .Screen/x DEO2
 	;draw-str JSR2
 	#20 ;draw-chr JSR2
@@ -457,17 +457,17 @@ JMP2r
 	;draw-str JSR2 ;draw-lb JSR2 ;draw-lb JSR2
 	STH2kr .Screen/x DEO2
 	#0a ;draw-chr/color STA
-	;draw-str JSR2 ;draw-lb JSR2 ;draw-lb JSR2
+	;draw-line JSR2 ;draw-lb JSR2
 	STH2r .Screen/x DEO2
-	;draw-str JSR2 ;draw-lb JSR2 ;draw-lb JSR2
+	;draw-line JSR2 ;draw-lb JSR2
 	POP2
-	( icon )
+	( draw icon )
 	STH2r #0008 SUB2 .Screen/x DEO2
 	.Screen/y DEI2k #003a SUB2 ROT DEO2
 	;&icon LDA2 #0100 SUB2 ;seek JSR2
 	#0200 .Disk/length DEO2
 	;mem-ptr JSR2 STH2k .Disk/read DEO2
-	#0802 #76 STH2r ;draw-pict-small JSR2
+	#080e #76 STH2r ;draw-pict-small JSR2
 
 JMP2r
 	&header $1 &start $2 &end $2 &icon $2
@@ -1000,7 +1000,7 @@ BRK
 &on-draw ( win* -- )
 
 	POP2
-	[ LIT2 &target $2 ] ;draw-line JSR2
+	[ LIT2 &target $2 ] ;draw-line JSR2 POP2
 	;draw-lb JSR2
 	.Screen/x DEI2k #0030 ADD2 ROT DEO2
 	[ LIT2 &action $2 ] #08 ;draw-button ( .. )
@@ -1054,9 +1054,9 @@ BRK
 &on-draw ( win* -- )
 
 	POP2
-	;&invalid-txt ;draw-line JSR2
+	;&invalid-txt ;draw-line JSR2 POP2
 	;draw-lb JSR2
-	[ LIT2 &target $2 ] ;draw-line JSR2
+	[ LIT2 &target $2 ] ;draw-line JSR2 POP2
 	;draw-lb JSR2
 	.Screen/x DEI2k #0030 ADD2 ROT DEO2
 	;dict/ok #08 ;draw-button ( .. )

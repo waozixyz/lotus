@@ -1109,7 +1109,7 @@ JMP2r
 
 JMP2r
 
-@draw-line ( str* -- )
+@draw-line ( str* -- str* )
 
 	.Screen/x DEI2 ,&x STR2
 	#01 .Screen/auto DEO
@@ -1118,7 +1118,7 @@ JMP2r
 		LDAk ;draw-chr JSR2
 		INC2 LDAk #0a NEQ ,&w JCN
 	&end
-	POP2
+	INC2
 	[ LIT2 &x $2 ] .Screen/x DEO2
 
 @draw-lb ( -- )
