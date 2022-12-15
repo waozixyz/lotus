@@ -67,7 +67,7 @@ JMP2r
 		2200 =tab-win "Tab $1
 		4200 =close-win "Close $1
 	03 "View $1
-		0000 =current-month "Today $1
+		0000 =now-month "Today $1
 		4000 =prev-month "Prev 20 "Month $1
 		8000 =next-month "Next 20 "Month $1
 	$1
@@ -100,13 +100,14 @@ BRK
 
 JMP2
 
-@current-month ( -- )
+@now-month ( -- )
 
 	.DateTime/year DEI2
 	.DateTime/month DEI
 
 @select-month ( year* m -- )
 
+	( TODO: Remove from zero-page )
 	.month STZ .year STZ2
 	;get-active-win JSR2 ;draw-win ( .. )
 
@@ -880,18 +881,18 @@ JMP2
 
 JMP2
 
-&notec ( -- ) #00 ,&press-key JSR JMP2r
-&notecs ( -- ) #01 ,&press-key JSR JMP2r
-&noted ( -- ) #02 ,&press-key JSR JMP2r
-&noteds ( -- ) #03 ,&press-key JSR JMP2r
-&notee ( -- ) #04 ,&press-key JSR JMP2r
-&notef ( -- ) #05 ,&press-key JSR JMP2r
-&notefs ( -- ) #06 ,&press-key JSR JMP2r
-&noteg ( -- ) #07 ,&press-key JSR JMP2r
-&notegs ( -- ) #08 ,&press-key JSR JMP2r
-&notea ( -- ) #09 ,&press-key JSR JMP2r
-&noteas ( -- ) #0a ,&press-key JSR JMP2r
-&noteb ( -- ) #0b ,&press-key JSR JMP2r
+&notec ( -- ) #00 ,&press-key JMP
+&notecs ( -- ) #01 ,&press-key JMP
+&noted ( -- ) #02 ,&press-key JMP
+&noteds ( -- ) #03 ,&press-key JMP
+&notee ( -- ) #04 ,&press-key JMP
+&notef ( -- ) #05 ,&press-key JMP
+&notefs ( -- ) #06 ,&press-key JMP
+&noteg ( -- ) #07 ,&press-key JMP
+&notegs ( -- ) #08 ,&press-key JMP
+&notea ( -- ) #09 ,&press-key JMP
+&noteas ( -- ) #0a ,&press-key JMP
+&noteb ( -- ) #0b ,&press-key JMP
 
 &press-key ( key -- )
 
