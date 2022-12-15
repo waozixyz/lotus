@@ -448,31 +448,31 @@ JMP2r
 		DUP2 .Disk/read DEO2
 
 	.Screen/x DEI2 STH2 DUP2r LIT2r 0040 ADD2r
+	;draw-lb JSR2
 	( body )
 	STH2kr .Screen/x DEO2
 	;draw-str JSR2
 	#20 ;draw-chr JSR2
 	#05 ;draw-chr/color STA
-	;draw-str JSR2 ;draw-lb JSR2
+	;draw-str JSR2 ;draw-lb JSR2 ;draw-lb JSR2
 	STH2kr .Screen/x DEO2
 	#0a ;draw-chr/color STA
-	;draw-str JSR2 ;draw-lb JSR2
+	;draw-str JSR2 ;draw-lb JSR2 ;draw-lb JSR2
 	STH2r .Screen/x DEO2
-	;draw-str JSR2 ;draw-lb JSR2
+	;draw-str JSR2 ;draw-lb JSR2 ;draw-lb JSR2
 	POP2
 	( icon )
-	STH2r .Screen/x DEO2
-	.Screen/y DEI2k #0018 SUB2 ROT DEO2
+	STH2r #0008 SUB2 .Screen/x DEO2
+	.Screen/y DEI2k #003a SUB2 ROT DEO2
 	;&icon LDA2 #0100 SUB2 ;seek JSR2
 	#0200 .Disk/length DEO2
 	;mem-ptr JSR2
 		DUP2 .Disk/read DEO2
 		.Screen/addr DEO2
 	#76 .Screen/auto DEO
-	#0c .Screen/sprite 
+	#02 .Screen/sprite 
 		DEOk DEOk DEOk DEOk
 		DEOk DEOk DEOk DEO
-
 	#01 .Screen/auto DEO
 
 JMP2r
