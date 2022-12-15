@@ -1039,6 +1039,19 @@ JMP2r
 JMP2r
 	&buf $10
 
+@draw-pict-small ( h color auto addr* -- )
+
+	.Screen/addr DEO2
+	.Screen/auto DEO
+	,&c STR
+	#00
+	&l
+		[ LIT &c $1 ] .Screen/sprite DEO
+		INC GTHk ,&l JCN
+	POP2
+
+JMP2r
+
 @draw-dec ( short* -- )
 
 	#01 .Screen/auto DEO

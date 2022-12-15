@@ -466,14 +466,8 @@ JMP2r
 	.Screen/y DEI2k #003a SUB2 ROT DEO2
 	;&icon LDA2 #0100 SUB2 ;seek JSR2
 	#0200 .Disk/length DEO2
-	;mem-ptr JSR2
-		DUP2 .Disk/read DEO2
-		.Screen/addr DEO2
-	#76 .Screen/auto DEO
-	#02 .Screen/sprite 
-		DEOk DEOk DEOk DEOk
-		DEOk DEOk DEOk DEO
-	#01 .Screen/auto DEO
+	;mem-ptr JSR2 STH2k .Disk/read DEO2
+	#0802 #76 STH2r ;draw-pict-small JSR2
 
 JMP2r
 	&header $1 &start $2 &end $2 &icon $2
