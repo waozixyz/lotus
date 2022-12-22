@@ -301,7 +301,7 @@ JMP2
 	.sel/win STZ
 
 JMP2r
-	&desktop POP ;sel-desktop JSR2 JMP2r
+	&desktop POP ;sel-desktop JMP2
 	&unchanged POP JMP2r
 
 @close-win ( -- )
@@ -376,33 +376,23 @@ JMP2
 
 &valid ( name* -- )
 
-	POP2 ;open-meta ,open-as JSR
-
-JMP2r
+	POP2 ;open-meta ,open-as JMP
 
 @open-as-text ( -- )
 
-	;open-text ,open-as JSR
-
-JMP2r
+	;open-text ,open-as JMP
 
 @open-as-pict ( -- )
 
-	;open-pict ,open-as JSR
-
-JMP2r
+	;open-pict ,open-as JMP
 
 @open-as-font ( -- )
 
-	;open-font ,open-as JSR
-
-JMP2r
+	;open-font ,open-as JMP
 
 @open-as-sound ( -- )
 
-	;open-sound ,open-as JSR
-
-JMP2r
+	;open-sound ,open-as JMP
 
 @open-as ( routine* -- )
 
@@ -416,9 +406,7 @@ JMP2r
 	;center-win ( .. )
 
 JMP2
-	&invalid
-		#0005 ADD2 ;dict/open SWP2 ;add-err JSR2
-	JMP2r
+	&invalid #0005 ADD2 ;dict/open SWP2 ;add-err JMP2
 
 (
 @|go )
@@ -430,7 +418,7 @@ JMP2
 	POP
 
 JMP2r
-	&valid #01 SUB ;sel-win JSR2 JMP2r
+	&valid #01 SUB ;sel-win JMP2
 
 @go-home ( -- )
 
@@ -462,29 +450,10 @@ JMP2r
 
 JMP2r
 
-@sel-left ( -- )
-
-	;draw-item-text/sel LDA ,get-rows JSR SUB ,sel-icon JSR
-
-JMP2r
-
-@sel-right ( -- )
-
-	;draw-item-text/sel LDA ,get-rows JSR ADD ,sel-icon JSR
-
-JMP2r
-
-@sel-up ( -- )
-
-	;draw-item-text/sel LDA #01 SUB ,sel-icon JSR
-
-JMP2r
-
-@sel-down ( -- )
-
-	;draw-item-text/sel LDA INC ,sel-icon JSR
-
-JMP2r
+@sel-left ( -- ) ;draw-item-text/sel LDA ,get-rows JSR SUB ,sel-icon JMP
+@sel-right ( -- ) ;draw-item-text/sel LDA ,get-rows JSR ADD ,sel-icon JMP
+@sel-up ( -- ) ;draw-item-text/sel LDA #01 SUB ,sel-icon JMP
+@sel-down ( -- ) ;draw-item-text/sel LDA INC ,sel-icon JMP
 
 @sel-icon ( id -- )
 
@@ -571,11 +540,12 @@ JMP2r
 	LIT ": ;draw-chr JSR2
 	.DateTime/minute DEI
 		DUP ;update-clock/last STA
-		,&d JSR
+		,&d ( .. )
 
-JMP2r
+JMP
+
 	&d DUP #0a DIV ,&c JSR #0a ( MOD ) [ DIVk MUL SUB ]
-	&c #30 ADD ;draw-chr JSR2 JMP2r
+	&c #30 ADD ;draw-chr JMP2
 
 @size-desktop-end
 
