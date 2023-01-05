@@ -1143,20 +1143,18 @@ JMP2
 @draw-txt ( txt* -- end* )
 
 	#01 .Screen/auto DEO
-	.Screen/x DEI2 ,&anchor STR2
+	.Screen/x DEI2 STH2
 	&w
-		LDAk ;draw-chr JSR2
+		LDAk #20 LTH ,&no-visible JCN
+			LDAk ;draw-chr JSR2
+			&no-visible
 		LDAk #0a NEQ ,&no-lb JCN
-			[ LIT2 &anchor $2 ] ,draw-lb2 JSR
+			( TODO: find why this is needed ) DUP POP DUP POP DUP POP
+			STH2kr .Screen/x DEO2
+			.Screen/y DEI2k #0008 ADD2 ROT DEO2
 			&no-lb
 		INC2 LDAk ,&w JCN
-
-JMP2r
-
-@draw-lb2 ( anchor* -- )
-
-	.Screen/x DEO2
-	.Screen/y DEI2k #0008 ADD2 ROT DEO2
+	POP2r
 
 JMP2r
 
