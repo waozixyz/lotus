@@ -410,9 +410,8 @@ JMP2
 
 @seek ( length* -- )
 
-	.Disk/name DEI2k ROT  DEO2
-	#0001 .Disk/length DEO2
-	#0000
+	.Disk/name DEI2k ROT DEO2
+	#0000 INC2k .Disk/length DEO2
 	&l
 		;&b .Disk/read DEO2
 		INC2 GTH2k ,&l JCN
@@ -1141,6 +1140,39 @@ JMP2r
 
 JMP2
 
+@draw-txt ( txt* -- end* )
+
+	#01 .Screen/auto DEO
+	.Screen/x DEI2 ,&anchor STR2
+	&w
+		LDAk ;draw-chr JSR2
+		LDAk #0a NEQ ,&no-lb JCN
+			[ LIT2 &anchor $2 ] ,draw-lb2 JSR
+			&no-lb
+		INC2 LDAk ,&w JCN
+
+JMP2r
+
+@draw-lb2 ( anchor* -- )
+
+	.Screen/x DEO2
+	.Screen/y DEI2k #0008 ADD2 ROT DEO2
+
+JMP2r
+
+@draw-metaicon ( location* -- )
+
+	;seek JSR2
+	#0090 .Disk/length DEO2
+	;metadata/icon
+		DUP2 .Disk/read DEO2
+		.Screen/addr DEO2
+	#26 .Screen/auto DEO
+	#85 .Screen/sprite DEOk DEOk DEO
+
+JMP2r
+
+
 @clear-screen ( -- )
 
 	#01 .Screen/auto DEO
@@ -1373,16 +1405,29 @@ JMP2
 
 JMP2r
 
-@has-meta ( filename* -- bool )
+@has-metadata ( src* -- bool )
 
 	.Disk/name DEO2
 	#0006 .Disk/length DEO2
-	;&b .Disk/read DEO2
-	,&litport LDR2 #80f0 EQU2
-	,&deo2 LDR #37 EQU AND
+	;metadata/header .Disk/read DEO2
+	;metadata/deo LDA2 #0637 EQU2
 
 JMP2r
-	&b $3 &litport $2 &deo2 $1
+
+@load-metadata ( addr* -- )
+
+	;metadata/start LDA2 #0100 SUB2 ;seek JSR2
+	#0002 .Disk/length DEO2
+	;metadata/end
+		DUP2 .Disk/read DEO2
+		LDA2 ;metadata/start LDA2 SUB2 .Disk/length DEO2
+	.Disk/read DEO2
+
+JMP2r
+
+@metadata
+	&header $1 &start $3 &deo $2 &end $2
+	&icon $90
 
 @save-theme ( -- )
 

@@ -369,7 +369,7 @@ JMP2
 
 	( check )
 	;get-sel-file JSR2 #0005 ADD2
-		DUP2 ;make-src JSR2 ;has-meta JSR2 ,&valid JCN
+		DUP2 ;make-src JSR2 ;has-metadata JSR2 ,&valid JCN
 		;dict/no-meta SWP2 ;add-err ( .. )
 
 JMP2
