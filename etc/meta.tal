@@ -3,7 +3,7 @@
 |00 @System &vector $2 &pad $6 &r $2 &g $2 &b $2
 |10 @Console &vector $2 &read $1 &pad $5 &write $1
 |20 @Screen &vector $2 &width $2 &height $2 &auto $1 &pad $1 &x $2 &y $2 &addr $2 &pixel $1 &sprite $1
-|b0 @Disk &vector $2 &success $2 &stat $2 &delete $1 &append $1 &name $2 &length $2 &read $2 &write $2
+|b0 @File &vector $2 &success $2 &stat $2 &delete $1 &append $1 &name $2 &length $2 &read $2 &write $2
 
 |0000
 
@@ -22,6 +22,9 @@
 	;dict/input ;pstr JSR2
 
 BRK
+
+(
+@|vectors )
 
 @await-src ( -> )
 
@@ -47,54 +50,19 @@ BRK
 &on-metadata ( -> )
 
 	;load-metadata JSR2
+	;metadata/body ;pstr JSR2 #0a18 DEO
 	;draw-metadata JSR2
 
 BRK
 
-@draw-metadata ( -- )
-
-	#004c .Screen/x DEO2
-	#0018 .Screen/y DEO2
-	;metadata/body STH2k ;draw-txt JSR2 INC2
-	;metadata/end LDA2 ;metadata/start LDA2
-		SUB2 STH2r ADD2 #0003 SUB2 SWP2
-	&l
-		LDAk STH
-		INC2 LDA2k STHr ;parse-field JSR2
-		INC2 INC2 GTH2k ,&l JCN
-	POP2 POP2
-
-JMP2r
-
-@parse-field ( value* key -- )
-
-	DUP #40 NEQ ,&no-spec JCN
-		;dict/spec ,&print-field JMP 
-		&no-spec
-	DUP #41 NEQ ,&no-mask JCN
-		;dict/mask ,&print-field JMP
-		&no-mask
-	DUP #83 NEQ ,&no-icon JCN
-		STH DUP2 #0100 SUB2 ;draw-icon JSR2 STHr
-		;dict/icon ,&print-field JMP
-		&no-icon
-	;dict/unknown ,&print-field JMP
-
-JMP2r
-
-&print-field ( value* key name* -- )
-
-	;pstr JSR2 LIT "( #18 DEO
-	;phex/byte JSR2 LIT ") #18 DEO #2018 DEO
-	;phex JSR2 #0a18 DEO
-
-JMP2r
+(
+@|core )
 
 @has-metadata ( src* -- bool )
 
-	.Disk/name DEO2
-	#0006 .Disk/length DEO2
-	;metadata/header .Disk/read DEO2
+	.File/name DEO2
+	#0006 .File/length DEO2
+	;metadata/header .File/read DEO2
 	;metadata/deo LDA2 #0637 EQU2
 
 JMP2r
@@ -102,20 +70,53 @@ JMP2r
 @load-metadata ( -- )
 
 	;metadata/start LDA2 #0100 SUB2 ;seek JSR2
-	#0002 .Disk/length DEO2
-	;metadata/end
-		DUP2 .Disk/read DEO2
-		LDA2 ;metadata/start LDA2 SUB2 .Disk/length DEO2
-	;metadata/body  .Disk/read DEO2
+
+	( version )
+	#0001 .File/length DEO2
+	;metadata/version .File/read DEO2
+
+	( body )
+	;metadata/body STH2
+	&s
+		STH2kr
+			DUP2 .File/read DEO2
+			INC2r LDA ,&s JCN
+	POP2r
+
+	( fields )
+	;metadata/fields
+		DUP2 .File/read DEO2
+		LDAk #03 MUL #00 SWP .File/length DEO2
+		INC2 .File/read DEO2
+
+JMP2r
+
+(
+@|drawing )
+
+@draw-metadata ( -- )
+
+	#004c .Screen/x DEO2
+	#0018 .Screen/y DEO2
+	;metadata/body ;draw-txt JSR2 POP2
+	( find picture )
+	;metadata/fields LDAk LITr 00 STH
+	INC2 DUP2 STH2r ADD2 SWP2
+	&l
+		LDAk #83 NEQ ,&no-pict JCN
+			INC2k LDA2 #0100 SUB2 ;draw-icon JSR2
+			&no-pict
+		INC2 GTH2k ,&l JCN
+	POP2 POP2
 
 JMP2r
 
 @draw-icon ( location* -- )
 
 	;seek JSR2
-	#0090 .Disk/length DEO2
+	#0090 .File/length DEO2
 	;metadata/icon
-		DUP2 .Disk/read DEO2
+		DUP2 .File/read DEO2
 		.Screen/addr DEO2
 	#26 .Screen/auto DEO
 	#001c
@@ -125,19 +126,13 @@ JMP2r
 
 JMP2r
 
-@draw-chr ( char -- )
-
-	#20 SUB #00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
-	#03 .Screen/sprite DEO
-
-JMP2r
-
 @draw-txt ( txt* -- end* )
 
 	#01 .Screen/auto DEO
 	.Screen/x DEI2 ,&anchor STR2
 	&w
-		LDAk ,draw-chr JSR
+		LDAk #20 SUB #00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
+		#03 .Screen/sprite DEO
 		LDAk #0a NEQ ,&no-lb JCN
 			[ LIT2 &anchor $2 ] ,draw-lb JSR
 			&no-lb
@@ -152,6 +147,9 @@ JMP2r
 
 JMP2r
 
+(
+@|stdlib )
+
 @phex ( short* -- )
 
 	SWP ,&byte JSR
@@ -162,10 +160,10 @@ JMP2r
 
 @seek ( length* -- )
 
-	.Disk/name DEI2k ROT DEO2
-	#0000 INC2k .Disk/length DEO2
+	.File/name DEI2k ROT DEO2
+	#0000 INC2k .File/length DEO2
 	&l
-		;&b .Disk/read DEO2
+		;&b .File/read DEO2
 		INC2 GTH2k ,&l JCN
 	POP2 POP2
 	
@@ -177,13 +175,12 @@ JMP2r
 @skey ( key buf -- proc ) OVR #21 LTH ,&eval JCN #00 SWP ;sput JSR2 #00 JMP2r &eval POP2 #01 JMP2r
 @pstr ( str* -- ) &w LDAk #18 DEO INC2 LDAk ,&w JCN POP2 JMP2r
 
+(
+@|assets )
+
 @dict
 	&input "Input(.tal): 20 $1
 	&empty "Metadata 20 "Missing $1
-	&unknown "Unknown $1
-	&spec "Spec $1
-	&mask "Mask $1
-	&icon "Icon $1
 
 @font ( atari8 )
 0000 0000 0000 0000 6060 6060 6000 6000
@@ -236,7 +233,8 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
 0000 60f2 9e0c 0000 3c42 9985 8599 423c
 
 @metadata
-	&header $1 &start $3 &deo $2 &end $2
+	&header $1 &start $3 &deo $2 &version $1
 	&body $100
+	&fields $100
 	&icon $90
 

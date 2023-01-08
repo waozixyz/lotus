@@ -25,6 +25,9 @@
 
 |0100 ( -> ) @size-system-start
 
+	( meta )
+	;meta #06 DEO2
+
 	( theme )
 	#500f .System/r DEO2
 	#b70f .System/g DEO2
@@ -44,6 +47,15 @@
 	;untrap JSR2
 
 BRK
+
+@meta 00 &body
+	( name ) "Potato 0a
+	( details ) "An 20 "Operating 20 "System 0a
+	( author ) "By 20 "Hundred 20 "Rabbits 0a
+	( date ) "Jan 20 "8, 20 "2023 00
+	02
+		( icon ) 83 =appicon
+		( mask ) 41 1705
 
 (
 @|memory )
