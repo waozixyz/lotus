@@ -146,9 +146,13 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
 	&line
 	7f80 8080 8080 7f00
 	fc02 0202 0202 fc00
+	7f80 8387 8380 7f00
+	fc02 82c2 8202 fc00
 	&fill
 	7fff ffff ffff 7f00
 	fcfe fefe fefe fc00
+	7fff fcf8 fcff 7f00
+	fcfe 7e3e 7efe fc00
 @octave-icns
 	&a
 	007c 7c7c 7c7c 7c7c

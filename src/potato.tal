@@ -865,18 +865,23 @@ JMP2
 
 @draw-swatches ( -- )
 
+	.cursor/color LDZ STH
 	#05 .Screen/auto DEO
-	;swatch-icns/fill .Screen/addr DEO2
-	#0c .Screen/sprite DEOk DEO
-	;swatch-icns/fill .Screen/addr DEO2
-	#0d .Screen/sprite DEOk DEO
-	;swatch-icns/fill .Screen/addr DEO2
-	#0e .Screen/sprite DEOk DEO
-	;swatch-icns/line .Screen/addr DEO2
-	#0e .Screen/sprite DEOk DEO
-
+	#0c ;swatch-icns/fill #00 STHkr EQU ,draw-swatch JSR
+	#0d ;swatch-icns/fill #01 STHkr EQU ,draw-swatch JSR
+	#0e ;swatch-icns/fill #02 STHkr EQU ,draw-swatch JSR
+	#0e ;swatch-icns/line #03 STHkr EQU ,draw-swatch JSR
+	POPr
 	.Screen/x DEI2k #0040 SUB2 ROT DEO2
 	.Screen/y DEI2k #0010 ADD2 ROT DEO2
+
+JMP2r
+
+@draw-swatch ( color sprite* selected -- )
+
+	#00 SWP #40 SFT ADD2
+	.Screen/addr DEO2
+	.Screen/sprite DEOk DEO
 
 JMP2r
 
