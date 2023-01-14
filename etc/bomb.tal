@@ -41,7 +41,7 @@ BRK
 	DUP #07 AND #00 NEQ ?&no-update
 		[ LIT2 &x $2 ] .Screen/x DEO2
 		[ LIT2 &y $2 ] .Screen/y DEO2
-		#00 ,&f LDR #04 SFT #07 AND DUP ADD
+		#00 ,&f LDR #04 SFT #03 AND DUP ADD
 			;frames ADD2 LDA2 .Screen/addr DEO2
 		#85 .Screen/sprite DEO
 		&no-update
@@ -49,7 +49,6 @@ BRK
 
 BRK
 @frames
-	=uxn-chr/f1 =uxn-chr/f2 =uxn-chr/f1 =uxn-chr/f3
 	=uxn-chr/f1 =uxn-chr/f2 =uxn-chr/f1 =uxn-chr/f3
 
 (
