@@ -367,16 +367,7 @@ JMP2
 
 @open-as-meta ( -- )
 
-	( check )
-	;get-sel-file JSR2 #0005 ADD2
-		DUP2 ;make-src JSR2 ;has-metadata JSR2 ,&valid JCN
-		;dict/no-meta SWP2 ;add-err ( .. )
-
-JMP2
-
-&valid ( name* -- )
-
-	POP2 ;open-meta ,open-as JMP
+	;open-meta ;open-as JMP2
 
 @open-as-text ( -- )
 
@@ -396,17 +387,17 @@ JMP2
 
 @open-as ( routine* -- )
 
-	,&routine STR2
 	;get-sel-file JSR2
 
 	LDAk LIT "- EQU ,&invalid JCN
 	LDAk LIT "? EQU ,&invalid JCN
 
-	[ LIT2 &routine $2 ] JSR2
+	( run routine ) SWP2 JSR2
+
 	;center-win ( .. )
 
 JMP2
-	&invalid #0005 ADD2 ;dict/open SWP2 ;add-err JMP2
+	&invalid NIP2 #0005 ADD2 ;dict/open SWP2 ;add-err JMP2
 
 (
 @|go )

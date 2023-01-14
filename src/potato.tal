@@ -23,6 +23,13 @@
 ( calendar )
 @year $2  @month $1
 
+( TODOs:
+	> Add window close icons in bar
+	> Load app icons from manifest
+	> Write welcome message
+	> Add clock application
+	)
+
 |0100 ( -> ) @size-system-start
 
 	( meta )
@@ -326,7 +333,7 @@ JMP2
 
 @open-meta ( file* -- )
 
-	#0005 ADD2 ;app-meta #240a #0010 #0008 ;add-win ( .. )
+	#0005 ADD2 ;app-meta #240a #0010 #0034 ;add-win ( .. )
 
 JMP2
 
@@ -422,10 +429,10 @@ JMP2
 
 @seek ( length* -- )
 
-	.Disk/name DEI2k ROT DEO2
-	#0000 INC2k .Disk/length DEO2
+	.File/name DEI2k ROT DEO2
+	#0000 INC2k .File/length DEO2
 	&l
-		;&b .Disk/read DEO2
+		;&b .File/read DEO2
 		INC2 GTH2k ,&l JCN
 	POP2 POP2
 	
@@ -1155,27 +1162,26 @@ JMP2
 @draw-txt ( txt* -- end* )
 
 	#01 .Screen/auto DEO
-	.Screen/x DEI2 STH2
+	.Screen/x DEI2 ,&anchor STR2
 	&w
-		LDAk #20 LTH ,&no-visible JCN
-			LDAk ;draw-chr JSR2
-			&no-visible
 		LDAk #0a NEQ ,&no-lb JCN
-			( TODO: find why this is needed ) DUP POP DUP POP DUP POP
-			STH2kr .Screen/x DEO2
+			[ LIT2 &anchor $2 ] .Screen/x DEO2
 			.Screen/y DEI2k #0008 ADD2 ROT DEO2
+			,&continue JMP
 			&no-lb
+		LDAk #00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
+		#0e .Screen/sprite DEO
+		&continue
 		INC2 LDAk ,&w JCN
-	POP2r
 
 JMP2r
 
 @draw-metaicon ( location* -- )
 
 	;seek JSR2
-	#0090 .Disk/length DEO2
+	#0090 .File/length DEO2
 	;metadata/icon
-		DUP2 .Disk/read DEO2
+		DUP2 .File/read DEO2
 		.Screen/addr DEO2
 	#26 .Screen/auto DEO
 	#85 .Screen/sprite DEOk DEOk DEO
@@ -1417,26 +1423,41 @@ JMP2r
 
 @has-metadata ( src* -- bool )
 
-	.Disk/name DEO2
-	#0006 .Disk/length DEO2
-	;metadata/header .Disk/read DEO2
+	.File/name DEO2
+	#0006 .File/length DEO2
+	;metadata/header .File/read DEO2
 	;metadata/deo LDA2 #0637 EQU2
 
 JMP2r
 
-@load-metadata ( addr* -- )
+@load-metadata ( -- )
 
 	;metadata/start LDA2 #0100 SUB2 ;seek JSR2
-	#0002 .Disk/length DEO2
-	;metadata/end
-		DUP2 .Disk/read DEO2
-		LDA2 ;metadata/start LDA2 SUB2 .Disk/length DEO2
-	.Disk/read DEO2
+
+	( version )
+	#0001 .File/length DEO2
+	;metadata/version .File/read DEO2
+
+	( body )
+	;metadata/body STH2
+	&s
+		STH2kr
+			DUP2 .File/read DEO2
+			INC2r LDA ,&s JCN
+	POP2r
+
+	( fields )
+	;metadata/fields
+		DUP2 .File/read DEO2
+		LDAk #03 MUL #00 SWP .File/length DEO2
+		INC2 .File/read DEO2
 
 JMP2r
 
 @metadata
-	&header $1 &start $3 &deo $2 &end $2
+	&header $1 &start $3 &deo $2 &version $1
+	&body $100
+	&fields $100
 	&icon $90
 
 @save-theme ( -- )

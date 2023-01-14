@@ -436,7 +436,37 @@ JMP2r
 	LDA2k #0038 ADD2 .Screen/x DEO2
 	INC2k INC2 LDA2 #001c ADD2 .Screen/y DEO2
 
-	;mem-ptr JSR2
+	DUP2 #0008 ADD2 LDA2 ;make-src JSR2
+		;has-metadata JSR2 ,&valid JCN
+	POP2
+
+&valid ( win* -- )
+
+	;load-metadata JSR2
+
+	;metadata/body ;draw-txt JSR2 POP2
+
+	LDA2k #0010 ADD2 .Screen/x DEO2
+	INC2k INC2 LDA2 #0020 ADD2 .Screen/y DEO2
+	( find picture )
+	;metadata/fields LDAk LITr 00 STH
+	INC2 DUP2 STH2r ADD2 SWP2
+	&l
+		LDAk #83 NEQ ,&no-pict JCN
+			INC2k LDA2 #0100 SUB2 ;draw-metaicon JSR2
+			&no-pict
+		INC2 GTH2k ,&l JCN
+	POP2 POP2
+
+	( DUP2 #0008 ADD2 LDA2 ;pstr JSR #0a18 DEO )
+
+	( .File/name DEO2
+	#0006 .File/length DEO2
+	;metadata/header .File/read DEO2
+
+	 )
+
+	( ;mem-ptr JSR2
 		DUP2 ;load-metadata JSR2
 		STH2k ;draw-txt JSR2 INC2
 	OVR2 LDA2 #0010 ADD2 .Screen/x DEO2
@@ -448,7 +478,7 @@ JMP2r
 		LDAk STH
 		INC2 LDA2k STHr ;parse-field JSR2
 		INC2 INC2 GTH2k ,&l JCN
-	POP2 POP2
+	POP2 POP2 )
 	( win* ) POP2
 
 JMP2r

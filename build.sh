@@ -6,7 +6,6 @@ set -o errexit # Exit immediately if a command exits with a non-zero status.
 roms_dir=${UXN_ROMS_DIR-"$HOME/roms"}
 
 asm="uxncli $roms_dir/drifblim.rom"
-asm="uxnasm"
 emu="uxnemu"
 lin="uxncli $roms_dir/uxnlin.rom"
 
