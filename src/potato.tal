@@ -25,9 +25,8 @@
 
 ( TODOs:
 	> Add window close icons in bar
-	> Load app icons from manifest
 	> Write welcome message
-	> Add clock application
+	> Cannot delete files with long names
 	)
 
 |0100 ( -> ) @size-system-start
@@ -333,12 +332,14 @@ JMP2
 
 @open-meta ( file* -- )
 
+	( TODO: open error if metadata missing )
 	#0005 ADD2 ;app-meta #240a #0010 #0034 ;add-win ( .. )
 
 JMP2
 
 @open-text ( file* -- )
 
+	( TODO: check that it is only ascii )
 	#0005 ADD2 ;app-text #5823 #001d #0034 ;add-win ( .. )
 
 JMP2
@@ -639,7 +640,7 @@ JMP2r
 
 	#01 .Screen/auto DEO
 	.Screen/x DEI2 ,&x STR2
-	;vert1-icn .Screen/addr DEO2
+	;vert-icn .Screen/addr DEO2
 	#8000
 	&loop
 		#00 OVRk ADD2 [ LIT2 &x $2 ] ADD2 .Screen/x DEO2
