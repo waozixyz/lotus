@@ -757,6 +757,40 @@ JMP2r
 		[ LIT &color 85 ] SWP ORA .Screen/sprite DEO
 	JMP2r
 
+@draw-rom-icon ( file* -- )
+
+	#0005 ADD2 ;make-src JSR2 ;has-metadata JSR2 ,&valid JCN
+	( display default icon )
+ 	;icons/application ;draw-icon JSR2
+
+JMP2r
+
+&valid ( -- )
+
+	;metadata/fields #0100 ;mclr JSR2
+	;load-metadata JSR2
+	( find picture )
+	;metadata/fields LDAk LITr 00 STH
+	INC2 DUP2 STH2r ADD2 SWP2
+	&l
+		LDAk #83 EQU ,&valid-icon JCN
+		INC2 GTH2k ,&l JCN
+	POP2 POP2
+	;icons/application ;draw-icon JSR2
+
+JMP2r
+
+&valid-icon ( fields* field -- )
+
+	INC2 LDA2 #0100 SUB2 ;seek JSR2
+	#0090 .File/length DEO2
+	;metadata/icon
+		DUP2 .File/read DEO2
+		;draw-icon JSR2
+	POP2
+
+JMP2r
+
 @draw-icon ( addr* -- )
 
 	.Screen/addr DEO2
@@ -785,7 +819,7 @@ JMP2
 	LDAk LIT "- EQU ,&folder JCN
 	LDAk LIT "? EQU ,&unknown JCN
 	DUP2 #0005 ADD2 LDA LIT ". EQU ,&unknown JCN
-	DUP2 #0005 ADD2 ;dict/rom-ext ;has-ext JSR2 ,&rom JCN
+	DUP2 #0005 ADD2 ;dict/rom-ext ;has-ext JSR2 ;draw-rom-icon JCN2
 	DUP2 #0005 ADD2 ;dict/chr-ext ;has-ext JSR2 ,&picture JCN
 	DUP2 #0005 ADD2 ;dict/icn-ext ;has-ext JSR2 ,&picture JCN
 	DUP2 #0005 ADD2 ;dict/pcm-ext ;has-ext JSR2 ,&sound JCN
@@ -796,7 +830,6 @@ JMP2
 	&folder POP2 ;icons/folder ;draw-icon JMP2
 	&unknown POP2 ;icons/unknown ;draw-icon JMP2
 	&picture POP2 ;icons/picture ;draw-icon JMP2
-	&rom POP2 ;icons/application ;draw-icon JMP2
 	&sound POP2 ;icons/sound ;draw-icon JMP2
 	&font POP2 ;icons/font ;draw-icon JMP2
 

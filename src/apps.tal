@@ -461,38 +461,7 @@ JMP2r
 			&no-pict
 		INC2 GTH2k ,&l JCN
 	POP2 POP2
-
-	( DUP2 #0008 ADD2 LDA2 ;pstr JSR #0a18 DEO )
-
-	( .File/name DEO2
-	#0006 .File/length DEO2
-	;metadata/header .File/read DEO2
-
-	 )
-
-	( ;mem-ptr JSR2
-		DUP2 ;load-metadata JSR2
-		STH2k ;draw-txt JSR2 INC2
-	OVR2 LDA2 #0010 ADD2 .Screen/x DEO2
-	OVR2 INC2 INC2 LDA2 #0020 ADD2 .Screen/y DEO2
-
-	;metadata/end LDA2 ;metadata/start LDA2
-		SUB2 STH2r ADD2 #0003 SUB2 SWP2
-	&l
-		LDAk STH
-		INC2 LDA2k STHr ;parse-field JSR2
-		INC2 INC2 GTH2k ,&l JCN
-	POP2 POP2 )
 	( win* ) POP2
-
-JMP2r
-
-@parse-field ( value* key -- )
-
-	DUP #83 NEQ ,&no-icon JCN
-		POP #0100 SUB2 ;draw-metaicon JMP2
-		&no-icon
-	POP POP2
 
 JMP2r
 
