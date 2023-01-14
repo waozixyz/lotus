@@ -437,10 +437,14 @@ JMP2r
 	INC2k INC2 LDA2 #001c ADD2 .Screen/y DEO2
 
 	DUP2 #0008 ADD2 LDA2 ;make-src JSR2
-		;has-metadata JSR2 ,&valid JCN
+		;has-metadata JSR2 ,&valid-metadata JCN
+	( TODO: make prettier )
+	;dict/no-metadata ;draw-str JSR2 POP2
 	POP2
 
-&valid ( win* -- )
+JMP2r
+
+&valid-metadata ( win* -- )
 
 	;load-metadata JSR2
 
