@@ -27,6 +27,7 @@
 	> Add window close icons in bar
 	> Write welcome message
 	> Cannot delete files with long names
+	> Cut long filenames in window titles
 	)
 
 |0100 ( -> ) @size-system-start

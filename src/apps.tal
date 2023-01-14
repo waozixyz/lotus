@@ -269,6 +269,11 @@ JMP2r
 		00 "2 =select-color2 "Color1 $1
 		00 "3 =select-color3 "Color2 $1
 		00 "4 =select-color4 "Color3 $1
+	04 "Goto $1
+		00 00 =app-tile/goto-pattern "Pattern $1
+		00 00 =app-tile/goto-font "Font $1
+		00 00 =app-tile/goto-window "Window $1
+		00 00 =app-tile/goto-icons "Icons $1
 	$1
 
 @app-tile
@@ -380,6 +385,30 @@ JMP2
 	;paint-patt/addr LDA2 #0010 ;mclr JSR2 ;draw-desktop ( .. )
 
 JMP2
+
+&goto-pattern ( -- )
+
+	;paint-patt/addr LDA2 ;&sel-tile JSR2
+
+JMP2r
+
+&goto-font ( -- )
+
+	;font/visible ;&sel-tile JSR2
+
+JMP2r
+
+&goto-window ( -- )
+
+	;frame1-chr ;&sel-tile JSR2
+
+JMP2r
+
+&goto-icons ( -- )
+
+	;icons ;&sel-tile JSR2
+
+JMP2r
 
 @paint-patt ( x y -- )
 
