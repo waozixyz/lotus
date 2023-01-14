@@ -5,11 +5,12 @@
 |0100 ( -> )
 
 	( theme )
-	#770f .System/r DEO2
-	#dd0f .System/g DEO2
-	#cc0f .System/b DEO2
+	#750f .System/r DEO2
+	#db0f .System/g DEO2
+	#ca0f .System/b DEO2
 	( fill )
 	#01 .Screen/auto DEO
+	;pattern-icn .Screen/addr DEO2
 	#0000 .Screen/y DEO2
 	.Screen/height DEI2 #03 SFT2 NIP #00
 	&h
@@ -41,19 +42,22 @@ BRK
 	DUP #07 AND #00 NEQ ?&no-update
 		[ LIT2 &x $2 ] .Screen/x DEO2
 		[ LIT2 &y $2 ] .Screen/y DEO2
-		#00 ,&f LDR #04 SFT #03 AND DUP ADD
+		#00 ,&f LDR #04 SFT #07 AND DUP ADD
 			;frames ADD2 LDA2 .Screen/addr DEO2
 		#85 .Screen/sprite DEO
 		&no-update
 	INC ,&f STR
 
 BRK
+
 @frames
 	=uxn-chr/f1 =uxn-chr/f2 =uxn-chr/f1 =uxn-chr/f3
-
+	=uxn-chr/f1 =uxn-chr/f4 =uxn-chr/f4 =uxn-chr/f4
+	
 (
 @|assets )
-
+@pattern-icn
+1038 7cfe 7c38 1000
 @uxn-chr
 0000 040c 0c0c 0400 0004 0e1e 1e1e 0f07 0000 0000 4060 6f9f 0000 0040 e0ff ffff 
 0000 0004 2666 668c 0000 0c2e 7fff fffe 
@@ -68,4 +72,7 @@ f0f8 f8f8 a858 f8f8 fcfc bcfc fcfc fcfc
 &f3
 0103 0303 0303 2363 0307 0707 0737 77f7 ffff ffff 5ea1 ffff ffff deff ffff ffff 
 f0f8 f8f8 b878 f8f8 fcfc fcfc fcfc fcfc
+&f4
+0103 0303 0303 2363 0307 0707 0737 77f7 ffff ffff dfa0 dfff ffff efff ffff ffff 
+f0f8 f8f8 b858 b8f8 fcfc 7cfc fcfc fcfc
 
