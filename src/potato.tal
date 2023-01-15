@@ -55,7 +55,7 @@
 
 BRK
 
-@meta 00 &body
+@meta 00
 	( name ) "Potato 0a
 	( details ) "An 20 "Operating 20 "System 0a
 	( author ) "By 20 "Hundred 20 "Rabbits 0a
@@ -253,31 +253,39 @@ JMP2r
 
 @file-rename ( -- )
 
-	;file-validate JSR2 #0005 ADD2 DUP2 ;&src STA2
-	;dict/rename SWP2 ;&callback ;add-form ( .. )
+	;dict/rename ;get-sel-file JSR2
+		DUP2 ;is-file-locked JSR2 ,&err JCN
+		#0005 ADD2
+			DUP2 ,&target STR2
+			;&callback ;add-form ( .. )
 
 JMP2
+	&err #0005 ADD2 ;add-err JMP2
 
 &callback ( -- )
 
-	( a* ) [ LIT2 &src $2 ] ;make-src JSR2
+	( a* ) [ LIT2 &target $2 ] ;make-src JSR2
 	( b* ) ;buf/form ;make-dst JSR2
 		;fcpy JSR2
-	( a* ) ,&src LDR2 ;make-src JSR2
+	( a* ) ,&target LDR2 ;make-src JSR2
 		;fdel ( .. )
 
 JMP2
 
 @file-clone ( -- )
 
-	;file-validate JSR2 #0005 ADD2 DUP2 ;&src STA2
-	;dict/clone SWP2 ;&callback ;add-form ( .. )
+	;dict/clone ;get-sel-file JSR2
+		DUP2 ;is-file-locked JSR2 ,&err JCN
+		#0005 ADD2
+			DUP2 ,&target STR2
+			;&callback ;add-form ( .. )
 
 JMP2
+	&err #0005 ADD2 ;add-err JMP2
 
 &callback ( -- )
 
-	( a* ) [ LIT2 &src $2 ] ;make-src JSR2
+	( a* ) [ LIT2 &target $2 ] ;make-src JSR2
 	( b* ) ;buf/form ;make-dst JSR2
 		;fcpy ( .. )
 
@@ -285,27 +293,20 @@ JMP2
 
 @file-delete ( -- )
 
-	;file-validate JSR2 #0005 ADD2 DUP2 ;&src STA2
-	;dict/delete SWP2 ;&callback ;add-option ( .. )
+	;dict/delete ;get-sel-file JSR2
+		DUP2 ;is-file-locked JSR2 ,&err JCN
+		#0005 ADD2
+			DUP2 ,&target STR2
+			;&callback ;add-option ( .. )
 
 JMP2
+	&err #0005 ADD2 ;add-err JMP2
 
 &callback ( -- )
 
-	( a* ) [ LIT2 &src $2 ] ;make-src JSR2 ;fdel ( .. )
-
-JMP2
-
-@file-validate ( -- file* )
-
-	;get-sel-file JSR2
-		DUP2 #ffff EQU2 ,&fail JCN
-		LDAk LIT "- EQU ,&fail JCN
-		LDAk LIT "? EQU ,&fail JCN
-	( -> do file operations )
+	( a* ) [ LIT2 &target $2 ] ;make-src JSR2 ;fdel JSR2
 
 JMP2r
-	&fail POP2r #0005 ADD2 ;dict/rename SWP2 ;add-err JMP2
 
 ( open a file )
 
@@ -490,6 +491,12 @@ JMP2r
 
 JMP2r
 	&true #01 JMP2r
+
+@is-file-locked ( file* -- b )
+
+	LDAk LIT "- EQU STH LDA LIT "? EQU STHr ORA
+
+JMP2r
 
 (
 @|drawing )
