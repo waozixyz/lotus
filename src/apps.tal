@@ -3,20 +3,20 @@
 (
 @|about )
 
-@about-manifest
+@app-about
+	=&manifest
+	=void-init
+	=&on-draw
+	=void-mouse
+	=void-button
+
+&manifest
 
 	03 "Disk $1
 		12 00 =expand-win "Expand $1
 		22 00 =tab-win "Tab $1
 		42 00 =close-win "Close $1
 	$1
-
-@app-about
-	=about-manifest
-	=void-init
-	=&on-draw
-	=void-mouse
-	=void-button
 
 &on-draw ( win* -- )
 
@@ -230,7 +230,14 @@ JMP2r
 (
 @|tile )
 
-@tile-manifest
+@app-tile
+	=&manifest
+	=void-init
+	=&on-draw
+	=&on-mouse
+	=void-button
+
+&manifest
 
 	03 "Tile $1
 		12 00 =expand-win "Expand $1
@@ -255,13 +262,6 @@ JMP2r
 		00 00 =app-tile/goto-window "Window $1
 		00 00 =app-tile/goto-icons "Icons $1
 	$1
-
-@app-tile
-	=tile-manifest
-	=void-init
-	=&on-draw
-	=&on-mouse
-	=void-button
 
 &on-draw ( win* -- )
 
@@ -426,20 +426,20 @@ JMP2
 JMP2r
 
 (
-@|meta )
-
-@meta-manifest
-
-	01 "Meta $1
-		42 00 =close-win "Close $1
-	$1
+@|metadata )
 
 @app-meta
-	=meta-manifest
+	=&manifest
 	=void-init
 	=&on-draw
 	=void-mouse
 	=void-button
+
+&manifest
+
+	01 "Meta $1
+		42 00 =close-win "Close $1
+	$1
 
 &on-draw ( win* -- )
 
@@ -478,9 +478,14 @@ JMP2r
 (
 @|text )
 
-( window port 0e is used for storing the line offset, used in scrolling )
+@app-text
+	=&manifest
+	=&on-init
+	=&on-draw
+	=&on-mouse
+	=void-button
 
-@text-manifest
+&manifest
 
 	03 "Text $1
 		12 00 =expand-win "Expand $1
@@ -492,13 +497,6 @@ JMP2r
 		01 "x =edit-cut "Cut $1
 		00 08 =edit-erase "Erase $1
 	$1
-
-@app-text
-	=text-manifest
-	=&on-init
-	=&on-draw
-	=&on-mouse
-	=void-button
 
 &on-init ( win* -- )
 
@@ -584,7 +582,14 @@ BRK
 (
 @|pict )
 
-@pict-manifest
+@app-pict
+	=&manifest
+	=void-init
+	=&on-draw
+	=void-mouse
+	=void-button
+
+&manifest
 
 	03 "Picture $1
 		12 00 =expand-win "Expand $1
@@ -595,13 +600,6 @@ BRK
 		10 00 =app-pict/prev "Previous $1
 		20 00 =app-pict/next "Next $1
 	$1
-
-@app-pict
-	=pict-manifest
-	=void-init
-	=&on-draw
-	=void-mouse
-	=void-button
 
 &on-draw ( win* -- )
 
@@ -665,7 +663,14 @@ JMP2
 (
 @|font )
 
-@font-manifest
+@app-font
+	=&manifest
+	=&on-init
+	=&on-draw
+	=void-mouse
+	=void-button
+
+&manifest
 
 	03 "Font $1
 		12 00 =expand-win "Expand $1
@@ -675,13 +680,6 @@ JMP2
 		10 00 =app-font/prev "Previous $1
 		20 00 =app-font/next "Next $1
 	$1
-
-@app-font
-	=font-manifest
-	=&on-init
-	=&on-draw
-	=void-mouse
-	=void-button
 
 &on-init ( win* -- )
 
@@ -756,7 +754,14 @@ JMP2
 (
 @|play )
 
-@play-manifest
+@app-play
+	=&manifest
+	=void-init
+	=&on-draw
+	=&on-mouse
+	=void-button
+
+&manifest
 
 	03 "Play $1
 		12 00 =expand-win "Expand $1
@@ -783,13 +788,6 @@ JMP2
 		00 "[ =app-play/zoomin "Zoom 20 "In $1
 		00 "] =app-play/zoomout "Zoom 20 "Out $1
 	$1
-
-@app-play
-	=play-manifest
-	=void-init
-	=&on-draw
-	=&on-mouse
-	=void-button
 
 &on-draw ( win* -- )
 
@@ -920,18 +918,18 @@ JMP2r
 (
 @|form )
 
-@form-manifest
-
-	01 "Form $1
-		42 00 =close-win "Cancel $1
-	$1
-
 @app-form
-	=form-manifest
+	=&manifest
 	=void-init
 	=&on-draw
 	=&on-mouse
 	=&on-button
+
+&manifest
+
+	01 "Form $1
+		42 00 =close-win "Cancel $1
+	$1
 
 &on-draw ( win* -- )
 
@@ -988,18 +986,18 @@ BRK
 (
 @|option )
 
-@option-manifest
-
-	01 "Option $1
-		42 00 =close-win "Cancel $1
-	$1
-
 @app-option
-	=option-manifest
+	=&manifest
 	=void-init
 	=&on-draw
 	=&on-mouse
 	=&on-button
+
+&manifest
+
+	01 "Option $1
+		42 00 =close-win "Cancel $1
+	$1
 
 &on-draw ( win* -- )
 
@@ -1042,18 +1040,18 @@ BRK
 (
 @|error )
 
-@error-manifest
-
-	01 "Error $1
-		42 00 =close-win "Cancel $1
-	$1
-
 @app-error
-	=error-manifest
+	=&manifest
 	=void-init
 	=&on-draw
 	=&on-mouse
 	=&on-button
+
+&manifest
+
+	01 "Error $1
+		42 00 =close-win "Cancel $1
+	$1
 
 &on-draw ( win* -- )
 
