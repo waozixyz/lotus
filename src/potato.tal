@@ -39,7 +39,7 @@
 	#500f .System/r DEO2
 	#b70f .System/g DEO2
 	#a70f .System/b DEO2
-	;dict/theme-ext ;load-theme JSR2
+	;dict/theme-ext load-theme
 
 	( 800x520 | 64:41 )
 	#0320 .Screen/width DEO2
@@ -48,10 +48,10 @@
 	#ff .drag STZ
 	#ff .sel/win STZ
 
-	;draw-menu-bg JSR2
-	;draw-menu JSR2
-	;dict/home-ext ;set-dir JSR2
-	;untrap JSR2
+	draw-menu-bg
+	draw-menu
+	;dict/home-ext set-dir
+	untrap
 
 BRK
 
@@ -121,7 +121,7 @@ JMP2
 @mem-type ( addr* -- type )
 
 	DUP2 ;mem LTH2 ,&a JCN
-	DUP2 ;get-mem-win JSR2 ;within-range JSR2 ,&c JCN
+	DUP2 get-mem-win within-range ,&c JCN
 	DUP2 ;mem .bounds LDZ2 ADD2 LTH2 ,&b JCN
 	POP2 #03
 
@@ -138,7 +138,7 @@ JMP2r
 
 @get-mem-win ( -- a* b* )
 
-	( win ) ;get-active-win JSR2
+	( win ) get-active-win
 	( win/mem-ptr ) #000a ADD2 LDA2k STH2
 	( win/mem-len ) INC2 INC2 LDA2
 	STH2kr ADD2 STH2r SWP2
@@ -167,7 +167,7 @@ JMP2r
 @set-dir ( path* -- )
 
 	,validate-dir JSR
-	;dir ;scpy JSR2
+	;dir scpy
 	#00 ;sel-icon ( .. )
 
 JMP2
@@ -175,9 +175,9 @@ JMP2
 @push-dir ( path* -- )
 
 	,validate-dir JSR
-	DUP2 ;dict/parent-ext ;scmp JSR2 ,pop-dir JCN
-	LIT "/ ;dir STH2k ;sput JSR2
-	STH2r ;scat JSR2
+	DUP2 ;dict/parent-ext scmp ,pop-dir JCN
+	LIT "/ ;dir STH2k sput
+	STH2r scat
 	#00 ;sel-icon ( .. )
 
 JMP2
@@ -185,8 +185,8 @@ JMP2
 @pop-dir ( path* -- )
 
 	,validate-dir JSR
-	;dir ;dict/home-ext ;scmp JSR2 ,&skip JCN
-	;dir DUP2 ;scap JSR2
+	;dir ;dict/home-ext scmp ,&skip JCN
+	;dir DUP2 scap
 	&loop
 		LDAk LIT "/ EQU ,&found JCN
 		#0001 SUB2 LTH2k ,&loop JCN
@@ -203,14 +203,14 @@ JMP2
 
 	.length LDZ #00 EQUk ,&skip JCN
 	&loop
-		( win ) DUP ;get-win JSR2
+		( win ) DUP get-win
 		( win/name ) #0008 ADD2 LDA2 ;no-name NEQ2 ,&busy JCN
 		INC GTHk ,&loop JCN
 	&skip
 	POP2
 
 JMP2r
-	&busy POP2r NIP ;sel-win JSR2 ;center-win JSR2 POP2 JMP2r
+	&busy POP2r NIP sel-win center-win POP2 JMP2r
 
 ( path handlers )
 
@@ -226,10 +226,10 @@ JMP2r
 
 @make-path ( file* -- abs* )
 
-	STH2k #0040 ;mclr JSR2
-	;dir STH2kr ;scat JSR2
-	LIT "/ STH2kr ;sput JSR2
-	STH2kr ;scat JSR2
+	STH2k #0040 mclr
+	;dir STH2kr scat
+	LIT "/ STH2kr sput
+	STH2kr scat
 	STH2r
 
 JMP2r
@@ -244,7 +244,7 @@ JMP2
 
 &callback ( -- )
 
-	;buf/form ;make-src JSR2 .File/name DEO2
+	;buf/form make-src .File/name DEO2
 	#0001 .File/length DEO2
 	;&buf .File/write DEO2
 
@@ -253,8 +253,8 @@ JMP2r
 
 @file-rename ( -- )
 
-	;dict/rename ;get-sel-file JSR2
-		DUP2 ;is-file-locked JSR2 ,&err JCN
+	;dict/rename get-sel-file
+		DUP2 is-file-locked ,&err JCN
 		#0005 ADD2
 			DUP2 ,&target STR2
 			;&callback ;add-form ( .. )
@@ -264,18 +264,18 @@ JMP2
 
 &callback ( -- )
 
-	( a* ) [ LIT2 &target $2 ] ;make-src JSR2
-	( b* ) ;buf/form ;make-dst JSR2
-		;fcpy JSR2
-	( a* ) ,&target LDR2 ;make-src JSR2
+	( a* ) [ LIT2 &target $2 ] make-src
+	( b* ) ;buf/form make-dst
+		fcpy
+	( a* ) ,&target LDR2 make-src
 		;fdel ( .. )
 
 JMP2
 
 @file-clone ( -- )
 
-	;dict/clone ;get-sel-file JSR2
-		DUP2 ;is-file-locked JSR2 ,&err JCN
+	;dict/clone get-sel-file
+		DUP2 is-file-locked ,&err JCN
 		#0005 ADD2
 			DUP2 ,&target STR2
 			;&callback ;add-form ( .. )
@@ -285,16 +285,16 @@ JMP2
 
 &callback ( -- )
 
-	( a* ) [ LIT2 &target $2 ] ;make-src JSR2
-	( b* ) ;buf/form ;make-dst JSR2
+	( a* ) [ LIT2 &target $2 ] make-src
+	( b* ) ;buf/form make-dst
 		;fcpy ( .. )
 
 JMP2
 
 @file-delete ( -- )
 
-	;dict/delete ;get-sel-file JSR2
-		DUP2 ;is-file-locked JSR2 ,&err JCN
+	;dict/delete get-sel-file
+		DUP2 is-file-locked ,&err JCN
 		#0005 ADD2
 			DUP2 ,&target STR2
 			;&callback ;add-option ( .. )
@@ -304,7 +304,7 @@ JMP2
 
 &callback ( -- )
 
-	( a* ) [ LIT2 &target $2 ] ;make-src JSR2 ;fdel JSR2
+	( a* ) [ LIT2 &target $2 ] make-src fdel
 
 JMP2r
 
@@ -314,13 +314,12 @@ JMP2r
 
 	DUP2 #ffff EQU2 ,&no-file JCN
 	LDAk LIT "- EQU ,open-folder JCN
-	DUP2 ;dict/icn-ext ;has-ext JSR2 ;open-pict JCN2
-	DUP2 ;dict/chr-ext ;has-ext JSR2 ;open-pict JCN2
-	DUP2 ;dict/uf2-ext ;has-ext JSR2 ;open-font JCN2
-	DUP2 ;dict/pcm-ext ;has-ext JSR2 ;open-sound JCN2
-	DUP2 ;dict/rom-ext ;has-ext JSR2 ;open-load JCN2
-	DUP2 #0005 ADD2 ;dict/theme-ext ;scmp JSR2 ;open-theme JCN2
-	( DUP2 #0005 ADD2 ;is-binary JSR2 ,open-hexa JCN )
+	DUP2 ;dict/icn-ext has-ext ;open-pict JCN2
+	DUP2 ;dict/chr-ext has-ext ;open-pict JCN2
+	DUP2 ;dict/uf2-ext has-ext ;open-font JCN2
+	DUP2 ;dict/pcm-ext has-ext ;open-sound JCN2
+	DUP2 ;dict/rom-ext has-ext ;open-load JCN2
+	DUP2 #0005 ADD2 ;dict/theme-ext scmp ;open-theme JCN2
 	;open-text ( .. )
 
 JMP2
@@ -334,7 +333,7 @@ JMP2
 
 @open-meta ( file* -- )
 
-	DUP2 ;make-src JSR2 ;has-metadata JSR2 #00 EQU ,&err JCN
+	DUP2 make-src has-metadata #00 EQU ,&err JCN
 	#0005 ADD2 ;app-meta #240a #0010 #0034 ;add-win ( .. )
 
 JMP2
@@ -348,32 +347,32 @@ JMP2
 
 @open-font ( file* -- )
 
-	#0005 ADD2 ;app-font #2222 #001d #0034 ;add-win JSR2
+	#0005 ADD2 ;app-font #2222 #001d #0034 add-win
 	;center-win ( .. )
 
 JMP2
 
 @open-sound ( file* -- )
 
-	#0005 ADD2 ;app-play #220f #001d #0034 ;add-win JSR2
+	#0005 ADD2 ;app-play #220f #001d #0034 add-win
 	;center-win ( .. )
 
 JMP2
 
 @open-theme ( file* -- )
 
-	#0005 ADD2 ;make-src JSR2 ;load-theme JSR2
-	;open-tile JSR2
+	#0005 ADD2 make-src load-theme
+	open-tile
 	;open-color ( .. )
 
 JMP2
 
 @open-load ( file* -- )
 
-	#0005 ADD2 ;make-src JSR2 .File/name DEO2
+	#0005 ADD2 make-src .File/name DEO2
 	#fe00 .File/length DEO2
-	;loader-rom #ffd5 #002a ;mcpy JSR2
-	;clear-screen JSR2
+	;loader-rom #ffd5 #002a mcpy
+	clear-screen
 	POP2r POP2r
 	#ffd5 JMP2
 
@@ -382,8 +381,8 @@ JMP2r
 @open-pict ( file* -- )
 
 	#0005 ADD2
-	DUP2 ;read-pict-size JSR2
-	;app-pict SWP2 INC INC #0000 DUP2 ;add-win JSR2
+	DUP2 read-pict-size
+	;app-pict SWP2 INC INC #0000 DUP2 add-win
 	;center-win ( .. )
 
 JMP2
@@ -391,9 +390,9 @@ JMP2
 @open-about ( -- )
 
 	( unique )
-	;app-about ;find-win JSR2
+	;app-about find-win
 		DUP #ff NEQ ,&reselect JCN POP
-	;no-name ;app-about #2213 #0000 DUP2 ;add-win JSR2
+	;no-name ;app-about #2213 #0000 DUP2 add-win
 	;center-win ( .. )
 
 JMP2
@@ -403,7 +402,7 @@ JMP2
 
 	;patt-chr ;paint-patt/addr STA2
 	( unique )
-	;app-tile ;find-win JSR2
+	;app-tile find-win
 		DUP #ff NEQ ,&reselect JCN POP
 	( create )
 	;no-name ;app-tile #0a0f
@@ -417,7 +416,7 @@ JMP2
 @open-color ( -- )
 
 	( unique )
-	;app-color ;find-win JSR2
+	;app-color find-win
 		DUP #ff NEQ ,&reselect JCN POP
 	;no-name ;app-color #0a0f
 	( y ) .Screen/height DEI2 #0088 SUB2
@@ -460,7 +459,7 @@ JMP2r
 
 @read-pict-size ( filename* -- size* )
 
-	;scap JSR2 #0009 SUB2 ,read-size JSR
+	scap #0009 SUB2 ,read-size JSR
 
 	ORAk ,&continue JCN
 		POP2 #1010
@@ -470,9 +469,9 @@ JMP2r
 
 @read-size ( 00x00* -- w h )
 
-	DUP2 ;sbyte JSR2 ,&w STR
+	DUP2 sbyte ,&w STR
 	INC2 INC2 LDAk LIT "x NEQ ,&cancel JCN
-	INC2 ;sbyte JSR2 [ LIT &w $1 ] SWP
+	INC2 sbyte [ LIT &w $1 ] SWP
 
 JMP2r
 	&cancel POP2 #0000 JMP2r
@@ -503,23 +502,23 @@ JMP2r
 
 @redraw-all ( -- )
 
-	;draw-menu-bg JSR2
+	draw-menu-bg
 
 @draw-desktop ( -- )
 
-	;draw-wallpaper JSR2
-	;load-dir JSR2
+	draw-wallpaper
+	load-dir
 
 	( draw icons )
-	;get-rows JSR2 STH
+	get-rows STH
 	LITr 00
 	;buf/dir
 	&w
 		#00 STHk2r SWP DIV #00a0 MUL2 #0010 ADD2 .Screen/x DEO2
 		#00 STHk2r SWP ( MOD ) [ DIVk MUL SUB ] #0018 MUL2 #0018 ADD2 .Screen/y DEO2
-		DUP2 ;draw-item-icon JSR2
-		DUP2 STHkr ;draw-item-text JSR2
-		;scap JSR2
+		DUP2 draw-item-icon
+		DUP2 STHkr draw-item-text
+		scap
 		INCr
 		INC2 LDAk ,&w JCN
 	POP2
@@ -528,7 +527,7 @@ JMP2r
 	( draw windows )
 	.length LDZ #00 EQUk ,&no-win JCN
 	&loop
-		DUP ;get-win JSR2 ;draw-win JSR2
+		DUP get-win draw-win
 		INC GTHk ,&loop JCN
 	&no-win
 	POP2
@@ -557,11 +556,11 @@ JMP2
 	( header )
 	( x ) LDA2k DUP2 ,&x STR2 .Screen/x DEO2 INC2 INC2
 	( y ) LDA2k DUP2 ,&y STR2 .Screen/y DEO2 INC2 INC2
-	( size ) LDA2k ;draw-win-decor JSR2 INC2 INC2
+	( size ) LDA2k draw-win-decor INC2 INC2
 	( app ) LDA2k DUP2 ,&app STR2
-	( app/name ) LDA2 INC2 #05 ;draw-text-color JSR2 INC2 INC2
-	( space ) #20 ;draw-chr JSR2
-	( win/name ) LDA2 #0a ;draw-text-color JSR2
+	( app/name ) LDA2 INC2 #05 draw-text-color INC2 INC2
+	( space ) #20 draw-chr
+	( win/name ) LDA2 #0a draw-text-color
 
 	( body )
 	( x ) [ LIT2 &x $2 ] #0008 ADD2 .Screen/x DEO2
@@ -574,10 +573,10 @@ JMP2
 
 	STH2
 	.Screen/x DEI2 .Screen/y DEI2
-	STH2kr ;draw-fill JSR2
+	STH2kr draw-fill
 	OVR2 OVR2 .Screen/y DEO2 .Screen/x DEO2
 	#85 ;draw-frame/color STA
-	STH2kr ;frame1-chr ;draw-frame JSR2
+	STH2kr ;frame1-chr draw-frame
 	OVR2 OVR2 #000a ADD2 .Screen/y DEO2 .Screen/x DEO2
 	STH2r POP #0a ,draw-dotted JSR
 	.Screen/y DEO2 .Screen/x DEO2
@@ -652,7 +651,7 @@ JMP2r
 	#8000
 	&loop
 		#00 OVRk ADD2 [ LIT2 &x $2 ] ADD2 .Screen/x DEO2
-		#00 OVR #90 SFT2 ;mem-type JSR2 #00 SWP #40 SFT2 ;prog-chrs ADD2 .Screen/addr DEO2
+		#00 OVR #90 SFT2 mem-type #00 SWP #40 SFT2 ;prog-chrs ADD2 .Screen/addr DEO2
 		#81 .Screen/sprite DEO
 		INC GTHk ,&loop JCN
 	POP2
@@ -662,7 +661,7 @@ JMP2r
 @scroll-text ( str* w -- str* w )
 
 	STHk ROT ROT DUP2
-	;slen JSR2 #00 STHr SUB2 DUP2 #8000 LTH2 ,&no-scroll JCN
+	slen #00 STHr SUB2 DUP2 #8000 LTH2 ,&no-scroll JCN
 		POP2 #0000 &no-scroll
 	ADD2 ROT
 
@@ -675,12 +674,12 @@ JMP2r
 
 	,scroll-text JSR
 
-	DUP ;input-icns ;draw-capped JSR2
+	DUP ;input-icns draw-capped
 	#30 SFT #00 SWP #000e ADD2 STH2
 	.Screen/x DEI2k STH2r SUB2 ROT DEO2
 	.Screen/y DEI2k #0004 ADD2 ROT DEO2
 
-	#0a ;draw-text-color JSR2
+	#0a draw-text-color
 
 	( re-anchor )
 	[ LIT2 &x $2 ] .Screen/x DEO2
@@ -692,7 +691,7 @@ JMP2r
 
 	DUP ;button-icns ,draw-capped JSR
 	#00 SWP INC INC #20 SFT STH2
-	DUP2 ;slen JSR2 #20 SFT2 STH2 ADD2r
+	DUP2 slen #20 SFT2 STH2 ADD2r
 	.Screen/x DEI2k STH2r SUB2 ROT DEO2
 	.Screen/y DEI2k #0004 ADD2 ROT DEO2
 	#0f ;draw-text-color ( .. )
@@ -728,7 +727,7 @@ JMP2r
 			[ LIT &color 03 ] .Screen/sprite DEO
 			INC GTHk ,&w JCN
 		POP2
-		;draw-lb JSR2
+		draw-lb
 		.Screen/x DEI2k #00 ,&x LDR #30 SFT2 SUB2 ROT DEO2
 		INC GTHk ,&h JCN
 	POP2
@@ -768,16 +767,16 @@ JMP2r
 
 @draw-rom-icon ( file* -- )
 
-	#0005 ADD2 ;make-src JSR2 ;has-metadata JSR2 ,&valid JCN
+	#0005 ADD2 make-src has-metadata ,&valid JCN
 	( display default icon )
- 	;icons/application ;draw-icon JSR2
+ 	;icons/application draw-icon
 
 JMP2r
 
 &valid ( -- )
 
-	;metadata/fields #0100 ;mclr JSR2
-	;load-metadata JSR2
+	;metadata/fields #0100 mclr
+	load-metadata
 	( find picture )
 	;metadata/fields LDAk LITr 00 STH
 	INC2 DUP2 STH2r ADD2 SWP2
@@ -785,17 +784,17 @@ JMP2r
 		LDAk #83 EQU ,&valid-icon JCN
 		INC2 GTH2k ,&l JCN
 	POP2 POP2
-	;icons/application ;draw-icon JSR2
+	;icons/application draw-icon
 
 JMP2r
 
 &valid-icon ( fields* field -- )
 
-	INC2 LDA2 #0100 SUB2 ;seek JSR2
+	INC2 LDA2 #0100 SUB2 seek
 	#0090 .File/length DEO2
 	;metadata/icon
 		DUP2 .File/read DEO2
-		;draw-icon JSR2
+		draw-icon
 	POP2
 
 JMP2r
@@ -810,15 +809,15 @@ JMP2r
 
 @draw-icon-size ( size* name* icon* -- )
 
-	;draw-icon JSR2
+	draw-icon
 	.Screen/y DEI2k #0014 SUB2 ROT DEO2
 	.Screen/x DEI2k STH2k #0020 ADD2 ROT DEO2
-	[ LIT &c1 0a ] ;draw-text-color JSR2
+	[ LIT &c1 0a ] draw-text-color
 	STH2r #0020 ADD2 .Screen/x DEO2
 	.Screen/y DEI2k #0009 ADD2 ROT DEO2
 	[ LIT &c2 05 ] ;draw-chr/color STA
-	;draw-dec JSR2
-	#20 ;draw-chr JSR2
+	draw-dec
+	#20 draw-chr
 	;dict/bytes ;draw-text ( .. )
 
 JMP2
@@ -828,11 +827,11 @@ JMP2
 	LDAk LIT "- EQU ,&folder JCN
 	LDAk LIT "? EQU ,&unknown JCN
 	DUP2 #0005 ADD2 LDA LIT ". EQU ,&unknown JCN
-	DUP2 #0005 ADD2 ;dict/rom-ext ;has-ext JSR2 ;draw-rom-icon JCN2
-	DUP2 #0005 ADD2 ;dict/chr-ext ;has-ext JSR2 ,&picture JCN
-	DUP2 #0005 ADD2 ;dict/icn-ext ;has-ext JSR2 ,&picture JCN
-	DUP2 #0005 ADD2 ;dict/pcm-ext ;has-ext JSR2 ,&sound JCN
-	DUP2 #0005 ADD2 ;dict/uf2-ext ;has-ext JSR2 ,&font JCN
+	DUP2 #0005 ADD2 ;dict/rom-ext has-ext ;draw-rom-icon JCN2
+	DUP2 #0005 ADD2 ;dict/chr-ext has-ext ,&picture JCN
+	DUP2 #0005 ADD2 ;dict/icn-ext has-ext ,&picture JCN
+	DUP2 #0005 ADD2 ;dict/pcm-ext has-ext ,&sound JCN
+	DUP2 #0005 ADD2 ;dict/uf2-ext has-ext ,&font JCN
 	POP2 ;icons/text ;draw-icon ( .. )
 
 JMP2
@@ -852,14 +851,14 @@ JMP2
 	.Screen/x DEI2k #0020 ADD2 STH2k ROT DEO2
 	.Screen/y DEI2k #0014 SUB2 ROT DEO2
 
-	#0005 ADD2 ;draw-text JSR2
+	#0005 ADD2 draw-text
 	STH2r .Screen/x DEO2
 	.Screen/y DEI2k #0009 ADD2 ROT DEO2
 
 	#01 ;draw-chr/color STA
-	DUP2 ;&buf #0004 ;mcpy JSR2
-	;&buf ;shex JSR2 ;draw-dec JSR2
-	#20 ;draw-chr JSR2
+	DUP2 ;&buf #0004 mcpy
+	;&buf shex draw-dec
+	#20 draw-chr
 	;dict/bytes ;draw-text ( .. )
 
 JMP2
@@ -899,7 +898,7 @@ JMP2r
 
 	( draw mid )
 	.Screen/y DEI2k #001f ADD2 ROT DEO2
-	#200c ;draw-dotted JSR2
+	#200c draw-dotted
 
 	( draw wav )
 	,&zoom STR2
@@ -935,7 +934,7 @@ JMP2r
 	( value )
 	#0010 ADD2 .Screen/y DEO2
 	#0004 ADD2 .Screen/x DEO2
-	STHkr ;draw-hex JSR2
+	STHkr draw-hex
 	#0e .Screen/sprite DEO
 	( marker )
 	.Screen/x DEI2 #0004 SUB2 #0000 STHkr ;knob-offsetx ADD2 LDA ADD2 .Screen/x DEO2
@@ -960,7 +959,7 @@ JMP2r
 	DUP2 .Screen/y DEO2
 	#0e .Screen/sprite DEO
 
-	[ LIT &octave 03 ] ;draw-hex JSR2
+	[ LIT &octave 03 ] draw-hex
 
 	;arrow-icns/v .Screen/addr DEO2
 	DUP2 #0010 ADD2 .Screen/y DEO2
@@ -989,9 +988,9 @@ JMP2r
 	( TODO: Add name and write value )
 
 	.Screen/x DEI2 SWP2
-	;draw-text JSR2
+	draw-text
 	.Screen/x DEO2
-	;draw-lb JSR2
+	draw-lb
 
 	#00 .Screen/auto DEO
 	STH
@@ -1077,12 +1076,12 @@ JMP2r
 
 @draw-pict ( name* -- )
 
-	DUP2 ;get-ext JSR2 ;dict/chr-ext ;scmp JSR2 STH
+	DUP2 get-ext ;dict/chr-ext scmp STH
 	( toggle 1-bit/2-bit )
 	#0010 #0008 STHkr [ JMP SWP2 POP2 ] .File/length DEO2
 	[ LIT &2bit 81 ] [ LIT &1bit 0e ] STHr [ JMP SWP POP ] ,&color STR
 	DUP2 .File/name DEO2
-		;read-pict-size JSR2
+		read-pict-size
 	,&height STR ,&width STR
 	.Screen/x DEI2 ,&anchor STR2
 	;&buf .Screen/addr DEO2
@@ -1097,7 +1096,7 @@ JMP2r
 			[ LIT &color $1 ] .Screen/sprite DEO
 			INC GTHk ,&h JCN
 		POP2
-		;draw-lb JSR2
+		draw-lb
 		INC GTHk ,&v JCN
 	POP2
 
@@ -1130,13 +1129,13 @@ JMP2r
 JMP2
 	&parse
 		DIV2k DUPk [ LIT &z $1 ] EQU ,&skip JCN
-		DUP #30 ADD ;draw-chr JSR2 #ff ,&z STR
+		DUP #30 ADD draw-chr #ff ,&z STR
 		&skip POP MUL2 SUB2
 	JMP2r
 
 @get-strw ( str* -- width* )
 
-	;slen JSR2 #30 SFT2
+	slen #30 SFT2
 
 JMP2r
 
@@ -1170,7 +1169,7 @@ JMP2r
 
 @draw-text ( str* -- )
 
-	;draw-str JSR2 POP2
+	draw-str POP2
 
 JMP2r
 
@@ -1180,7 +1179,7 @@ JMP2r
 	#01 .Screen/auto DEO
 	&w
 		LDAk #00 EQU ,&end JCN
-		LDAk ;draw-chr JSR2
+		LDAk draw-chr
 		INC2 LDAk #0a NEQ ,&w JCN
 	&end
 	INC2
@@ -1225,7 +1224,7 @@ JMP2r
 
 @draw-metaicon ( location* -- )
 
-	;seek JSR2
+	seek
 	#0090 .File/length DEO2
 	;metadata/icon
 		DUP2 .File/read DEO2
@@ -1260,23 +1259,23 @@ JMP2r
 @draw-month ( -- )
 
 	( start day )
-	.year LDZ2 .month LDZ #01 ;dotw JSR2 ;&offset STA
+	.year LDZ2 .month LDZ #01 dotw ;&offset STA
 	.Screen/x DEI2 STH2k #0040 ADD2 .Screen/x DEO2
 	.Screen/y DEI2 STH2k #0012 SUB2 .Screen/y DEO2
 	( month )
-	#00 .month LDZ #20 SFT2 ;dict/months ADD2 ;draw-str JSR2 POP2
+	#00 .month LDZ #20 SFT2 ;dict/months ADD2 draw-str POP2
 	( year )
 	.Screen/x DEI2k #0008 ADD2 ROT DEO2
-	.year LDZ2 ;draw-dec JSR2
+	.year LDZ2 draw-dec
 	( week )
 	STH2kr .Screen/y DEO2
 	#0700
 	&lw
 		#00 OVR #0020 MUL2 OVR2r STH2r ADD2 .Screen/x DEO2
 		DUP .DateTime/dotw DEI EQU
-		.year LDZ2 .month LDZ ;is-month JSR2 AND STH
+		.year LDZ2 .month LDZ is-month AND STH
 			#050c STHr JMP SWP POP ;draw-chr/color STA
-		#00 OVR #20 SFT2 ;dict/dotw ADD2 ;draw-str JSR2 POP2
+		#00 OVR #20 SFT2 ;dict/dotw ADD2 draw-str POP2
 		INC GTHk ,&lw JCN
 	POP2
 	( days )
@@ -1287,10 +1286,10 @@ JMP2r
 		#00 OVR #07 DIV #0010 MUL2 STH2kr ADD2 .Screen/y DEO2
 		DUP [ LIT &offset $1 ] SUB
 			DUP #80 GTH ,&skip JCN
-			INCk .year LDZ2 .month LDZ ;diam JSR2 GTH ,&skip JCN
-			STHk .year LDZ2 .month LDZ STHr INC ;is-today JSR2 STH
+			INCk .year LDZ2 .month LDZ diam GTH ,&skip JCN
+			STHk .year LDZ2 .month LDZ STHr INC is-today STH
 				#0c0e STHr JMP SWP POP ;draw-chr/color STA
-		#00 OVR INC ;draw-dec JSR2
+		#00 OVR INC draw-dec
 		&skip
 		POP
 		INC GTHk ;&l JCN2
@@ -1447,13 +1446,13 @@ JMP2r
 	DUP #20 LTH ,&invalid JCN
 	DUP #7e GTH ,&invalid JCN
 	POP
-	OVR2 ;slen JSR2 [ LIT2 &len $2 ] LTH2 ,&ok JCN
+	OVR2 slen [ LIT2 &len $2 ] LTH2 ,&ok JCN
 		POP2 POP JMP2r
 		&ok
 	;sput ( .. )
 
 JMP2
-	&erase POP ;spop JSR2 POP JMP2r
+	&erase POP spop POP JMP2r
 	&invalid POP2 POP2 JMP2r
 
 @has-ext ( str* ext* -- bool )
@@ -1464,9 +1463,12 @@ JMP2
 
 @get-ext ( str* -- ext* )
 
-	;scap JSR2 #0004 SUB2
+	scap #0004 SUB2
 
 JMP2r
+
+(
+@|metadata )
 
 @has-metadata ( src* -- bool )
 
@@ -1479,7 +1481,7 @@ JMP2r
 
 @load-metadata ( -- )
 
-	;metadata/start LDA2 #0100 SUB2 ;seek JSR2
+	;metadata/start LDA2 #0100 SUB2 seek
 
 	( version )
 	#0001 .File/length DEO2
@@ -1509,7 +1511,7 @@ JMP2r
 
 @save-theme ( -- )
 
-	;dict/theme-ext ;make-src JSR2 .File/name DEO2
+	;dict/theme-ext make-src .File/name DEO2
 	#0002 .File/length DEO2
 	.System/r DEI2 ,&w JSR
 	.System/g DEI2 ,&w JSR
@@ -1523,6 +1525,9 @@ JMP2
 	&b $2
 
 @no-name $1
+
+(
+@|dates )
 
 @is-today ( year* month day -- bool )
 
@@ -1563,7 +1568,7 @@ JMP2r
 	#00 OVR ;&m ADD2 LDA
 
 	SWP #01 NEQ ,&no-feb JCN
-		STH DUP2 ;is-leap-year JSR2 STHr ADD
+		STH DUP2 is-leap-year STHr ADD
 		&no-feb
 	NIP NIP
 
