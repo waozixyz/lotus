@@ -13,8 +13,7 @@
 |0000
 
 @cursor &x $2 &y $2 &color $1
-@sel
-	&win $1
+@sel &win $1
 @drag $1
 @length $1
 @bounds $2
@@ -26,9 +25,7 @@
 ( TODOs:
 	> Add window close icons in bar
 	> Write welcome message
-	> Cannot delete files with long names
-	> Cut long filenames in window titles
-	)
+	> Cut long filenames in window titles )
 
 |0100 ( -> ) @size-system-start
 
@@ -59,7 +56,7 @@ BRK
 	( name ) "Potato 0a
 	( details ) "An 20 "Operating 20 "System 0a
 	( author ) "By 20 "Hundred 20 "Rabbits 0a
-	( date ) "Jan 20 "8, 20 "2023 00
+	( date ) "Jan 20 "19, 20 "2023 00
 	02
 		( icon ) 83 =appicon
 		( mask ) 41 1705
@@ -103,12 +100,12 @@ JMP2r
 	DUP2 ,&offset STR2
 	OVR2 INC2 STH2
 	#1000
-	&loop
+	&l
 		#00 OVR #40 SFT2 ;windows #000a ADD2 ADD2 LDA2k STH2kr LTH2 ?&continue
 			DUP2 LDA2k [ LIT2 &offset $2 ] SUB2 SWP2 STA2
 			&continue
 			POP2
-		INC GTHk ?&loop
+		INC GTHk ?&l
 	POP2
 	POP2r
 	( update bound )
@@ -187,9 +184,9 @@ JMP2r
 	validate-dir
 	;dir ;dict/home-ext scmp ?&skip
 	;dir DUP2 scap
-	&loop
+	&l
 		LDAk LIT "/ EQU ?&found
-		#0001 SUB2 LTH2k ?&loop
+		#0001 SUB2 LTH2k ?&l
 		&found
 	NIP2
 	#00 ROT ROT STA
@@ -202,10 +199,10 @@ JMP2r
 @validate-dir ( -- )
 
 	.length LDZ #00 EQUk ?&skip
-	&loop
+	&l
 		( win ) DUP get-win
 		( win/name ) #0008 ADD2 LDA2 ;no-name NEQ2 ?&busy
-		INC GTHk ?&loop
+		INC GTHk ?&l
 	&skip
 	POP2
 
@@ -525,9 +522,9 @@ JMP2r
 
 	( draw windows )
 	.length LDZ #00 EQUk ?&no-win
-	&loop
+	&l
 		DUP get-win draw-win
-		INC GTHk ?&loop
+		INC GTHk ?&l
 	&no-win
 	POP2
 
@@ -648,11 +645,11 @@ JMP2r
 	.Screen/x DEI2 ,&x STR2
 	;vert-icn .Screen/addr DEO2
 	#8000
-	&loop
+	&l
 		#00 OVRk ADD2 [ LIT2 &x $2 ] ADD2 .Screen/x DEO2
 		#00 OVR #90 SFT2 mem-type #00 SWP #40 SFT2 ;prog-chrs ADD2 .Screen/addr DEO2
 		#81 .Screen/sprite DEO
-		INC GTHk ?&loop
+		INC GTHk ?&l
 	POP2
 
 JMP2r
@@ -903,11 +900,11 @@ JMP2r
 	#01 .Screen/auto DEO
 	LITr 00
 	ADD2k NIP2 SWP2
-	&loop
+	&l
 		LDAk #00 SWP #02 SFT2 [ LIT2 &y $2 ] ADD2 .Screen/y DEO2
 		#0a .Screen/pixel DEO
 		INCr STHkr #00 EQU ?&end
-		[ LIT2 &zoom $2 ] ADD2 GTH2k ?&loop
+		[ LIT2 &zoom $2 ] ADD2 GTH2k ?&l
 	&end
 	POP2 POP2
 	POPr
@@ -994,11 +991,11 @@ JMP2r
 	#00 .Screen/auto DEO
 	STH
 	#1000
-	&loop
+	&l
 		#00 OVR STHkr GTH #30 SFT ;slider-icns ADD2 .Screen/addr DEO2
 		#0a .Screen/sprite DEO
 		.Screen/x DEI2k #0004 ADD2 ROT DEO2
-		INC GTHk ?&loop
+		INC GTHk ?&l
 	POP2
 	POPr
 
@@ -1146,9 +1143,9 @@ JMP2r
 
 	LDAk #00 EQU ?&skip
 	#01 .Screen/auto DEO
-	&while
+	&w
 		LDAk draw-chr
-		INC2 LDAk ?&while
+		INC2 LDAk ?&w
 	&skip
 	INC2
 
@@ -1303,7 +1300,7 @@ JMP2r
 @pstr ( str* -- ) &w LDAk #18 DEO INC2 LDAk ?&w POP2 JMP2r
 @msfl ( a* b* len* -- ) STH2 SWP2 EQU2k ?&e &l DUP2k STH2kr ADD2 LDA ROT ROT STA INC2 GTH2k ?&l POP2 POP2 &e POP2r JMP2r
 @msfr ( a* b* len* -- ) STH2 EQU2k ?&e &l DUP2 LDAk ROT ROT STH2kr ADD2 STA #0001 SUB2 LTH2k ?&l POP2 POP2 &e POP2r JMP2r
-@mcpy ( src* dst* len* -- ) SWP2 STH2 OVR2 ADD2 SWP2 &loop LDAk STH2kr STA INC2r INC2 GTH2k ?&loop POP2 POP2 POP2r JMP2r
+@mcpy ( src* dst* len* -- ) SWP2 STH2 OVR2 ADD2 SWP2 &l LDAk STH2kr STA INC2r INC2 GTH2k ?&l POP2 POP2 POP2r JMP2r
 
 @fcpy ( src* dst* -- )
 
@@ -1453,17 +1450,8 @@ JMP2
 	&erase POP spop POP JMP2r
 	&invalid POP2 POP2 JMP2r
 
-@has-ext ( str* ext* -- bool )
-
-	SWP2 get-ext ;scmp ( .. )
-
-JMP2
-
-@get-ext ( str* -- ext* )
-
-	scap #0004 SUB2
-
-JMP2r
+@has-ext ( str* ext* -- b ) SWP2 get-ext !scmp
+@get-ext ( str* -- ext* ) scap #0004 SUB2 JMP2r
 
 (
 @|metadata )
@@ -1500,12 +1488,6 @@ JMP2r
 		INC2 .File/read DEO2
 
 JMP2r
-
-@metadata
-	&header $1 &start $3 &deo $2 &version $1
-	&body $100
-	&fields $100
-	&icon $90
 
 @save-theme ( -- )
 

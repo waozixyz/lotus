@@ -489,6 +489,15 @@ JMP2r
 JMP2r
 	&found POP2r JMP2r
 
+(
+@|color-picking )
+
+@select-color ( id -- ) .cursor/color STZ !draw-desktop
+	&0 #00 !select-color
+	&1 #01 !select-color
+	&2 #02 !select-color
+	&3 #03 !select-color
+
 @find-name ( name* -- id|ff )
 
 	,&t STR2

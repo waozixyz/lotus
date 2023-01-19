@@ -324,6 +324,12 @@ ffff 7eff e7ff 00ff ffff ffff ffff ffff a0a0 a0a0 a0a0 60e0 f0f0 f0f0 f0f0 f0f0
 	0a mem-ptr*
 	0c mem-len* )
 
+@metadata
+	&header $1 &start $3 &deo $2 &version $1
+	&body $100
+	&fields $100
+	&icon $90
+
 @buf
 	&src $40 ( used by make-src )
 	&dst $40 ( used by make-dst )

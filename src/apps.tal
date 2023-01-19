@@ -155,10 +155,10 @@ JMP2
 	01 "File $1
 		01 "s =save-theme "Save $1
 	04 "Select $1
-		00 "1 =select-color1 "Background $1
-		00 "2 =select-color2 "Color1 $1
-		00 "3 =select-color3 "Color2 $1
-		00 "4 =select-color4 "Color3 $1
+		00 "1 =select-color/0 "Background $1
+		00 "2 =select-color/1 "Color1 $1
+		00 "3 =select-color/2 "Color2 $1
+		00 "4 =select-color/3 "Color3 $1
 	$1
 
 @app-color
@@ -188,7 +188,7 @@ JMP2
 		OVR .System/b STHk ,&set-color JSR STHr ,&set-nibble JSR
 		&no-b
 	DUP #09 NEQ ,&no-swatch JCN
-		OVR #02 SFT .cursor/color STZ
+		OVR #02 SFT select-color
 		[ LIT2 &win $2 ] ;draw-win JSR2
 		,&release JMP
 		&no-swatch
@@ -265,10 +265,10 @@ JMP2r
 		01 "c =app-tile/copy-patt "Copy $1
 		01 "v =app-tile/paste-patt "Paste $1
 	04 "Color $1
-		00 "1 =select-color1 "Background $1
-		00 "2 =select-color2 "Color1 $1
-		00 "3 =select-color3 "Color2 $1
-		00 "4 =select-color4 "Color3 $1
+		00 "1 =select-color/0 "Background $1
+		00 "2 =select-color/1 "Color1 $1
+		00 "3 =select-color/2 "Color2 $1
+		00 "4 =select-color/3 "Color3 $1
 	04 "Goto $1
 		00 00 =app-tile/goto-pattern "Pattern $1
 		00 00 =app-tile/goto-font "Font $1
@@ -329,7 +329,7 @@ JMP2r
 		;paint-patt JSR2 BRK
 		&no-paint
 	DUP #09 NEQ ,&no-swatch JCN
-		OVR #01 SFT .cursor/color STZ
+		OVR #01 SFT select-color
 		#ffff ;paint-patt/last STA2
 		;get-active-win JSR2 ;draw-win JSR2
 		,&release JMP
@@ -1165,12 +1165,6 @@ BRK
 	INC2
 
 JMP2r
-
-( used in tile/patt apps )
-@select-color1 ( -- ) #00 .cursor/color STZ JMP2r
-@select-color2 ( -- ) #01 .cursor/color STZ JMP2r
-@select-color3 ( -- ) #02 .cursor/color STZ JMP2r
-@select-color4 ( -- ) #03 .cursor/color STZ JMP2r
 
 @size-apps-end
 
