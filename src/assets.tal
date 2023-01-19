@@ -299,9 +299,9 @@ ffff 7eff e7ff 00ff ffff ffff ffff ffff a0a0 a0a0 a0a0 60e0 f0f0 f0f0 f0f0 f0f0
 ( blobs )
 
 @loader-rom
-	8000 8000 0711 0106 80f7 0d02 a001 00af
-	80ac 37a0 ffd5 80a2 36ef 3826 8000 0505
-	1521 aa80 f50d 2222 6f2c
+	8000 8000 0711 0106 20ff f702 a001 00af
+	80ac 37a0 ffd5 80a2 36ef 38af 8000 6f15
+	21aa 20ff f622 226f 2c00
 @notes
 	30 32 34 35
 	37 39 3b 3c

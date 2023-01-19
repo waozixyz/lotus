@@ -318,7 +318,7 @@ JMP2r
 	DUP2 ;dict/chr-ext has-ext ?open-pict
 	DUP2 ;dict/uf2-ext has-ext ?open-font
 	DUP2 ;dict/pcm-ext has-ext ?open-sound
-	DUP2 ;dict/rom-ext has-ext ?open-load
+	DUP2 ;dict/rom-ext has-ext ?open-rom
 	DUP2 #0005 ADD2 ;dict/theme-ext scmp ?open-theme
 	!open-text
 
@@ -367,16 +367,15 @@ JMP2r
 
 ( .. )
 
-@open-load ( file* -- )
+@open-rom ( file* -- )
 
 	#0005 ADD2 make-src .File/name DEO2
 	#fe00 .File/length DEO2
-	;loader-rom #ffd5 #002a mcpy
+	;loader-rom #ffd6 #0029 mcpy
 	clear-screen
-	POP2r POP2r
-	#ffd5 JMP2
+	POP2r #ffd6
 
-JMP2r
+JMP2 ( -> )
 
 @open-pict ( file* -- )
 
