@@ -190,24 +190,15 @@ JMP2r
 &on-draw ( win* -- )
 
 	POP2
-	[ .System/r ,&get-color JSR ] ;dict/red
-		draw-slider
-	[ .System/g ,&get-color JSR ] ;dict/green
-		draw-slider
-	[ .System/b ,&get-color JSR ] ;dict/blue
-		draw-slider
-
-	( swatches )
-
-	draw-swatches
-
-	.System/r ,&get-color JSR draw-hex
-	.System/g ,&get-color JSR draw-hex
-	.System/b ,&get-color JSR draw-hex
+	[ .System/r ,&get-color JSR ] DUP ;dict/red draw-slider
+	[ .System/g ,&get-color JSR ] DUP ;dict/green draw-slider
+	[ .System/b ,&get-color JSR ] DUP ;dict/blue draw-slider
+	( swatches ) draw-swatches
+	( hex ) ROT draw-hex SWP draw-hex draw-hex
 
 JMP2r
 
-&get-color ( system -- hex )
+&get-color ( port -- hex )
 
 	.cursor/color LDZ STHk #01 SFT ADD DEI
 		#01 STHr #01 AND SUB #20 SFT SFT #0f AND
