@@ -1266,10 +1266,10 @@ JMP2r
 	STH2kr .Screen/y DEO2
 	#0700
 	&lw
-		#00 OVR #0020 MUL2 OVR2r STH2r ADD2 .Screen/x DEO2
+		#00 OVR #50 SFT2 OVR2r STH2r ADD2 .Screen/x DEO2
 		DUP .DateTime/dotw DEI EQU
 		.year LDZ2 .month LDZ is-month AND STH
-			#050c STHr JMP SWP POP ;draw-chr/color STA
+			#050c STHr [ JMP SWP POP ] ;draw-chr/color STA
 		#00 OVR #20 SFT2 ;dict/dotw ADD2 draw-str POP2
 		INC GTHk ?&lw
 	POP2
@@ -1277,13 +1277,13 @@ JMP2r
 	LIT2r 0010 ADD2r
 	#2a00
 	&l
-		#00 OVR #07 DIVk MUL SUB #0020 MUL2 OVR2r STH2r ADD2 .Screen/x DEO2
-		#00 OVR #07 DIV #0010 MUL2 STH2kr ADD2 .Screen/y DEO2
+		#00 OVR #07 DIVk MUL SUB #50 SFT2 OVR2r STH2r ADD2 .Screen/x DEO2
+		#00 OVR #07 DIV #40 SFT2 STH2kr ADD2 .Screen/y DEO2
 		DUP [ LIT &offset $1 ] SUB
 			DUP #80 GTH ?&skip
 			INCk .year LDZ2 .month LDZ diam GTH ?&skip
 			STHk .year LDZ2 .month LDZ STHr INC is-today STH
-				#0c0e STHr JMP SWP POP ;draw-chr/color STA
+				#0c0e STHr [ JMP SWP POP ] ;draw-chr/color STA
 		#00 OVR INC draw-dec
 		&skip
 		POP
