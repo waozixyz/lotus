@@ -1151,13 +1151,6 @@ JMP2r
 
 JMP2r
 
-@draw-chr ( char -- )
-
-	#00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
-	[ LIT &color 03 ] .Screen/sprite DEO
-
-JMP2r
-
 @draw-text-color ( str* color -- )
 
 	;draw-chr/color STA
@@ -1196,9 +1189,16 @@ JMP2r
 
 @draw-hex ( char -- )
 
-	#0f AND DUP #09 GTH #07 MUL ADD #30 ADD ;draw-chr ( .. )
+	#0f AND DUP #09 GTH #07 MUL ADD #30 ADD ( .. )
 
-JMP2
+@draw-chr ( char -- )
+
+	#00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
+	[ LIT &color 03 ] .Screen/sprite DEO
+
+JMP2r
+
+( .. )
 
 @draw-txt ( txt* -- end* )
 
@@ -1223,9 +1223,7 @@ JMP2r
 	#0090 .File/length DEO2
 	;metadata/icon
 		DUP2 .File/read DEO2
-		.Screen/addr DEO2
-	#26 .Screen/auto DEO
-	#85 .Screen/sprite DEOk DEOk DEO
+		draw-icon
 
 JMP2r
 
@@ -1296,7 +1294,7 @@ JMP2r
 (
 @|stdlib )
 
-@scmp ( a* b* -- f ) STH2 &l LDAk LDAkr STHr ANDk #00 EQU ?&e NEQk ?&e POP2 INC2 INC2r ,&l JMP &e NIP2 POP2r EQU JMP2r
+@scmp ( a* b* -- f ) STH2 &l LDAk LDAkr STHr ANDk #00 EQU ?&e NEQk ?&e POP2 INC2 INC2r !&l &e NIP2 POP2r EQU JMP2r
 @pstr ( str* -- ) &w LDAk #18 DEO INC2 LDAk ?&w POP2 JMP2r
 @msfl ( a* b* len* -- ) STH2 SWP2 EQU2k ?&e &l DUP2k STH2kr ADD2 LDA ROT ROT STA INC2 GTH2k ?&l POP2 POP2 &e POP2r JMP2r
 @msfr ( a* b* len* -- ) STH2 EQU2k ?&e &l DUP2 LDAk ROT ROT STH2kr ADD2 STA #0001 SUB2 LTH2k ?&l POP2 POP2 &e POP2r JMP2r
@@ -1373,8 +1371,8 @@ JMP2r
 
 @chex ( c -- val|ff )
 
-	LIT "0 SUB DUP #09 GTH JMP JMP2r
-	#27 SUB DUP #0f GTH JMP JMP2r
+	LIT "0 SUB DUP #09 GTH [ JMP JMP2r ]
+	#27 SUB DUP #0f GTH [ JMP JMP2r ]
 	POP #ff
 
 JMP2r
