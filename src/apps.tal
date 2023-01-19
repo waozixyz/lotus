@@ -61,12 +61,7 @@ JMP2r
 (
 @|calendar )
 
-@app-calendar
-	=&manifest
-	=&on-init
-	=&on-draw
-	=void-mouse
-	=void-button
+@app-calendar =&manifest =&on-init =&on-draw =void-mouse =void-button
 
 &manifest
 	03 "Calendar $1
@@ -126,12 +121,7 @@ JMP2r
 (
 @|color )
 
-@app-color
-	=&manifest
-	=void-init
-	=&on-draw
-	=&on-mouse
-	=void-button
+@app-color =&manifest =void-init =&on-draw =&on-mouse =void-button
 
 &manifest
 
@@ -154,34 +144,31 @@ JMP2r
 		POP2 POP2 POP2 BRK
 		&on-click
 
-	DUP2 ,&win STR2
-	POP2
+	( win* ) POP2
 	#03 SFT2 NIP ROT ROT #02 SFT2 NIP SWP
 	OVR #0f GTH ,&skip JCN
 	DUP #01 NEQ ,&no-r JCN
-		OVR .System/r STHk ,&set-color JSR STHr ,&set-nibble JSR
+		OVR .System/r STHk ,&set-color JSR
+			STHr ,&set-nibble JSR
 		&no-r
 	DUP #04 NEQ ,&no-g JCN
-		OVR .System/g STHk ,&set-color JSR STHr ,&set-nibble JSR
+		OVR .System/g STHk ,&set-color JSR
+			STHr ,&set-nibble JSR
 		&no-g
 	DUP #07 NEQ ,&no-b JCN
-		OVR .System/b STHk ,&set-color JSR STHr ,&set-nibble JSR
+		OVR .System/b STHk ,&set-color JSR
+			STHr ,&set-nibble JSR
 		&no-b
 	DUP #09 NEQ ,&no-swatch JCN
 		OVR #02 SFT select-color
-		[ LIT2 &win $2 ] draw-win
-		,&release JMP
+		#00 .Mouse/state DEO
 		&no-swatch
-		&skip
+	&skip
 	POP2
 
 BRK
 
-&release ( -> )
-	#00 .Mouse/state DEO POP2
-BRK
-
-&set-nibble ( -- )
+&set-nibble ( color port -- )
 
 	.cursor/color LDZ #01 SFT ADD DEO
 	get-active-win
@@ -230,12 +217,7 @@ JMP2r
 (
 @|tile )
 
-@app-tile
-	=&manifest
-	=void-init
-	=&on-draw
-	=&on-mouse
-	=void-button
+@app-tile =&manifest =void-init =&on-draw =&on-mouse =void-button
 
 &manifest
 
