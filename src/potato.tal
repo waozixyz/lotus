@@ -166,7 +166,7 @@ JMP2r
 
 @set-dir ( path* -- )
 
-	,validate-dir JSR
+	validate-dir
 	;dir scpy
 	#00 !sel-icon
 
@@ -174,7 +174,7 @@ JMP2r
 
 @push-dir ( path* -- )
 
-	,validate-dir JSR
+	validate-dir
 	DUP2 ;dict/parent-ext scmp ?pop-dir
 	LIT "/ ;dir STH2k sput
 	STH2r scat
@@ -184,7 +184,7 @@ JMP2r
 
 @pop-dir ( path* -- )
 
-	,validate-dir JSR
+	validate-dir
 	;dir ;dict/home-ext scmp ?&skip
 	;dir DUP2 scap
 	&loop
@@ -216,7 +216,7 @@ JMP2r
 
 @make-dst ( file* -- abs* )
 
-	;buf/dst ,make-path JSR
+	;buf/dst make-path
 
 JMP2r
 
@@ -458,7 +458,7 @@ JMP2r
 
 @read-pict-size ( filename* -- size* )
 
-	scap #0009 SUB2 ,read-size JSR
+	scap #0009 SUB2 read-size
 
 	ORAk ?&continue
 		POP2 #1010
@@ -577,7 +577,7 @@ JMP2
 	#85 ;draw-frame/color STA
 	STH2kr ;frame1-chr draw-frame
 	OVR2 OVR2 #000a ADD2 .Screen/y DEO2 .Screen/x DEO2
-	STH2r POP #0a ,draw-dotted JSR
+	STH2r POP #0a draw-dotted
 	.Screen/y DEO2 .Screen/x DEO2
 
 JMP2r
@@ -671,7 +671,7 @@ JMP2r
 	.Screen/x DEI2 ,&x STR2
 	.Screen/y DEI2 ,&y STR2
 
-	,scroll-text JSR
+	scroll-text
 
 	DUP ;input-icns draw-capped
 	#30 SFT #00 SWP #000e ADD2 STH2
@@ -688,7 +688,7 @@ JMP2r
 
 @draw-button ( str* w -- )
 
-	DUP ;button-icns ,draw-capped JSR
+	DUP ;button-icns draw-capped
 	#00 SWP INC INC #20 SFT STH2
 	DUP2 slen #20 SFT2 STH2 ADD2r
 	.Screen/x DEI2k STH2r SUB2 ROT DEO2
@@ -871,10 +871,10 @@ JMP2
 
 	.cursor/color LDZ STH
 	#05 .Screen/auto DEO
-	#0c ;swatch-icns/fill #00 STHkr EQU ,draw-swatch JSR
-	#0d ;swatch-icns/fill #01 STHkr EQU ,draw-swatch JSR
-	#0e ;swatch-icns/fill #02 STHkr EQU ,draw-swatch JSR
-	#0e ;swatch-icns/line #03 STHkr EQU ,draw-swatch JSR
+	#0c ;swatch-icns/fill #00 STHkr EQU draw-swatch
+	#0d ;swatch-icns/fill #01 STHkr EQU draw-swatch
+	#0e ;swatch-icns/fill #02 STHkr EQU draw-swatch
+	#0e ;swatch-icns/line #03 STHkr EQU draw-swatch
 	POPr
 	.Screen/x DEI2k #0040 SUB2 ROT DEO2
 	.Screen/y DEI2k #0010 ADD2 ROT DEO2
@@ -967,19 +967,20 @@ JMP2r
 	.Screen/x DEO2
 	#25 .Screen/auto DEO
 	[ LIT &last ff ]
-	DUP #00 EQU ;octave-icns/a ,&draw-key JSR
-	DUP #02 EQU ;octave-icns/b ,&draw-key JSR
-	DUP #04 EQU ;octave-icns/c ,&draw-key JSR
-	DUP #05 EQU ;octave-icns/a ,&draw-key JSR
-	DUP #07 EQU ;octave-icns/b ,&draw-key JSR
-	DUP #09 EQU ;octave-icns/b ,&draw-key JSR
-	#0b EQU ;octave-icns/c ,&draw-key JSR
-	#00 ;octave-icns/d ,&draw-key JSR
+	DUP #00 EQU ;octave-icns/a draw-octave-key
+	DUP #02 EQU ;octave-icns/b draw-octave-key
+	DUP #04 EQU ;octave-icns/c draw-octave-key
+	DUP #05 EQU ;octave-icns/a draw-octave-key
+	DUP #07 EQU ;octave-icns/b draw-octave-key
+	DUP #09 EQU ;octave-icns/b draw-octave-key
+	#0b EQU ;octave-icns/c draw-octave-key
+	#00 ;octave-icns/d
+
+@draw-octave-key ( color addr* -- )
+
+	.Screen/addr DEO2 #03 MUL #0b SWP SUB .Screen/sprite DEO
 
 JMP2r
-	&draw-key ( color addr* -- )
-		.Screen/addr DEO2 #03 MUL #0b SWP SUB .Screen/sprite DEO
-	JMP2r
 
 @draw-slider ( value name* -- )
 
@@ -1051,7 +1052,7 @@ JMP2r
 @draw-drag ( win* color -- )
 
 	;draw-frame/color STA
-	,set-anchor JSR
+	set-anchor
 	INC2 INC2 LDA2 ;frame2-chr !draw-frame
 
 ( .. )
@@ -1138,7 +1139,7 @@ JMP2r
 
 @draw-str-right ( text* -- )
 
-	DUP2 ,get-strw JSR STH2
+	DUP2 get-strw STH2
 	.Screen/x DEI2k STH2r SUB2 ROT DEO2
 
 @draw-str ( str* -- str* )
@@ -1146,7 +1147,7 @@ JMP2r
 	LDAk #00 EQU ?&skip
 	#01 .Screen/auto DEO
 	&while
-		LDAk ,draw-chr JSR
+		LDAk draw-chr
 		INC2 LDAk ?&while
 	&skip
 	INC2
@@ -1190,11 +1191,11 @@ JMP2r
 
 @draw-short ( short* -- )
 
-	SWP ,draw-byte JSR
+	SWP draw-byte
 
 @draw-byte ( byte -- )
 
-	DUP #04 SFT ,draw-hex JSR
+	DUP #04 SFT draw-hex
 
 @draw-hex ( char -- )
 
@@ -1355,8 +1356,8 @@ JMP2r
 
 @sbyte ( str* -- byte )
 
-	LDAk ,chex JSR #40 SFT STH
-	INC2 LDA ,chex JSR STHr ADD
+	LDAk chex #40 SFT STH
+	INC2 LDA chex STHr ADD
 
 JMP2r
 
@@ -1366,7 +1367,7 @@ JMP2r
 	&w
 		LITr 40 SFT2r
 		LITr 00
-		LDAk ,chex JSR STH ADD2r
+		LDAk chex STH ADD2r
 		INC2 LDAk ?&w
 	POP2
 	STH2r
@@ -1386,7 +1387,7 @@ JMP2r
 	LIT2r 0000
 	&w
 		INC2r
-		INC2 LDAk ,is-alphanum JSR ?&w
+		INC2 LDAk is-alphanum ?&w
 	POP2
 	STH2r
 
@@ -1412,8 +1413,8 @@ JMP2r
 
 @get-chr ( addr* pixel -- color )
 
-	STH DUP2 STHkr ,get-icn JSR
-	ROT ROT #0008 ADD2 STHr ,get-icn JSR DUP ADD ORA
+	STH DUP2 STHkr get-icn
+	ROT ROT #0008 ADD2 STHr get-icn DUP ADD ORA
 
 JMP2r
 
@@ -1454,7 +1455,7 @@ JMP2
 
 @has-ext ( str* ext* -- bool )
 
-	SWP2 ,get-ext JSR ;scmp ( .. )
+	SWP2 get-ext ;scmp ( .. )
 
 JMP2
 
