@@ -43,21 +43,21 @@ JMP2r
 
 @on-frame ( -> )
 
-	;update-clock JSR2
+	update-clock
 
 BRK
 
 @on-button ( -> )
 
-	.Controller/button DEI2 ;find-modkey JSR2
-	ORAk #00 EQU ,&skip JCN
+	.Controller/button DEI2 find-modkey
+	ORAk #00 EQU ?&skip
 		( blocking ) JSR2 BRK
 		&skip
 	POP2
 
 	( send button to active win )
 	( win ) ;get-active-win JSR2
-	DUP2 #ffff EQU2 ,&no-win JCN
+	DUP2 #ffff EQU2 ?&no-win
 		.Controller/button DEI2 SWP2 DUP2
 		( win/app ) #0006 ADD2 LDA2
 		( win/app/on-button ) #0008 ADD2 LDA2 JMP2
@@ -68,31 +68,31 @@ BRK
 
 @on-mouse ( -> )
 
-	.Mouse/y DEI2 #000c LTH2 ;trap-menu JCN2
+	.Mouse/y DEI2 #000c LTH2 ?trap-menu
 
 	#42 .Mouse/state DEI #00 NEQ SUB ;cursor-icn ;update-cursor JSR2
 
 	( handle drag )
-	.drag LDZ #ff NEQ ;on-drag JCN2
-	.Mouse/state DEI .Controller/button DEI #0102 EQU2 ;on-drag-start JCN2
+	.drag LDZ #ff NEQ ?on-drag
+	.Mouse/state DEI .Controller/button DEI #0102 EQU2 ?on-drag-start
 
 	( pick window )
-	.Mouse/state DEI #00 EQU ,&no-touch-win JCN
+	.Mouse/state DEI #00 EQU ?&no-touch-win
 		.Mouse/x DEI2 .Mouse/y DEI2 ;pick-win JSR2
-		DUP #ff EQU ,touch-desktop JCN
+		DUP #ff EQU ?touch-desktop
 		DUP ;sel-win JSR2
 		( pick dragbar )
 		( win ) ;get-win JSR2
 		( win/y ) INC2 INC2 LDA2
-			.Mouse/y DEI2 SWP2 SUB2 #000a GTH2 ,&no-bar JCN
+			.Mouse/y DEI2 SWP2 SUB2 #000a GTH2 ?&no-bar
 			;set-drag JSR2
 			&no-bar
 		&no-touch-win
 
 	( send mouse to active win )
 	.Mouse/x DEI2 .Mouse/y DEI2 ;get-active-win JSR2
-		DUP2 #ffff EQU2 ,&skip JCN
-		ROT2k ROT2 ROT2 ;within-win JSR2 ,&send JCN
+		DUP2 #ffff EQU2 ?&skip
+		ROT2k ROT2 ROT2 ;within-win JSR2 ?&send
 	&skip
 
 	POP2 POP2 POP2
@@ -108,7 +108,7 @@ BRK
 
 	POP
 	.Mouse/x DEI2 .Mouse/y DEI2 ;pick-icon JSR2 ;sel-icon JSR2
-	.Mouse/state DEI #02 LTH ,&no-launch JCN
+	.Mouse/state DEI #02 LTH ?&no-launch
 		;go-file JSR2
 		&no-launch
 	#00 .Mouse/state DEO
@@ -119,7 +119,7 @@ BRK
 
 @on-drag ( -> )
 
-	.Mouse/state DEI #00 EQU ;on-drag-end JCN2
+	.Mouse/state DEI #00 EQU ?on-drag-end
 
 	.drag LDZ ;get-win JSR2 STH2k
 
@@ -146,7 +146,7 @@ BRK
 
 @clamp-win ( x* -- x* )
 
-	DUP2 ROT2 STH2k SUB2 #8000 GTH2 ,&gth JCN
+	DUP2 ROT2 STH2k SUB2 #8000 GTH2 ?&gth
 	POP2r
 
 JMP2r
@@ -155,16 +155,16 @@ JMP2r
 @on-drag-end ( -> )
 
 	( clear )
-	.drag LDZ ;get-win JSR2 #40 ;draw-drag JSR2
+	.drag LDZ get-win #40 draw-drag
 	#ff .drag STZ
-	;draw-desktop JSR2
+	draw-desktop
 
 BRK
 
 @on-drag-start ( -> )
 
-	.Mouse/x DEI2 .Mouse/y DEI2 ;pick-win JSR2 DUP #ff EQU ,&no-win JCN
-		;sel-win JSR2 ;set-drag JSR2
+	.Mouse/x DEI2 .Mouse/y DEI2 pick-win DUP #ff EQU ?&no-win
+		sel-win set-drag
 
 BRK
 	&no-win BRK
@@ -186,7 +186,7 @@ JMP2r
 
 @get-win ( id -- addr* )
 
-	DUP #10 LTH ,&exists JCN
+	DUP #10 LTH ?&exists
 		POP #ffff JMP2r
 		&exists
 	#40 SFT #00 SWP ;windows ADD2
@@ -196,10 +196,10 @@ JMP2r
 @pick-win ( x* y* -- id|ff )
 
 	,&y STR2 ,&x STR2
-	#00 .length LDZ DUP #00 EQU ,&skip JCN
+	#00 .length LDZ DUP #00 EQU ?&skip
 	&loop
-		DUP #01 SUB ;get-win JSR2 [ LIT2 &x $2 ] [ LIT2 &y $2 ] ROT2 ,within-win JSR ,&found JCN
-		#01 SUB LTHk ,&loop JCN
+		DUP #01 SUB get-win [ LIT2 &x $2 ] [ LIT2 &y $2 ] ROT2 ,within-win JSR ?&found
+		#01 SUB LTHk ?&loop
 		&skip
 	POP2
 	#ff
@@ -210,10 +210,10 @@ JMP2r
 @within-win ( x* y* win* -- flag )
 
 	STH2
-	( x0 ) OVR2 STH2kr LDA2 LTH2 ,&fail JCN
-	( y0 ) DUP2 STH2kr INC2 INC2 LDA2 LTH2 ,&fail JCN
-	( x1 ) OVR2 STH2kr LDA2k SWP2 #0004 ADD2 LDA #00 SWP #30 SFT2 ADD2 GTH2 ,&fail JCN
-	( y1 ) DUP2 STH2kr INC2 INC2 LDA2k SWP2 #0003 ADD2 LDA #00 SWP #30 SFT2 ADD2 GTH2 ,&fail JCN
+	( x0 ) OVR2 STH2kr LDA2 LTH2 ?&fail
+	( y0 ) DUP2 STH2kr INC2 INC2 LDA2 LTH2 ?&fail
+	( x1 ) OVR2 STH2kr LDA2k SWP2 #0004 ADD2 LDA #00 SWP #30 SFT2 ADD2 GTH2 ?&fail
+	( y1 ) DUP2 STH2kr INC2 INC2 LDA2k SWP2 #0003 ADD2 LDA #00 SWP #30 SFT2 ADD2 GTH2 ?&fail
 	POP2 POP2 POP2r #01
 
 JMP2r
@@ -224,9 +224,9 @@ JMP2r
 	,&a STR2
 	.length LDZ #00
 	&loop
-		( win ) DUP ;get-win JSR2
-		( win/app ) #0006 ADD2 LDA2 [ LIT2 &a $2 ] EQU2 ,&found JCN
-		INC GTHk ,&loop JCN
+		( win ) DUP get-win
+		( win/app ) #0006 ADD2 LDA2 [ LIT2 &a $2 ] EQU2 ?&found
+		INC GTHk ?&loop
 	POP2
 	#ff
 
@@ -239,7 +239,7 @@ JMP2r
 @add-err ( action* target* -- )
 
 	;app-error/target STA2
-	;app-error #1809 #0000 DUP2 ;add-win JSR2
+	;app-error #1809 #0000 DUP2 add-win
 	;center-win ( .. )
 
 JMP2
@@ -247,9 +247,9 @@ JMP2
 @add-form ( action* target* callback* -- )
 
 	;app-form/callback STA2
-	;buf/form ;scpy JSR2
+	;buf/form scpy
 	DUP2 ;app-form/action STA2
-		;app-form #1808 #0000 DUP2 ;add-win JSR2
+		;app-form #1808 #0000 DUP2 add-win
 	;center-win ( .. )
 
 JMP2
@@ -259,7 +259,7 @@ JMP2
 	;app-option/callback STA2
 	;app-option/target STA2
 	DUP2 ;app-option/action STA2
-		;app-option #1807 #0000 DUP2 ;add-win JSR2
+		;app-option #1807 #0000 DUP2 add-win
 	;center-win ( .. )
 
 JMP2
@@ -274,7 +274,7 @@ JMP2
 	STH2r STA2
 
 	( init vector )
-	.length LDZ ;get-win JSR2
+	.length LDZ get-win
 		( win/app ) DUP2 #0006 ADD2 LDA2
 		( win/app/on-init ) INC2 INC2 LDA2 JSR2
 
@@ -283,8 +283,8 @@ JMP2
 
 @sel-win ( id -- )
 
-	DUP #ff EQU ,&desktop JCN
-	DUP .sel/win LDZ EQU ,&unchanged JCN
+	DUP #ff EQU ?&desktop
+	DUP .sel/win LDZ EQU ?&unchanged
 
 	DUP ;get-win JSR2 #0010 SWP2 ;get-active-win JSR2 ;mswp JSR2
 
@@ -306,7 +306,7 @@ JMP2r
 
 @close-win ( -- )
 
-	.length LDZ ,&continue JCN
+	.length LDZ ?&continue
 		( nothing to close ) JMP2r
 		&continue
 
@@ -324,7 +324,7 @@ JMP2
 
 @sel-desktop ( -- )
 
-	.sel/win LDZ #ff EQU ,&skip JCN
+	.sel/win LDZ #ff EQU ?&skip
 		;manifest ;draw-menu/manifest STA2
 		;draw-menu-bg JSR2
 		;draw-menu JSR2
@@ -389,8 +389,8 @@ JMP2
 
 	;get-sel-file JSR2
 
-	LDAk LIT "- EQU ,&invalid JCN
-	LDAk LIT "? EQU ,&invalid JCN
+	LDAk LIT "- EQU ?&invalid
+	LDAk LIT "? EQU ?&invalid
 
 	( run routine ) SWP2 JSR2
 
@@ -405,7 +405,7 @@ JMP2
 @go-active ( -- )
 
 	.length LDZ
-	DUP ,&valid JCN
+	DUP ?&valid
 	POP
 
 JMP2r
@@ -448,7 +448,7 @@ JMP2r
 
 @sel-icon ( id -- )
 
-	( min ) DUP #80 LTH ,&min-ok JCN POP #00 &min-ok
+	( min ) DUP #80 LTH ?&min-ok POP #00 &min-ok
 	( max ) ,desk-len JSR LTHk [ JMP SWP POP ]
 	;draw-item-text/sel STA
 	;draw-desktop JSR2
@@ -462,7 +462,7 @@ JMP2
 	;buf/dir
 	&w
 		;scap JSR2 INCr
-		INC2 LDAk ,&w JCN
+		INC2 LDAk ?&w
 	POP2
 	STHr #01 SUB
 
@@ -478,10 +478,10 @@ JMP2r
 	LITr 00
 	;buf/dir
 	&w
-		EQUkr STHr ,&found JCN
+		EQUkr STHr ?&found
 		;scap JSR2
 		INCr
-		INC2 LDAk ,&w JCN
+		INC2 LDAk ?&w
 	POP2
 	POP2r
 	#ffff
@@ -496,10 +496,10 @@ JMP2r
 	;buf/dir
 	&w
 		#0005 ADD2
-			DUP2 [ LIT2 &t $2 ] ;scmp JSR2 ,&found JCN
+			DUP2 [ LIT2 &t $2 ] scmp ?&found
 		;scap JSR2
 		INCr
-		INC2 LDAk ,&w JCN
+		INC2 LDAk ?&w
 	POP2
 	POPr
 	#ff
@@ -509,7 +509,7 @@ JMP2r
 
 @update-clock ( -- )
 
-	[ LIT &last ff ] .DateTime/minute DEI NEQ ,&continue JCN
+	[ LIT &last ff ] .DateTime/minute DEI NEQ ?&continue
 		JMP2r
 		&continue
 
