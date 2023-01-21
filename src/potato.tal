@@ -311,6 +311,8 @@ JMP2r
 		DUP2 is-file-locked ?&err
 		#0005 ADD2
 			DUP2 ,&target STR2
+			( auto rename to .rom )
+			DUP2 scap #0004 SUB2 ;dict/rom-ext SWP2 scpy
 			;&callback !add-form
 
 ( .. )
