@@ -1,11 +1,11 @@
 
 @on-error ( id* name* -> )
 
-	#0a18 DEO
-	( print ) ;err pstr pstr #2018 DEO pstr ;dict/asm-in pstr ;scope pstr ;dict/asm-dot pstr
-	( halt ) #010f DEO
+	!add-err
+	POP2 POP2
+	POP2r
 
-BRK
+JMP2r
 
 @handle-file ( f* -- )
 
