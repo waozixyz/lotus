@@ -305,6 +305,28 @@ JMP2r
 
 JMP2r
 
+@file-assemble ( -- )
+
+	;dict/assemble get-sel-file
+		DUP2 is-file-locked ?&err
+		#0005 ADD2
+			DUP2 ,&target STR2
+			;&callback !add-form
+
+( .. )
+	&err #0005 ADD2 !add-err
+
+&callback ( -- )
+
+	( src* ) [ LIT2 &target $2 ] make-src
+	( dst* ) ;buf/form make-dst
+	( buffer ) mem-ptr
+		assemble
+
+JMP2r
+
+( .. )
+
 ( open a file )
 
 @open-file ( file* -- )
@@ -827,6 +849,7 @@ JMP2r
 	DUP2 #0005 ADD2 ;dict/chr-ext has-ext ?&picture
 	DUP2 #0005 ADD2 ;dict/icn-ext has-ext ?&picture
 	DUP2 #0005 ADD2 ;dict/pcm-ext has-ext ?&sound
+	DUP2 #0005 ADD2 ;dict/tal-ext has-ext ?&source
 	DUP2 #0005 ADD2 ;dict/uf2-ext has-ext ?&font
 	POP2 ;icons/text !draw-icon
 
@@ -836,6 +859,7 @@ JMP2r
 	&picture POP2 ;icons/picture !draw-icon
 	&sound POP2 ;icons/sound !draw-icon
 	&font POP2 ;icons/font !draw-icon
+	&source POP2 ;icons/source !draw-icon
 
 @draw-item-text ( file* id -- file* )
 

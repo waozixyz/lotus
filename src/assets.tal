@@ -12,6 +12,7 @@
 	&delete "Delete $1
 	&clone "Clone $1
 	&open "Open $1
+	&assemble "Assemble $1
 	&ok "OK $1
 	&red "Red $1
 	&green "Green $1
@@ -21,6 +22,7 @@
 	&pcm-ext ".pcm $1
 	&rom-ext ".rom $1
 	&uf2-ext ".uf2 $1
+	&tal-ext ".tal $1
 	&home-ext ". $1
 	&parent-ext ".. $1
 	&snarf-ext ".snarf $1
@@ -35,6 +37,36 @@
 		"Jul $1 "Aug $1 "Sep $1 "Oct $1 "Nov $1 "Dec $1
 	&err-space "Space 20 "Unavailable $1
 	&no-metadata "Metadata 20 "Missing $1
+	( assembler )
+	&asm-input "Input(.tal): 20 $1
+	&asm-output "Output(.rom): 20 $1
+	&asm-assembled "Assembled 20 $1
+	&asm-reset "INIT $1
+	&asm-spacer 20 "-> 20 $1
+	&asm-in ", 20 "in 20 $1
+	&asm-bytes 20 "bytes( $1
+	&asm-end ") &asm-dot ". 0a $1
+	&asm-labels 20 "labels $1
+	&asm-unused "-- 20 "Unused 20 "label: 20 $1
+	&asm-sym-ext ".sym $1
+
+
+@err "!! 20 "Error: 20 $1
+	&source "Source $1
+	&duplicate "Duplicate  $1
+	&number "Number $1
+	&reference "Reference $1
+	&distance "Distance $1
+	&invalid "Invalid $1
+	&mode "Mode $1
+	&rewind "Rewind $1
+
+@opcodes
+	"LIT "INC "POP "NIP "SWP "ROT "DUP "OVR
+	"EQU "NEQ "GTH "LTH "JMP "JCN "JSR "STH
+	"LDZ "STZ "LDR "STR "LDA "STA "DEI "DEO
+	"ADD "SUB "MUL "DIV "AND "ORA "EOR "SFT
+	&brk "BRK
 
 ( icn )
 
@@ -279,6 +311,12 @@ ffff 7eff e7ff 00ff ffff ffff ffff ffff a0a0 a0a0 a0a0 60e0 f0f0 f0f0 f0f0 f0f0
 	0301 0000 0000 0000 0703 0100 0000 0000
 	ffff 7e00 0000 0000 ffff ff7e 0000 0000
 	c080 0000 0000 0000 e0c0 8000 0000 0000
+	&source
+	0000 0101 0f0f 0f00 0001 020e 1010 101f 0000 8181 ffff ff00 0081 427e 0000 00ff 
+	0000 8080 f0f0 f000 0080 4070 0808 08f8 0f0f 0f0f 0f0f 0f0f 1f1f 1f1f 1f1f 1f1f 
+	ffff 7eff e7ff ffff ffff ffff ffff ffff f0f0 f0f0 f0f0 f0f0 f8f8 f8f8 f8f8 f8f8 
+	0f00 0000 0000 0000 1f0f 0000 0000 0000 ff00 0000 0000 0000 ffff 0000 0000 0000 
+	f000 0000 0000 0000 f8f0 0000 0000 0000
 @frame1-chr
 	( e ) 0000 0000 070f 0f0f 0000 0007 0f1f 1f1f
 	( h ) 0000 0000 ffff ffff 0000 00ff ffff ffff

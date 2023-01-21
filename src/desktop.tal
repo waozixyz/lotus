@@ -7,11 +7,12 @@
 		01 "t =open-tile "Wallpaper $1
 		01 "k =open-color "Theme $1
 		01 "q =exit "Exit $1
-	04 "File $1
+	05 "File $1
 		01 "n =file-create "Create $1
 		01 "r =file-rename "Rename $1
 		01 "d =file-clone "Clone $1
 		01 08 =file-delete "Delete $1
+		00 00 =file-assemble "Assemble $1
 	05 "Open $1
 		05 "D =open-as-meta "As 20 "Meta $1
 		05 "T =open-as-text "As 20 "Text $1

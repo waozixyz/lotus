@@ -1120,4 +1120,4 @@ JMP2r
 
 @size-apps-end
 
-~src/manifest.tal
+~src/assembler.tal
