@@ -46,7 +46,7 @@
 	#ff .sel/win STZ
 
 	draw-menu-bg
-	draw-menu
+	<draw-menu>
 	;dict/home-ext set-dir
 	untrap
 

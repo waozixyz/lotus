@@ -296,10 +296,10 @@ JMP2
 		#0006 ADD2 LDA2
 
 	( get manifest )
-	LDA2 ;draw-menu/manifest STA2
+	LDA2 ;<draw-menu>/manifest STA2
 
 	;draw-menu-bg JSR2
-	;draw-menu JSR2
+	;<draw-menu> JSR2
 	.sel/win STZ
 
 JMP2r
@@ -327,9 +327,9 @@ JMP2
 @sel-desktop ( -- )
 
 	.sel/win LDZ #ff EQU ?&skip
-		;manifest ;draw-menu/manifest STA2
+		;manifest ;<draw-menu>/manifest STA2
 		;draw-menu-bg JSR2
-		;draw-menu JSR2
+		;<draw-menu> JSR2
 		#ff .sel/win STZ
 		&skip
 
