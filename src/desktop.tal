@@ -71,7 +71,8 @@ BRK
 
 	.Mouse/y DEI2 #000c LTH2 ?trap-menu
 
-	#42 .Mouse/state DEI #00 NEQ SUB ;cursor-icn ;update-cursor JSR2
+	[ LIT2 00 -Mouse/state ] DEI NEQ #41 ADD ;cursor-icn <update-cursor>
+
 
 	( handle drag )
 	.drag LDZ #ff NEQ ?on-drag

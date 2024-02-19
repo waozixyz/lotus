@@ -8,19 +8,14 @@
 	;on-mouse-menu .Mouse/vector DEO2
 	;on-control-menu .Controller/vector DEO2
 
-	#40 ;draw-cursor JSR2
+	#40 <draw-cursor>
 
 BRK
 
 @on-mouse-menu ( -> )
 
-	#40 ;draw-cursor JSR2
-	( record mouse positions )
-	.Mouse/x DEI2 DUP2 .cursor/x STZ2 .Screen/x DEO2
-	.Mouse/y DEI2 DUP2 .cursor/y STZ2 .Screen/y DEO2
-	( draw new cursor )
-	;hand-icn .Screen/addr DEO2
-	#42 .Mouse/state DEI #00 NEQ ADD .Screen/sprite DEO
+	[ LIT2 00 -Mouse/state ] DEI NEQ #41 ADD ;hand-icn <update-cursor>
+
 	( when touch cat )
 	.Mouse/state DEI #00 EQU ,&no-touch-cat JCN
 	.Mouse/y DEI2 #000c GTH2 ,&no-touch-cat JCN
@@ -351,6 +346,21 @@ JMP2r
 	.Screen/sprite DEO
 
 JMP2r
+
+@<update-cursor> ( color addr* -- )
+	[ LIT2 00 -Screen/auto ] DEO
+	;fill-icn .Screen/addr DEO2
+	#40 <draw-cursor>
+	.Mouse/x DEI2 ,<draw-cursor>/x STR2
+	.Mouse/y DEI2 ,<draw-cursor>/y STR2
+	.Screen/addr DEO2
+
+@<draw-cursor> ( color -- )
+	[ LIT2 &x $2 ] .Screen/x DEO2
+	[ LIT2 &y $2 ] .Screen/y DEO2
+	.Screen/sprite DEO
+	JMP2r
+
 
 ( theme )
 

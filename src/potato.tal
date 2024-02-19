@@ -618,6 +618,9 @@ JMP2r
 
 	#0000 .Screen/x DEO2
 	#0010 .Screen/y DEO2
+	#80 .Screen/pixel DEO
+	JMP2r
+	( TODO: )
 	#01 .Screen/auto DEO
 	;patt-chr .Screen/addr DEO2
 	;dict/paper-ext .File/name DEO2
