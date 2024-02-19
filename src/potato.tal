@@ -289,16 +289,6 @@
 	INC2 sbyte [ LIT &w $1 ] SWP JMP2r
 	&cancel POP2 #0000 JMP2r
 
-@is-binary ( file* -- flag )
-	.File/name DEO2
-	#0001 .File/length DEO2
-	&s ;&buf .File/read DEO2
-	[ LIT &buf $1 ] #7e GTH ?&true
-	.File/success DEI2 #0000 EQU2 ?&end
-	,&s JMP
-	&end #00 JMP2r
-	&true #01 JMP2r
-
 @is-file-locked ( file* -- b )
 	LDAk LIT "- EQU STH
 	LDA LIT "? EQU STHr ORA JMP2r
@@ -444,10 +434,15 @@
 @draw-fill ( w h -- )
 	[ LIT2 01 -Screen/auto ] DEO
 	;fill-icn .Screen/addr DEO2
+	.Screen/x DEI2 ,&anchor STR2
 	SWP ,&x STR
-	#00 &h [ LIT &x $1 ] #00 &w [ LIT2 &color 03 -Screen/sprite ] DEO
-	INC GTHk ?&w
-	POP2 draw-lb .Screen/x DEI2k #00 ,&x LDR #30 SFT2 SUB2 ROT DEO2
+	#00
+	&h ( -- )
+		[ LIT2 &x $1 00 ]
+		&w ( -- )
+		[ LIT2 &color 03 -Screen/sprite ] DEO
+		INC GTHk ?&w
+	POP2 draw-lb [ LIT2 &anchor $2 ] .Screen/x DEO2
 	INC GTHk ?&h
 	POP2 JMP2r
 
@@ -481,7 +476,7 @@
 
 @draw-rom-icon ( file* -- )
 	#0005 ADD2 make-src has-metadata ?&valid
-	( display default icon ) ;icons/application draw-icon JMP2r
+	( display default icon ) ;icons/application !draw-icon
 	&valid ( -- )
 		;metadata/fields #0100 mclr load-metadata
 		( find picture ) ;metadata/fields LDAk LITr 00 STH
@@ -489,7 +484,7 @@
 	&l ( -- )
 		LDAk #83 EQU ?&valid-icon
 		INC2 GTH2k ?&l
-	POP2 POP2 ;icons/application draw-icon JMP2r
+	POP2 POP2 ;icons/application !draw-icon
 	&valid-icon ( fields* field -- )
 		INC2 LDA2 #0100 SUB2 seek #0090 .File/length DEO2
 		;metadata/icon DUP2 .File/read DEO2
@@ -767,7 +762,7 @@
 @draw-metaicon ( location* -- )
 	seek #0090 .File/length DEO2
 	;metadata/icon DUP2 .File/read DEO2
-	draw-icon JMP2r
+	!draw-icon
 
 @<clear-screen> ( -- )
 	#0000 DUP2 .Screen/x DEO2
