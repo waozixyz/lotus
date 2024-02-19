@@ -194,19 +194,8 @@
 	;&callback !add-option
 	&err #0005 ADD2 !add-err
 	&callback ( -- )
-		( a* ) [ LIT2 &target $2 ] make-src fdel JMP2r
+		( a* ) [ LIT2 &target $2 ] make-src !fdel
 
-@file-assemble ( -- )
-	;dict/assemble get-sel-file DUP2 is-file-locked ?&err
-	#0005 ADD2 DUP2 ,&target STR2
-	( auto rename to .rom ) DUP2 scap #0004 SUB2 ;dict/rom-ext SWP2 scpy ;&callback !add-form
-	&err #0005 ADD2 !add-err
-	&callback ( -- )
-		( src* ) [ LIT2 &target $2 ] make-src
-		( dst* ) ;buf/form make-dst
-		( buffer ) mem-ptr
-		( | TODO )
-		POP2 POP2 POP2 JMP2r
 		( open a file )
 
 @open-file ( file* -- )
@@ -245,31 +234,29 @@
 @open-rom ( file* -- )
 	#0005 ADD2 make-src .File/name DEO2
 	#fe00 .File/length DEO2
-	;loader-rom #ffd6 #0029 mcpy clear-screen POP2r #ffd6 JMP2
+	;loader-rom #ffd6 #0029 mcpy <clear-screen>
+	POP2r #ffd6 JMP2
 
 @open-pict ( file* -- )
 	#0005 ADD2 DUP2 read-pict-size ;app-pict SWP2 INC INC #0000 DUP2 add-win !center-win
 
 @open-about ( -- )
-	( unique ) ;app-about find-win DUP #ff NEQ ?&reselect
+	( unique ) ;app-about find-win INCk ?sel-win
 	POP ;no-name ;app-about #2213 #0000 DUP2 add-win !center-win
-	&reselect !sel-win
 
 @open-tile ( -- )
 	;patt-chr ;paint-patt/addr STA2
-	( unique ) ;app-tile find-win DUP #ff NEQ ?&reselect
+	( unique ) ;app-tile find-win INCk ?sel-win
 	POP
 	( create ) ;no-name ;app-tile #0a0f
 	( y ) .Screen/height DEI2 #0088 SUB2
 	( x ) .Screen/width DEI2 #0060 SUB2 !add-win
-	&reselect !sel-win
 
 @open-color ( -- )
-	( unique ) ;app-color find-win DUP #ff NEQ ?&reselect
+	( unique ) ;app-color find-win INCk ?sel-win
 	POP ;no-name ;app-color #0a0f
 	( y ) .Screen/height DEI2 #0088 SUB2
 	( x ) .Screen/width DEI2 #00c0 SUB2 !add-win
-	&reselect !sel-win
 
 (
 @|helpers )
@@ -783,17 +770,14 @@
 	;metadata/icon DUP2 .File/read DEO2
 	draw-icon JMP2r
 
-@clear-screen ( -- )
-	#01 .Screen/auto DEO
-	#0000 .Screen/y DEO2
-	.Screen/height DEI2 #03 SFT2 NIP #00 &h #0000 .Screen/x DEO2
-	.Screen/width DEI2 #03 SFT2 NIP #00 &w #00 .Screen/sprite DEO
-	INC GTHk ?&w
-	POP2 .Screen/y DEI2k #0008 ADD2 ROT DEO2
-	INC GTHk ?&h
-	POP2 #15 .Screen/auto DEO
+@<clear-screen> ( -- )
+	#0000 DUP2 .Screen/x DEO2
+	.Screen/y DEO2
+	[ LIT2 80 -Screen/sprite ] DEO
 	JMP2r
-	( calendar )
+
+(
+@|calendar )
 
 @draw-month ( -- )
 	( start day ) .year LDZ2 .month LDZ #01 dotw ;&offset STA
