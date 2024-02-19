@@ -12,327 +12,204 @@
 
 |0000
 
-@cursor &x $2 &y $2 &color $1
-@sel &win $1
-@drag $1
-@length $1
-@bounds $2
-@dir $40
+	@cursor &color $1
+	@sel &win $1
+	@drag $1
+	@length $1
+	@bounds $2
+	@dir $40
+	( calendar )
 
-( calendar )
-@year $2  @month $1
+	@year $2
+	@month $1
 
-( TODOs:
-	> Add window close icons in bar
-	> Write welcome message
-	> Cut long filenames in window titles )
+|0100
+	( -> )
 
-|0100 ( -> ) @size-system-start
-
-	( meta )
+@size-system-start ( | meta )
 	;meta #06 DEO2
-
-	( theme )
+	( | theme )
 	#500f .System/r DEO2
 	#b70f .System/g DEO2
 	#a70f .System/b DEO2
-	;dict/theme-ext load-theme
-
-	( 800x520 | 64:41 )
+	;dict/theme-ext <load-theme>
+	( | 800x520 | 64:41 )
 	#0320 .Screen/width DEO2
 	#0208 .Screen/height DEO2
-
-	#ff .drag STZ
-	#ff .sel/win STZ
-
-	draw-menu-bg
+	[ LIT2 ff -drag ] STZ
+	[ LIT2 ff -sel/win ] STZ
+	<draw-menu-bg>
 	<draw-menu>
-	;dict/home-ext set-dir
-	untrap
+	;dict/home-ext <set-dir>
+	untrap BRK
 
-BRK
-
-@meta 00
+@meta
+	00
 	( name ) "Potato 0a
 	( details ) "An 20 "Operating 20 "System 0a
 	( author ) "By 20 "Hundred 20 "Rabbits 0a
-	( date ) "Jan 20 "19, 20 "2023 00
-	02
-		( icon ) 83 =appicon
-		( mask ) 41 1705
+	( date ) "Feb 20 "19, 20 "2024 00 02
+	( icon ) 83 =appicon
+	( mask ) 41 1705
 
 (
 @|memory )
 
 @mem-try ( len* -- len* )
-
-	( TODO: Return only maximum available memory )
-
-JMP2r
+	( | TODO: Return only maximum available memory )
+	JMP2r
 
 @mem-ptr ( -- ptr* )
-
-	;mem .bounds LDZ2 ADD2
-
-JMP2r
+	;mem .bounds LDZ2 ADD2 JMP2r
 
 @mem-pad ( len* -- )
-
 	.bounds STHk LDZ2 ADD2 STHr STZ2
-
-JMP2r
+	JMP2r
 
 @mem-req ( len* -- ptr*|ffff )
-
 	;mem .bounds LDZ2 ADD2 ADD2k
-	( catch overflow )
-	LTH2k ?&valid
-		POP2 POP2 POP2 #ffff JMP2r
-		&valid
-	( update mem )
-	ROT2 .bounds LDZ2 ADD2 .bounds STZ2 POP2
-
-JMP2r
+	( catch overflow ) LTH2k ?{
+		POP2 POP2 POP2 #ffff JMP2r }
+	( | update mem )
+	ROT2 .bounds LDZ2 ADD2 .bounds STZ2
+	POP2 JMP2r
 
 @mem-rel ( ptr* len* -- )
-
-	( each window after ptr, subtract len )
+	( | each window after ptr, subtract len )
 	DUP2 ,&offset STR2
 	OVR2 INC2 STH2
 	#1000
-	&l
+	&l ( -- )
 		#00 OVR #40 SFT2 ;windows #000a ADD2 ADD2 LDA2k STH2kr LTH2 ?&continue
-			DUP2 LDA2k [ LIT2 &offset $2 ] SUB2 SWP2 STA2
-			&continue
-			POP2
-		INC GTHk ?&l
-	POP2
-	POP2r
-	( update bound )
+		DUP2 LDA2k [ LIT2 &offset $2 ] SUB2 SWP2 STA2
+		&continue POP2 INC GTHk ?&l
+	POP2 POP2r
+	( | update bound )
 	.bounds LDZ2 OVR2 SUB2 .bounds STZ2
-	( shift memory left from ptr, by length )
+	( | shift memory left from ptr, by length )
 	#fff0 SWP2 !msfl
 
-( .. )
-
 @mem-type ( addr* -- type )
-
 	DUP2 ;mem LTH2 ?&a
 	DUP2 get-mem-win within-range ?&c
 	DUP2 ;mem .bounds LDZ2 ADD2 LTH2 ?&b
-	POP2 #03
-
-JMP2r
+	POP2 #03 JMP2r
 	&a POP2 #00 JMP2r
 	&b POP2 #01 JMP2r
 	&c POP2 #02 JMP2r
 
 @within-range ( a* start* end* -- flag )
-
-	ROT2 GTH2k STH NIP2 LTH2 STHr AND
-
-JMP2r
+	ROT2 GTH2k STH
+	NIP2 LTH2 STHr AND JMP2r
 
 @get-mem-win ( -- a* b* )
-
-	( win ) get-active-win
-	( win/mem-ptr ) #000a ADD2 LDA2k STH2
-	( win/mem-len ) INC2 INC2 LDA2
-	STH2kr ADD2 STH2r SWP2
-
-JMP2r
+	( | win )
+	get-active-win
+	( | win/mem-ptr )
+	#000a ADD2 LDA2k STH2
+	( | win/mem-len )
+	INC2 INC2 LDA2 STH2kr ADD2 STH2r SWP2 JMP2r
 
 (
 @|directory )
 
 @load-dir ( -- )
-
 	;dir .File/name DEO2
 	#0400 .File/length DEO2
-	;buf/dir
-		DUP2 .File/read DEO2
+	;buf/dir DUP2 .File/read DEO2
 	( remove linebreaks )
-	&w
-		LDAk #0a NEQ ?&no-lb
-			STH2k #00 STH2r STA
-			&no-lb
+	&w ( -- )
+		LDAk #0a NEQ ?{
+			STH2k #00 STH2r STA }
 		INC2 LDAk ?&w
-	POP2
+	POP2 JMP2r
 
-JMP2r
-
-@set-dir ( path* -- )
-
-	validate-dir
-	;dir scpy
-	#00 !sel-icon
-
-( .. )
+@<set-dir> ( path* -- )
+	validate-dir ;dir scpy #00 !sel-icon
 
 @push-dir ( path* -- )
-
-	validate-dir
-	DUP2 ;dict/parent-ext scmp ?pop-dir
-	LIT "/ ;dir STH2k sput
-	STH2r scat
-	#00 !sel-icon
-
-( .. )
+	validate-dir DUP2 ;dict/parent-ext scmp ?pop-dir
+	LIT "/ ;dir STH2k sput STH2r scat #00 !sel-icon
 
 @pop-dir ( path* -- )
-
-	validate-dir
-	;dir ;dict/home-ext scmp ?&skip
+	validate-dir ;dir ;dict/home-ext scmp ?&skip
 	;dir DUP2 scap
-	&l
-		LDAk LIT "/ EQU ?&found
-		#0001 SUB2 LTH2k ?&l
-		&found
-	NIP2
-	#00 ROT ROT STA
-	&skip
-	POP2
-	#00 !sel-icon
-
-( .. )
+	&l ( -- )
+		LDAk LIT "/ EQU ?{
+			#0001 SUB2 LTH2k ?&l }
+	NIP2 #00 ROT ROT STA
+	&skip POP2 #00 !sel-icon
 
 @validate-dir ( -- )
-
 	.length LDZ #00 EQUk ?&skip
-	&l
+	&l ( -- )
 		( win ) DUP get-win
 		( win/name ) #0008 ADD2 LDA2 ;no-name NEQ2 ?&busy
 		INC GTHk ?&l
-	&skip
-	POP2
-
-JMP2r
+	&skip POP2 JMP2r
 	&busy POP2r NIP sel-win center-win POP2 JMP2r
-
-( path handlers )
+	( path handlers )
 
 @make-dst ( file* -- abs* )
-
-	;buf/dst make-path
-
-JMP2r
+	;buf/dst !make-path
 
 @make-src ( file* -- abs* )
-
 	;buf/src
 
 @make-path ( file* -- abs* )
-
-	STH2k #0040 mclr
-	;dir STH2kr scat
-	LIT "/ STH2kr sput
-	STH2kr scat
-	STH2r
-
-JMP2r
-
-( file operations )
+	STH2k #0040 mclr ;dir STH2kr scat LIT "/ STH2kr sput STH2kr scat STH2r JMP2r
+	( file operations )
 
 @file-create ( -- )
-
 	;dict/create ;dict/newfile-txt ;&callback !add-form
-
-( .. )
-
-&callback ( -- )
-
-	;buf/form make-src .File/name DEO2
-	#0001 .File/length DEO2
-	;&buf .File/write DEO2
-
-JMP2r
-	&buf 00
+	&callback ( -- )
+		;buf/form make-src .File/name DEO2
+		#0001 .File/length DEO2
+		;&buf .File/write DEO2
+		JMP2r
+		&buf 00
 
 @file-rename ( -- )
-
-	;dict/rename get-sel-file
-		DUP2 is-file-locked ?&err
-		#0005 ADD2
-			DUP2 ,&target STR2
-			;&callback !add-form
-
-( .. )
+	;dict/rename get-sel-file DUP2 is-file-locked ?&err
+	#0005 ADD2 DUP2 ,&target STR2
+	;&callback !add-form
 	&err #0005 ADD2 !add-err
-
-&callback ( -- )
-
-	( a* ) [ LIT2 &target $2 ] make-src
-	( b* ) ;buf/form make-dst
-		fcpy
-	( a* ) ,&target LDR2 make-src
-		!fdel
-
-( .. )
+	&callback ( -- )
+		( a* ) [ LIT2 &target $2 ] make-src
+		( b* ) ;buf/form make-dst fcpy
+		( a* ) ,&target LDR2 make-src !fdel
 
 @file-clone ( -- )
-
-	;dict/clone get-sel-file
-		DUP2 is-file-locked ?&err
-		#0005 ADD2
-			DUP2 ,&target STR2
-			;&callback !add-form
-
-( .. )
+	;dict/clone get-sel-file DUP2 is-file-locked ?&err
+	#0005 ADD2 DUP2 ,&target STR2
+	;&callback !add-form
 	&err #0005 ADD2 !add-err
-
-&callback ( -- )
-
-	( a* ) [ LIT2 &target $2 ] make-src
-	( b* ) ;buf/form make-dst
-		!fcpy
-
-( .. )
+	&callback ( -- )
+		( a* ) [ LIT2 &target $2 ] make-src
+		( b* ) ;buf/form make-dst !fcpy
 
 @file-delete ( -- )
-
-	;dict/delete get-sel-file
-		DUP2 is-file-locked ?&err
-		#0005 ADD2
-			DUP2 ,&target STR2
-			;&callback !add-option
-
-( .. )
+	;dict/delete get-sel-file DUP2 is-file-locked ?&err
+	#0005 ADD2 DUP2 ,&target STR2
+	;&callback !add-option
 	&err #0005 ADD2 !add-err
-
-&callback ( -- )
-
-	( a* ) [ LIT2 &target $2 ] make-src fdel
-
-JMP2r
+	&callback ( -- )
+		( a* ) [ LIT2 &target $2 ] make-src fdel JMP2r
 
 @file-assemble ( -- )
-
-	;dict/assemble get-sel-file
-		DUP2 is-file-locked ?&err
-		#0005 ADD2
-			DUP2 ,&target STR2
-			( auto rename to .rom )
-			DUP2 scap #0004 SUB2 ;dict/rom-ext SWP2 scpy
-			;&callback !add-form
-
-( .. )
+	;dict/assemble get-sel-file DUP2 is-file-locked ?&err
+	#0005 ADD2 DUP2 ,&target STR2
+	( auto rename to .rom ) DUP2 scap #0004 SUB2 ;dict/rom-ext SWP2 scpy ;&callback !add-form
 	&err #0005 ADD2 !add-err
-
-&callback ( -- )
-
-	( src* ) [ LIT2 &target $2 ] make-src
-	( dst* ) ;buf/form make-dst
-	( buffer ) mem-ptr
-		assemble
-
-JMP2r
-
-( .. )
-
-( open a file )
+	&callback ( -- )
+		( src* ) [ LIT2 &target $2 ] make-src
+		( dst* ) ;buf/form make-dst
+		( buffer ) mem-ptr
+		( | TODO )
+		POP2 POP2 POP2 JMP2r
+		( open a file )
 
 @open-file ( file* -- )
-
 	DUP2 #ffff EQU2 ?&no-file
 	LDAk LIT "- EQU ?open-folder
 	DUP2 ;dict/icn-ext has-ext ?open-pict
@@ -342,511 +219,311 @@ JMP2r
 	DUP2 ;dict/rom-ext has-ext ?open-rom
 	DUP2 #0005 ADD2 ;dict/theme-ext scmp ?open-theme
 	!open-text
-
-( .. )
 	&no-file POP2 JMP2r
 
 @open-folder ( file* -- )
-
-	#0005 ADD2 !push-dir ( .. )
-
-( .. )
+	#0005 ADD2 !push-dir
 
 @open-meta ( file* -- )
-
 	DUP2 make-src has-metadata #00 EQU ?&err
 	#0005 ADD2 ;app-meta #240a #0010 #0034 !add-win
-
-( .. )
 	&err #0005 ADD2 ;dict/no-metadata SWP2 !add-err
 
 @open-text ( file* -- )
-
 	#0005 ADD2 ;app-text #3023 #001d #0034 !add-win
 
-( .. )
-
 @open-font ( file* -- )
-
-	#0005 ADD2 ;app-font #2222 #001d #0034 add-win
-	!center-win
-
-( .. )
+	#0005 ADD2 ;app-font #2222 #001d #0034 add-win !center-win
 
 @open-sound ( file* -- )
-
-	#0005 ADD2 ;app-play #220f #001d #0034 add-win
-	!center-win
-
-( .. )
+	#0005 ADD2 ;app-play #220f #001d #0034 add-win !center-win
 
 @open-theme ( file* -- )
-
-	#0005 ADD2 make-src load-theme
-	open-tile
-	!open-color
-
-( .. )
+	#0005 ADD2 make-src <load-theme>
+	open-tile !open-color
 
 @open-rom ( file* -- )
-
 	#0005 ADD2 make-src .File/name DEO2
 	#fe00 .File/length DEO2
-	;loader-rom #ffd6 #0029 mcpy
-	clear-screen
-	POP2r #ffd6
-
-JMP2 ( -> )
+	;loader-rom #ffd6 #0029 mcpy clear-screen POP2r #ffd6 JMP2
 
 @open-pict ( file* -- )
-
-	#0005 ADD2
-	DUP2 read-pict-size
-	;app-pict SWP2 INC INC #0000 DUP2 add-win
-	!center-win
-
-( .. )
+	#0005 ADD2 DUP2 read-pict-size ;app-pict SWP2 INC INC #0000 DUP2 add-win !center-win
 
 @open-about ( -- )
-
-	( unique )
-	;app-about find-win
-		DUP #ff NEQ ?&reselect POP
-	;no-name ;app-about #2213 #0000 DUP2 add-win
-	!center-win
-
-( .. )
+	( unique ) ;app-about find-win DUP #ff NEQ ?&reselect
+	POP ;no-name ;app-about #2213 #0000 DUP2 add-win !center-win
 	&reselect !sel-win
 
 @open-tile ( -- )
-
 	;patt-chr ;paint-patt/addr STA2
-	( unique )
-	;app-tile find-win
-		DUP #ff NEQ ?&reselect POP
-	( create )
-	;no-name ;app-tile #0a0f
+	( unique ) ;app-tile find-win DUP #ff NEQ ?&reselect
+	POP
+	( create ) ;no-name ;app-tile #0a0f
 	( y ) .Screen/height DEI2 #0088 SUB2
-	( x ) .Screen/width DEI2 #0060 SUB2
-		!add-win
-
-( .. )
+	( x ) .Screen/width DEI2 #0060 SUB2 !add-win
 	&reselect !sel-win
 
 @open-color ( -- )
-
-	( unique )
-	;app-color find-win
-		DUP #ff NEQ ?&reselect POP
-	;no-name ;app-color #0a0f
+	( unique ) ;app-color find-win DUP #ff NEQ ?&reselect
+	POP ;no-name ;app-color #0a0f
 	( y ) .Screen/height DEI2 #0088 SUB2
-	( x ) .Screen/width DEI2 #00c0 SUB2
-		!add-win
-
-( .. )
+	( x ) .Screen/width DEI2 #00c0 SUB2 !add-win
 	&reselect !sel-win
 
 (
 @|helpers )
 
 @seek ( length* -- )
-
 	.File/name DEI2k ROT DEO2
 	#0000 INC2k .File/length DEO2
-	&l
+	&l ( -- )
 		;&b .File/read DEO2
 		INC2 GTH2k ?&l
-	POP2 POP2
-	
-JMP2r
+	POP2 POP2 JMP2r
 	&b $1
 
 @play-note ( pitch -- )
-
-	( TODO: )
-	#2777 .Audio0/adsr DEO2
+	( TODO: ) #2777 .Audio0/adsr DEO2
 	#ff .Audio0/volume DEO
-
-	( store last key pressed )
-	DUP #0d ( MOD ) [ DIVk MUL SUB ] ;draw-octave/last STA
-
+	( store last key pressed ) DUP #0d
+	( MOD ) [ DIVk MUL SUB ] ;draw-octave/last STA
 	( TODO: set octave )
 	( octave ) #40 ADD
-	( hit/loop ) [ LIT &hit 00 ] #70 SFT ORA
-		.Audio0/pitch DEO
-
-JMP2r
+	( hit/loop ) [ LIT &hit 00 ] #70 SFT ORA .Audio0/pitch DEO
+	JMP2r
 
 @read-pict-size ( filename* -- size* )
-
-	scap #0009 SUB2 read-size
-
-	ORAk ?&continue
-		POP2 #1010
-		&continue
-
-JMP2r
+	scap #0009 SUB2 read-size ORAk ?&continue
+	POP2 #1010 &continue JMP2r
 
 @read-size ( 00x00* -- w h )
-
 	DUP2 sbyte ,&w STR
 	INC2 INC2 LDAk LIT "x NEQ ?&cancel
-	INC2 sbyte [ LIT &w $1 ] SWP
-
-JMP2r
+	INC2 sbyte [ LIT &w $1 ] SWP JMP2r
 	&cancel POP2 #0000 JMP2r
 
 @is-binary ( file* -- flag )
-
 	.File/name DEO2
 	#0001 .File/length DEO2
-	&s
-		;&buf .File/read DEO2
-		[ LIT &buf $1 ] #7e GTH ?&true
-		.File/success DEI2 #0000 EQU2 ?&end
-		,&s JMP
-	&end
-	#00
-
-JMP2r
+	&s ;&buf .File/read DEO2
+	[ LIT &buf $1 ] #7e GTH ?&true
+	.File/success DEI2 #0000 EQU2 ?&end
+	,&s JMP
+	&end #00 JMP2r
 	&true #01 JMP2r
 
 @is-file-locked ( file* -- b )
-
-	LDAk LIT "- EQU STH LDA LIT "? EQU STHr ORA
-
-JMP2r
+	LDAk LIT "- EQU STH
+	LDA LIT "? EQU STHr ORA JMP2r
 
 (
 @|drawing )
 
 @redraw-all ( -- )
-
-	draw-menu-bg
+	<draw-menu-bg>
 
 @draw-desktop ( -- )
-
-	draw-wallpaper
+	<draw-wallpaper>
 	load-dir
+	( draw icons ) get-rows STH
+	LITr 00 ;buf/dir &w #00 STHk2r SWP DIV #00a0 MUL2 #0010 ADD2 .Screen/x DEO2
+	#00 STHk2r SWP
+	( MOD ) [ DIVk MUL SUB ] #0018 MUL2 #0018 ADD2 .Screen/y DEO2
+	DUP2 draw-item-icon DUP2 STHkr draw-item-text scap INCr INC2 LDAk ?&w
+	POP2 POP2r
+	( draw windows ) .length LDZ #00 EQUk ?&no-win
+	&l ( -- )
+		DUP get-win draw-win INC GTHk ?&l
+	&no-win POP2 JMP2r
 
-	( draw icons )
-	get-rows STH
-	LITr 00
-	;buf/dir
-	&w
-		#00 STHk2r SWP DIV #00a0 MUL2 #0010 ADD2 .Screen/x DEO2
-		#00 STHk2r SWP ( MOD ) [ DIVk MUL SUB ] #0018 MUL2 #0018 ADD2 .Screen/y DEO2
-		DUP2 draw-item-icon
-		DUP2 STHkr draw-item-text
-		scap
-		INCr
-		INC2 LDAk ?&w
-	POP2
-	POP2r
-
-	( draw windows )
-	.length LDZ #00 EQUk ?&no-win
-	&l
-		DUP get-win draw-win
-		INC GTHk ?&l
-	&no-win
-	POP2
-
-JMP2r
-
-@draw-menu-bg ( -- )
-
-	#0000 DUP2 .Screen/x DEO2 .Screen/y DEO2
+@<draw-menu-bg> ( -- )
+	#0000 DUP2 .Screen/x DEO2
+	.Screen/y DEO2
 	;menu-chr .Screen/addr DEO2
 	#15 .Screen/auto DEO
 	.Screen/width DEI2 #03 SFT2 NIP #00
-	&l
+	&l ( -- )
 		;menu-chr .Screen/addr DEO2
 		#81 .Screen/sprite DEO
 		INC GTHk ?&l
-	POP2
-	!draw-clock
-
-( .. )
+	POP2 !draw-clock
 
 @draw-win ( win* -- )
-
 	DUP2
-
 	( header )
-	( x ) LDA2k DUP2 ,&x STR2 .Screen/x DEO2 INC2 INC2
-	( y ) LDA2k DUP2 ,&y STR2 .Screen/y DEO2 INC2 INC2
+	( x ) LDA2k DUP2 ,&x STR2
+	.Screen/x DEO2
+	INC2 INC2
+	( y ) LDA2k DUP2 ,&y STR2
+	.Screen/y DEO2
+	INC2 INC2
 	( size ) LDA2k draw-win-decor INC2 INC2
 	( app ) LDA2k DUP2 ,&app STR2
 	( app/name ) LDA2 INC2 #05 draw-text-color INC2 INC2
 	( space ) #20 draw-chr
 	( win/name ) LDA2 #0a draw-text-color
-
 	( body )
 	( x ) [ LIT2 &x $2 ] #0008 ADD2 .Screen/x DEO2
 	( y ) [ LIT2 &y $2 ] #0012 ADD2 .Screen/y DEO2
-	( app/on-draw ) [ LIT2 &app $2 ] #0004 ADD2 LDA2 ( .. )
-
-JMP2
+	( app/on-draw ) [ LIT2 &app $2 ] #0004 ADD2 LDA2 JMP2
 
 @draw-win-decor ( w h -- )
-
 	STH2
-	.Screen/x DEI2 .Screen/y DEI2
-	STH2kr draw-fill
-	OVR2 OVR2 .Screen/y DEO2 .Screen/x DEO2
+	.Screen/x DEI2 .Screen/y DEI2 STH2kr draw-fill OVR2 OVR2 .Screen/y DEO2
+	.Screen/x DEO2
 	#85 ;draw-frame/color STA
-	STH2kr ;frame1-chr draw-frame
-	OVR2 OVR2 #000a ADD2 .Screen/y DEO2 .Screen/x DEO2
-	STH2r POP #0a draw-dotted
-	.Screen/y DEO2 .Screen/x DEO2
-
-JMP2r
+	STH2kr ;frame1-chr draw-frame OVR2 OVR2 #000a ADD2 .Screen/y DEO2
+	.Screen/x DEO2
+	STH2r POP #0a draw-dotted .Screen/y DEO2
+	.Screen/x DEO2
+	JMP2r
 
 @draw-dotted ( w color -- )
-
-	.Screen/x DEI2 SWP2
-	,&color STR
+	.Screen/x DEI2 SWP2 ,&color STR
 	#01 .Screen/auto DEO
 	;line-icn .Screen/addr DEO2
-	#00 &l [ LIT &color 0a ] .Screen/sprite DEO INC GTHk ?&l POP2
-	.Screen/x DEO2
+	#00 &l [ LIT &color 0a ] .Screen/sprite DEO
+	INC GTHk ?&l
+	POP2 .Screen/x DEO2
+	JMP2r
 
-JMP2r
-
-@draw-wallpaper ( -- )
-
+@<draw-wallpaper> ( -- )
 	#0000 .Screen/x DEO2
 	#0010 .Screen/y DEO2
-	#80 .Screen/pixel DEO
-	JMP2r
-	( TODO: )
-	#01 .Screen/auto DEO
+	[ LIT2 01 -Screen/auto ] DEO
 	;patt-chr .Screen/addr DEO2
-	;dict/paper-ext .File/name DEO2
-	#0008 .File/length DEO2
-
-	&stream
-		;patt-chr .File/read DEO2
-		.File/success DEI2 #0000 EQU2 ?&eof
-		#01 .Screen/sprite DEO
-		.Screen/x DEI2 .Screen/width DEI2 LTH2 ?&no-lb
-			#0000 .Screen/x DEO2
-			.Screen/y DEI2k #0008 ADD2 ROT DEO2
-			&no-lb
-		,&stream JMP
-		&eof
-	.Screen/y DEI2 .Screen/height DEI2 LTH2 ?draw-patt
-
-JMP2r
-
-@draw-patt ( -- )
-
-	( cache size )
 	.Screen/width DEI2 #03 SFT2 NIP ,&x STR
-	.Screen/height DEI2 #03 SFT2 NIP INC ,&y STR
-	( draw )
-	#0010 .Screen/y DEO2
-	#01 .Screen/auto DEO
-	;patt-chr .Screen/addr DEO2
-	[ LIT &y $1 ] #00
-	&h
-		STHk
-		#0000 .Screen/x DEO2
-		[ LIT &x $1 ] #00
-		&w
-			DUP #01 AND #40 SFT STHkr #01 AND #50 SFT ORA #81 ORA
-				.Screen/sprite DEO
-			INC GTHk ?&w
-		POP2
-		POPr
-		.Screen/y DEI2k #0008 ADD2 ROT DEO2
-		INC GTHk ?&h
+	.Screen/height DEI2 #03 SFT2 NIP ,&y STR
+	[ LIT2 &y 10 00 ]
+	&h ( -- )
+		[ LIT2 &x 10 00 ]
+		&w ( -- )
+		[ LIT2 81 -Screen/sprite ] DEO
+		INC GTHk ?&w
 	POP2
-
-JMP2r
+	( reset x ) #0000 .Screen/x DEO2
+	( reset y ) .Screen/y DEI2k #0008 ADD2 ROT DEO2
+	INC GTHk ?&h
+	POP2 JMP2r
 
 @draw-memory ( -- )
-
 	#01 .Screen/auto DEO
 	.Screen/x DEI2 ,&x STR2
 	;vert-icn .Screen/addr DEO2
 	#8000
-	&l
+	&l ( -- )
 		#00 OVRk ADD2 [ LIT2 &x $2 ] ADD2 .Screen/x DEO2
 		#00 OVR #90 SFT2 mem-type #00 SWP #40 SFT2 ;prog-chrs ADD2 .Screen/addr DEO2
 		#81 .Screen/sprite DEO
 		INC GTHk ?&l
-	POP2
-
-JMP2r
+	POP2 JMP2r
 
 @scroll-text ( str* w -- str* w )
-
-	STHk ROT ROT DUP2
-	slen #00 STHr SUB2 DUP2 #8000 LTH2 ?&no-scroll
-		POP2 #0000 &no-scroll
-	ADD2 ROT
-
-JMP2r
+	STHk ROT ROT DUP2 slen #00 STHr SUB2 DUP2 #8000 LTH2 ?&no-scroll
+	POP2 #0000 &no-scroll ADD2 ROT JMP2r
 
 @draw-input ( str* w -- )
-
 	.Screen/x DEI2 ,&x STR2
 	.Screen/y DEI2 ,&y STR2
-
-	scroll-text
-
-	DUP ;input-icns draw-capped
-	#30 SFT #00 SWP #000e ADD2 STH2
+	scroll-text DUP ;input-icns draw-capped #30 SFT #00 SWP #000e ADD2 STH2
 	.Screen/x DEI2k STH2r SUB2 ROT DEO2
 	.Screen/y DEI2k #0004 ADD2 ROT DEO2
-
 	#0a draw-text-color
-
-	( re-anchor )
-	[ LIT2 &x $2 ] .Screen/x DEO2
+	( re-anchor ) [ LIT2 &x $2 ] .Screen/x DEO2
 	[ LIT2 &y $2 ] #0018 ADD2 .Screen/y DEO2
-
-JMP2r
+	JMP2r
 
 @draw-button ( str* w -- )
-
-	DUP ;button-icns draw-capped
-	#00 SWP INC INC #20 SFT STH2
-	DUP2 slen #20 SFT2 STH2 ADD2r
-	.Screen/x DEI2k STH2r SUB2 ROT DEO2
+	DUP ;button-icns draw-capped #00 SWP INC INC #20 SFT STH2
+	DUP2 slen #20 SFT2 STH2
+	ADD2r .Screen/x DEI2k STH2r SUB2 ROT DEO2
 	.Screen/y DEI2k #0004 ADD2 ROT DEO2
 	#0f !draw-text-color
 
-( .. )
-
 @draw-capped ( w sprite* -- )
-
 	#15 .Screen/auto DEO
-	DUP2 .Screen/addr DEO2 #0010 ADD2
-	#0a .Screen/sprite DEO
+	DUP2 .Screen/addr DEO2
+	#0010 ADD2 #0a .Screen/sprite DEO
 	ROT #00
-	&l
+	&l ( -- )
 		OVR2 .Screen/addr DEO2
 		#0a .Screen/sprite DEO
 		INC GTHk ?&l
-	POP2
-	#15 .Screen/auto DEO
+	POP2 #15 .Screen/auto DEO
 	#0010 ADD2 .Screen/addr DEO2
 	#0a .Screen/sprite DEO
-
-JMP2r
+	JMP2r
 
 @draw-fill ( w h -- )
-
 	#01 .Screen/auto DEO
 	;fill-icn .Screen/addr DEO2
 	SWP ,&x STR
-	#00
-	&h
-		[ LIT &x $1 ] #00
-		&w
-			[ LIT &color 03 ] .Screen/sprite DEO
-			INC GTHk ?&w
-		POP2
-		draw-lb
-		.Screen/x DEI2k #00 ,&x LDR #30 SFT2 SUB2 ROT DEO2
-		INC GTHk ?&h
-	POP2
-
-JMP2r
+	#00 &h [ LIT &x $1 ] #00 &w [ LIT &color 03 ] .Screen/sprite DEO
+	INC GTHk ?&w
+	POP2 draw-lb .Screen/x DEI2k #00 ,&x LDR #30 SFT2 SUB2 ROT DEO2
+	INC GTHk ?&h
+	POP2 JMP2r
 
 @draw-frame ( w h chr* -- )
-
-	STH2 ,&h STR ,&w STR
+	STH2
+	,&h STR
+	,&w STR
 	.Screen/x DEI2 DUP2 #0008 SUB2 .Screen/x DEO2
 	.Screen/y DEI2 #0008 SUB2 DUP2 .Screen/y DEO2
 	( ul ) #00 STH2kr #05 ,&single JSR
 	( uu ) [ LIT &w $1 ] #00 STH2kr #0010 ADD2 #01 ,&repeat JSR
 	( ur ) #10 STH2kr #06 ,&single JSR
-	( rr ) [ LIT &h $1 ] #00 STH2kr #0020 ADD2 #02 ,&repeat JSR
-	#0008 ADD2 .Screen/y DEO2
+	( rr ) [ LIT &h $1 ] #00 STH2kr #0020 ADD2 #02 ,&repeat JSR #0008 ADD2 .Screen/y DEO2
 	#0008 SUB2 .Screen/x DEO2
 	( ll ) ,&h LDR #10 STH2kr #0020 ADD2 #02 ,&repeat JSR
 	( dl ) #20 STH2kr #01 ,&single JSR
 	( bb ) ,&w LDR #20 STH2kr #0010 ADD2 #01 ,&repeat JSR
-	( dr ) #30 STH2r #00 ,&single JSR
-
-JMP2r
+	( dr ) #30 STH2r #00 ,&single JSR JMP2r
 	&repeat ( times color addr* auto -- )
 		.Screen/auto DEO
 		.Screen/addr DEO2
 		STH
-		#00 &l STHkr ,&paint JSR INC GTHk ?&l POP2
-		POPr
-	JMP2r
+		#00 &l STHkr ,&paint JSR INC GTHk ?&l
+	POP2 POPr JMP2r
 	&single ( color addr* auto -- )
 		.Screen/auto DEO
 		.Screen/addr DEO2
 	&paint ( mask -- )
 		[ LIT &color 85 ] SWP ORA .Screen/sprite DEO
-	JMP2r
+		JMP2r
 
 @draw-rom-icon ( file* -- )
-
 	#0005 ADD2 make-src has-metadata ?&valid
-	( display default icon )
- 	;icons/application draw-icon
-
-JMP2r
-
-&valid ( -- )
-
-	;metadata/fields #0100 mclr
-	load-metadata
-	( find picture )
-	;metadata/fields LDAk LITr 00 STH
-	INC2 DUP2 STH2r ADD2 SWP2
-	&l
+	( display default icon ) ;icons/application draw-icon JMP2r
+	&valid ( -- )
+		;metadata/fields #0100 mclr load-metadata
+		( find picture ) ;metadata/fields LDAk LITr 00 STH
+		INC2 DUP2 STH2r ADD2 SWP2
+	&l ( -- )
 		LDAk #83 EQU ?&valid-icon
 		INC2 GTH2k ?&l
-	POP2 POP2
-	;icons/application draw-icon
-
-JMP2r
-
-&valid-icon ( fields* field -- )
-
-	INC2 LDA2 #0100 SUB2 seek
-	#0090 .File/length DEO2
-	;metadata/icon
-		DUP2 .File/read DEO2
-		draw-icon
-	POP2
-
-JMP2r
+	POP2 POP2 ;icons/application draw-icon JMP2r
+	&valid-icon ( fields* field -- )
+		INC2 LDA2 #0100 SUB2 seek #0090 .File/length DEO2
+		;metadata/icon DUP2 .File/read DEO2
+		draw-icon POP2 JMP2r
 
 @draw-icon ( addr* -- )
-
 	.Screen/addr DEO2
 	#26 .Screen/auto DEO
 	#85 .Screen/sprite DEOk DEOk DEO
-
-JMP2r
+	JMP2r
 
 @draw-icon-size ( size* name* icon* -- )
-
-	draw-icon
-	.Screen/y DEI2k #0014 SUB2 ROT DEO2
+	draw-icon .Screen/y DEI2k #0014 SUB2 ROT DEO2
 	.Screen/x DEI2k STH2k #0020 ADD2 ROT DEO2
-	[ LIT &c1 0a ] draw-text-color
-	STH2r #0020 ADD2 .Screen/x DEO2
+	[ LIT &c1 0a ] draw-text-color STH2r #0020 ADD2 .Screen/x DEO2
 	.Screen/y DEI2k #0009 ADD2 ROT DEO2
 	[ LIT &c2 05 ] ;draw-chr/color STA
-	draw-dec
-	#20 draw-chr
-	;dict/bytes !draw-text
-
-( .. )
+	draw-dec #20 draw-chr ;dict/bytes !draw-text
 
 @draw-item-icon ( file* -- file* )
-
 	LDAk LIT "- EQU ?&folder
 	LDAk LIT "? EQU ?&unknown
 	DUP2 #0005 ADD2 LDA LIT ". EQU ?&unknown
@@ -857,8 +534,6 @@ JMP2r
 	DUP2 #0005 ADD2 ;dict/tal-ext has-ext ?&source
 	DUP2 #0005 ADD2 ;dict/uf2-ext has-ext ?&font
 	POP2 ;icons/text !draw-icon
-
-( .. )
 	&folder POP2 ;icons/folder !draw-icon
 	&unknown POP2 ;icons/unknown !draw-icon
 	&picture POP2 ;icons/picture !draw-icon
@@ -867,668 +542,449 @@ JMP2r
 	&source POP2 ;icons/source !draw-icon
 
 @draw-item-text ( file* id -- file* )
-
 	[ LIT &sel 00 ] EQU #09 MUL INC INC ;draw-chr/color STA
-
 	LDAk LIT "- EQU ?&no-size
 	LDAk LIT "? EQU ?&no-size
-
 	.Screen/x DEI2k #0020 ADD2 STH2k ROT DEO2
 	.Screen/y DEI2k #0014 SUB2 ROT DEO2
-
-	#0005 ADD2 draw-text
-	STH2r .Screen/x DEO2
+	#0005 ADD2 draw-text STH2r .Screen/x DEO2
 	.Screen/y DEI2k #0009 ADD2 ROT DEO2
-
 	#01 ;draw-chr/color STA
-	DUP2 ;&buf #0004 mcpy
-	;&buf shex draw-dec
-	#20 draw-chr
-	;dict/bytes ;draw-text ( .. )
-
-JMP2
+	DUP2 ;&buf #0004 mcpy ;&buf shex draw-dec #20 draw-chr ;dict/bytes ;draw-text JMP2
 	&buf $5
-	&no-size
-		.Screen/y DEI2k #0010 SUB2 ROT DEO2
-		.Screen/x DEI2k #0020 ADD2 ROT DEO2
-		#0005 ADD2 !draw-text
+	&no-size .Screen/y DEI2k #0010 SUB2 ROT DEO2
+	.Screen/x DEI2k #0020 ADD2 ROT DEO2
+	#0005 ADD2 !draw-text
 
 @draw-swatches ( -- )
-
 	.cursor/color LDZ STH
 	#05 .Screen/auto DEO
-	#0c ;swatch-icns/fill #00 STHkr EQU draw-swatch
-	#0d ;swatch-icns/fill #01 STHkr EQU draw-swatch
-	#0e ;swatch-icns/fill #02 STHkr EQU draw-swatch
-	#0e ;swatch-icns/line #03 STHkr EQU draw-swatch
-	POPr
-	.Screen/x DEI2k #0040 SUB2 ROT DEO2
+	#0c ;swatch-icns/fill #00 STHkr EQU draw-swatch #0d ;swatch-icns/fill #01 STHkr EQU draw-swatch #0e ;swatch-icns/fill #02 STHkr EQU draw-swatch #0e ;swatch-icns/line #03 STHkr EQU draw-swatch POPr .Screen/x DEI2k #0040 SUB2 ROT DEO2
 	.Screen/y DEI2k #0010 ADD2 ROT DEO2
-
-JMP2r
+	JMP2r
 
 @draw-swatch ( color sprite* selected -- )
-
-	#00 SWP #40 SFT ADD2
-	.Screen/addr DEO2
+	#00 SWP #40 SFT ADD2 .Screen/addr DEO2
 	.Screen/sprite DEOk DEO
-
-JMP2r
+	JMP2r
 
 @draw-waveform ( addr* length* zoom* -- )
-
 	.Screen/x DEI2 ,&x STR2
 	.Screen/y DEI2 ,&y STR2
-
-	( draw mid )
-	.Screen/y DEI2k #001f ADD2 ROT DEO2
+	( draw mid ) .Screen/y DEI2k #001f ADD2 ROT DEO2
 	#200c draw-dotted
-
-	( draw wav )
-	,&zoom STR2
+	( draw wav ) ,&zoom STR2
 	#01 .Screen/auto DEO
-	LITr 00
-	ADD2k NIP2 SWP2
-	&l
+	LITr 00 ADD2k NIP2 SWP2
+	&l ( -- )
 		LDAk #00 SWP #02 SFT2 [ LIT2 &y $2 ] ADD2 .Screen/y DEO2
 		#0a .Screen/pixel DEO
 		INCr STHkr #00 EQU ?&end
 		[ LIT2 &zoom $2 ] ADD2 GTH2k ?&l
-	&end
-	POP2 POP2
-	POPr
-
-	( rewind )
-	[ LIT2 &x $2 ] .Screen/x DEO2
+	&end POP2 POP2 POPr
+	( rewind ) [ LIT2 &x $2 ] .Screen/x DEO2
 	,&y LDR2 #0048 ADD2 .Screen/y DEO2
-
-JMP2r
+	JMP2r
 
 @draw-knob ( x* y* value -- )
-
 	.Screen/x DEI2 ,&x STR2
 	.Screen/y DEI2 ,&y STR2
 	STH
-	OVR2 OVR2 .Screen/y DEO2 .Screen/x DEO2
-	( circle )
-	;knob-icns .Screen/addr DEO2
+	OVR2 OVR2 .Screen/y DEO2
+	.Screen/x DEO2
+	( circle ) ;knob-icns .Screen/addr DEO2
 	#16 .Screen/auto DEO
 	#0e .Screen/sprite DEOk DEO
 	#00 .Screen/auto DEO
-	( value )
-	#0010 ADD2 .Screen/y DEO2
+	( value ) #0010 ADD2 .Screen/y DEO2
 	#0004 ADD2 .Screen/x DEO2
-	STHkr draw-hex
-	#0e .Screen/sprite DEO
-	( marker )
-	.Screen/x DEI2 #0004 SUB2 #0000 STHkr ;knob-offsetx ADD2 LDA ADD2 .Screen/x DEO2
+	STHkr draw-hex #0e .Screen/sprite DEO
+	( marker ) .Screen/x DEI2 #0004 SUB2 #0000 STHkr ;knob-offsetx ADD2 LDA ADD2 .Screen/x DEO2
 	.Screen/y DEI2 #0010 SUB2 #0000 STHr ;knob-offsety ADD2 LDA ADD2 .Screen/y DEO2
 	;knob-icns #0020 ADD2 .Screen/addr DEO2
 	#0a .Screen/sprite DEO
-
 	[ LIT2 &x $2 ] #0010 ADD2 .Screen/x DEO2
 	[ LIT2 &y $2 ] .Screen/y DEO2
-
-
-JMP2r
+	JMP2r
 
 @draw-octave ( -- )
-
-	.Screen/x DEI2
-	.Screen/y DEI2
-
-	#02 .Screen/auto DEO
+	.Screen/x DEI2 .Screen/y DEI2 #02 .Screen/auto DEO
 	OVR2 #0040 ADD2 .Screen/x DEO2
 	;arrow-icns/v .Screen/addr DEO2
 	DUP2 .Screen/y DEO2
 	#0e .Screen/sprite DEO
-
-	[ LIT &octave 03 ] draw-hex
-
-	;arrow-icns/v .Screen/addr DEO2
+	[ LIT &octave 03 ] draw-hex ;arrow-icns/v .Screen/addr DEO2
 	DUP2 #0010 ADD2 .Screen/y DEO2
 	#2e .Screen/sprite DEO
-
 	.Screen/y DEO2
 	.Screen/x DEO2
 	#25 .Screen/auto DEO
-	[ LIT &last ff ]
-	DUP #00 EQU ;octave-icns/a draw-octave-key
-	DUP #02 EQU ;octave-icns/b draw-octave-key
-	DUP #04 EQU ;octave-icns/c draw-octave-key
-	DUP #05 EQU ;octave-icns/a draw-octave-key
-	DUP #07 EQU ;octave-icns/b draw-octave-key
-	DUP #09 EQU ;octave-icns/b draw-octave-key
-	#0b EQU ;octave-icns/c draw-octave-key
-	#00 ;octave-icns/d
+	[ LIT &last ff ] DUP #00 EQU ;octave-icns/a draw-octave-key DUP #02 EQU ;octave-icns/b draw-octave-key DUP #04 EQU ;octave-icns/c draw-octave-key DUP #05 EQU ;octave-icns/a draw-octave-key DUP #07 EQU ;octave-icns/b draw-octave-key DUP #09 EQU ;octave-icns/b draw-octave-key #0b EQU ;octave-icns/c draw-octave-key #00 ;octave-icns/d
 
 @draw-octave-key ( color addr* -- )
-
-	.Screen/addr DEO2 #03 MUL #0b SWP SUB .Screen/sprite DEO
-
-JMP2r
+	.Screen/addr DEO2
+	#03 MUL #0b SWP SUB .Screen/sprite DEO
+	JMP2r
 
 @draw-slider ( value name* -- )
-
-	( TODO: Add name and write value )
-
-	.Screen/x DEI2 SWP2
-	draw-text
-	.Screen/x DEO2
-	draw-lb
-
-	#00 .Screen/auto DEO
+	( TODO: Add name and write value ) .Screen/x DEI2 SWP2 draw-text .Screen/x DEO2
+	draw-lb #00 .Screen/auto DEO
 	STH
 	#1000
-	&l
+	&l ( -- )
 		#00 OVR STHkr GTH #30 SFT ;slider-icns ADD2 .Screen/addr DEO2
 		#0a .Screen/sprite DEO
 		.Screen/x DEI2k #0004 ADD2 ROT DEO2
 		INC GTHk ?&l
-	POP2
-	POPr
-
-	.Screen/x DEI2k #0040 SUB2 ROT DEO2
+	POP2 POPr .Screen/x DEI2k #0040 SUB2 ROT DEO2
 	.Screen/y DEI2k #0010 ADD2 ROT DEO2
-
-JMP2r
+	JMP2r
 
 @draw-flip ( bool -- )
-
 	#16 .Screen/auto DEO
 	#00 SWP #50 SFT2 ;flip-icns ADD2 .Screen/addr DEO2
 	#0e .Screen/sprite DEOk DEO
-
-JMP2r
+	JMP2r
 
 @draw-scrollbar ( pos h -- )
-
 	.Screen/x DEI2 ;&x STA2
 	.Screen/y DEI2 ;&y STA2
-
-	#01 SUB
-	#06 .Screen/auto DEO
+	#01 SUB #06 .Screen/auto DEO
 	;arrow-icns/v .Screen/addr DEO2
 	#0e .Screen/sprite DEO
 	#02 .Screen/auto DEO
 	#00
-	&l
+	&l ( -- )
 		#0e .Screen/sprite DEO
 		INC GTHk ?&l
-	POP
-	#01 .Screen/auto DEO
+	POP #01 .Screen/auto DEO
 	;arrow-icns/v .Screen/addr DEO2
 	#2e .Screen/sprite DEO
-
-	( recover y )
-	INC #00 SWP #30 SFT2 STH2
+	( recover y ) INC #00 SWP #30 SFT2 STH2
 	.Screen/y DEI2k STH2r SUB2 ROT DEO2
-
-	( marker )
-	.Screen/y DEI2 ,&y STR2
+	( marker ) .Screen/y DEI2 ,&y STR2
 	,&x LDR2 .Screen/x DEO2
 	;fill-icn .Screen/addr DEO2
 	#00 SWP #10 SFT2 .Screen/y DEI2 ADD2 #0008 ADD2 .Screen/y DEO2
 	#06 .Screen/sprite DEO
 	[ LIT2 &x $2 ] #0008 ADD2 .Screen/y DEO2
 	[ LIT2 &y $2 ] .Screen/y DEO2
-
-JMP2r
+	JMP2r
 
 @draw-drag ( win* color -- )
-
 	;draw-frame/color STA
-	set-anchor
-	INC2 INC2 LDA2 ;frame2-chr !draw-frame
-
-( .. )
+	set-anchor INC2 INC2 LDA2 ;frame2-chr !draw-frame
 
 @set-anchor ( win* -- win/size* )
-
-	LDA2k .Screen/x DEO2 INC2 INC2
-	LDA2k .Screen/y DEO2
-
-JMP2r
+	LDA2k .Screen/x DEO2
+	INC2 INC2 LDA2k .Screen/y DEO2
+	JMP2r
 
 @set-anchor-body ( win* -- win/size* )
-
-	LDA2k #0008 ADD2 .Screen/x DEO2 INC2 INC2
-	LDA2k #0012 ADD2 .Screen/y DEO2
-
-JMP2r
-
-( image handlers )
+	LDA2k #0008 ADD2 .Screen/x DEO2
+	INC2 INC2 LDA2k #0012 ADD2 .Screen/y DEO2
+	JMP2r
+	( image handlers )
 
 @draw-pict ( name* -- )
-
 	DUP2 get-ext ;dict/chr-ext scmp STH
-	( toggle 1-bit/2-bit )
-	#0010 #0008 STHkr [ JMP SWP2 POP2 ] .File/length DEO2
+	( toggle 1-bit/2-bit ) #0010 #0008 STHkr [ JMP SWP2 POP2 ] .File/length DEO2
 	[ LIT &2bit 81 ] [ LIT &1bit 0e ] STHr [ JMP SWP POP ] ,&color STR
 	DUP2 .File/name DEO2
-		read-pict-size
-	,&height STR ,&width STR
+	read-pict-size ,&height STR
+	,&width STR
 	.Screen/x DEI2 ,&anchor STR2
 	;&buf .Screen/addr DEO2
-	( draw )
-	#01 .Screen/auto DEO
-	[ LIT &height $1 ] #00
-	&v
-		[ LIT2 &anchor $2 ] .Screen/x DEO2
-		[ LIT &width $1 ] #00
-		&h
-			;&buf .File/read DEO2
-			[ LIT &color $1 ] .Screen/sprite DEO
-			INC GTHk ?&h
-		POP2
-		draw-lb
-		INC GTHk ?&v
-	POP2
-
-JMP2r
+	( draw ) #01 .Screen/auto DEO
+	[ LIT &height $1 ] #00 &v [ LIT2 &anchor $2 ] .Screen/x DEO2
+	[ LIT &width $1 ] #00 &h ;&buf .File/read DEO2
+	[ LIT &color $1 ] .Screen/sprite DEO
+	INC GTHk ?&h
+	POP2 draw-lb INC GTHk ?&v
+	POP2 JMP2r
 	&buf $10
 
 @draw-pict-small ( h color auto addr* -- )
-
 	.Screen/addr DEO2
 	.Screen/auto DEO
 	,&c STR
 	#00
-	&l
+	&l ( -- )
 		[ LIT &c $1 ] .Screen/sprite DEO
 		INC GTHk ?&l
-	POP2
-
-JMP2r
+	POP2 JMP2r
 
 @draw-dec ( short* -- )
-
 	#01 .Screen/auto DEO
 	#00 ,&z STR
-	#2710 ,&parse JSR
-	#03e8 ,&parse JSR
-	#0064 ,&parse JSR
-	#000a ,&parse JSR
-	NIP #30 ADD !draw-chr
-
-	&parse
-		DIV2k DUPk [ LIT &z $1 ] EQU ?&skip
-		DUP #30 ADD draw-chr #ff ,&z STR
-		&skip POP MUL2 SUB2
-	JMP2r
+	#2710 ,&parse JSR #03e8 ,&parse JSR #0064 ,&parse JSR #000a ,&parse JSR NIP #30 ADD !draw-chr
+	&parse DIV2k DUPk [ LIT &z $1 ] EQU ?&skip
+	DUP #30 ADD draw-chr #ff ,&z STR
+	&skip POP MUL2 SUB2 JMP2r
 
 @get-strw ( str* -- width* )
-
-	slen #30 SFT2
-
-JMP2r
+	slen #30 SFT2 JMP2r
 
 @draw-str-right ( text* -- )
-
 	DUP2 get-strw STH2
 	.Screen/x DEI2k STH2r SUB2 ROT DEO2
 
 @draw-str ( str* -- str* )
-
 	LDAk #00 EQU ?&skip
 	#01 .Screen/auto DEO
-	&w
-		LDAk draw-chr
-		INC2 LDAk ?&w
-	&skip
-	INC2
-
-JMP2r
+	&w LDAk draw-chr INC2 LDAk ?&w
+	&skip INC2 JMP2r
 
 @draw-text-color ( str* color -- )
-
 	;draw-chr/color STA
 
 @draw-text ( str* -- )
-
-	draw-str POP2
-
-JMP2r
+	draw-str POP2 JMP2r
 
 @draw-line ( str* -- str* )
-
 	.Screen/x DEI2 ,&x STR2
 	#01 .Screen/auto DEO
-	&w
-		LDAk #00 EQU ?&end
-		LDAk draw-chr
-		INC2 LDAk #0a NEQ ?&w
-	&end
-	INC2
-	[ LIT2 &x $2 ] .Screen/x DEO2
+	&w LDAk #00 EQU ?&end
+	LDAk draw-chr INC2 LDAk #0a NEQ ?&w
+	&end INC2 [ LIT2 &x $2 ] .Screen/x DEO2
 
 @draw-lb ( -- )
-
 	.Screen/y DEI2k #0008 ADD2 ROT DEO2
-
-JMP2r
+	JMP2r
 
 @draw-short ( short* -- )
-
 	SWP draw-byte
 
 @draw-byte ( byte -- )
-
 	DUP #04 SFT draw-hex
 
 @draw-hex ( char -- )
-
-	#0f AND DUP #09 GTH #07 MUL ADD #30 ADD ( .. )
+	#0f AND DUP #09 GTH #07 MUL ADD #30 ADD
 
 @draw-chr ( char -- )
-
 	#00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
 	[ LIT &color 03 ] .Screen/sprite DEO
-
-JMP2r
-
-( .. )
+	JMP2r
 
 @draw-txt ( txt* -- end* )
-
 	#01 .Screen/auto DEO
 	.Screen/x DEI2 ,&anchor STR2
-	&w
-		LDAk #0a NEQ ?&no-lb
-			[ LIT2 &anchor $2 ] .Screen/x DEO2
-			.Screen/y DEI2k #0008 ADD2 ROT DEO2
-			,&continue JMP
-			&no-lb
-		LDAk #00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
-		#0e .Screen/sprite DEO
-		&continue
-		INC2 LDAk ?&w
-
-JMP2r
+	&w LDAk #0a NEQ ?&no-lb
+	[ LIT2 &anchor $2 ] .Screen/x DEO2
+	.Screen/y DEI2k #0008 ADD2 ROT DEO2
+	,&continue JMP
+	&no-lb LDAk #00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
+	#0e .Screen/sprite DEO
+	&continue INC2 LDAk ?&w
+	JMP2r
 
 @draw-metaicon ( location* -- )
-
-	seek
-	#0090 .File/length DEO2
-	;metadata/icon
-		DUP2 .File/read DEO2
-		draw-icon
-
-JMP2r
-
+	seek #0090 .File/length DEO2
+	;metadata/icon DUP2 .File/read DEO2
+	draw-icon JMP2r
 
 @clear-screen ( -- )
-
 	#01 .Screen/auto DEO
 	#0000 .Screen/y DEO2
-	.Screen/height DEI2 #03 SFT2 NIP #00
-	&h
-		#0000 .Screen/x DEO2
-		.Screen/width DEI2 #03 SFT2 NIP #00
-		&w
-			#00 .Screen/sprite DEO
-			INC GTHk ?&w
-		POP2
-		.Screen/y DEI2k #0008 ADD2 ROT DEO2
-		INC GTHk ?&h
-	POP2
-	#15 .Screen/auto DEO
-
-JMP2r
-
-( calendar )
+	.Screen/height DEI2 #03 SFT2 NIP #00 &h #0000 .Screen/x DEO2
+	.Screen/width DEI2 #03 SFT2 NIP #00 &w #00 .Screen/sprite DEO
+	INC GTHk ?&w
+	POP2 .Screen/y DEI2k #0008 ADD2 ROT DEO2
+	INC GTHk ?&h
+	POP2 #15 .Screen/auto DEO
+	JMP2r
+	( calendar )
 
 @draw-month ( -- )
-
-	( start day )
-	.year LDZ2 .month LDZ #01 dotw ;&offset STA
+	( start day ) .year LDZ2 .month LDZ #01 dotw ;&offset STA
 	.Screen/x DEI2 STH2k #0040 ADD2 .Screen/x DEO2
 	.Screen/y DEI2 STH2k #0012 SUB2 .Screen/y DEO2
-	( month )
-	#00 .month LDZ #20 SFT2 ;dict/months ADD2 draw-str POP2
-	( year )
-	.Screen/x DEI2k #0008 ADD2 ROT DEO2
+	( month ) #00 .month LDZ #20 SFT2 ;dict/months ADD2 draw-str POP2
+	( year ) .Screen/x DEI2k #0008 ADD2 ROT DEO2
 	.year LDZ2 draw-dec
-	( week )
-	STH2kr .Screen/y DEO2
-	#0700
-	&lw
-		#00 OVR #50 SFT2 OVR2r STH2r ADD2 .Screen/x DEO2
-		DUP .DateTime/dotw DEI EQU
-		.year LDZ2 .month LDZ is-month AND STH
-			#050c STHr [ JMP SWP POP ] ;draw-chr/color STA
-		#00 OVR #20 SFT2 ;dict/dotw ADD2 draw-str POP2
-		INC GTHk ?&lw
+	( week ) STH2kr .Screen/y DEO2
+	#0700 &lw #00 OVR #50 SFT2 OVR2r STH2r ADD2 .Screen/x DEO2
+	DUP .DateTime/dotw DEI EQU .year LDZ2 .month LDZ is-month AND STH
+	#050c STHr [ JMP SWP POP ] ;draw-chr/color STA
+	#00 OVR #20 SFT2 ;dict/dotw ADD2 draw-str POP2 INC GTHk ?&lw
 	POP2
-	( days )
-	LIT2r 0010 ADD2r
-	#2a00
-	&l
+	( days ) LIT2r 0010 ADD2r #2a00
+	&l ( -- )
 		#00 OVR #07 DIVk MUL SUB #50 SFT2 OVR2r STH2r ADD2 .Screen/x DEO2
 		#00 OVR #07 DIV #40 SFT2 STH2kr ADD2 .Screen/y DEO2
-		DUP [ LIT &offset $1 ] SUB
-			DUP #80 GTH ?&skip
-			INCk .year LDZ2 .month LDZ diam GTH ?&skip
-			STHk .year LDZ2 .month LDZ STHr INC is-today STH
-				#0c0e STHr [ JMP SWP POP ] ;draw-chr/color STA
-		#00 OVR INC draw-dec
-		&skip
-		POP
-		INC GTHk ?&l
-	POP2
-	POP2r POP2r
-
-JMP2r
+		DUP [ LIT &offset $1 ] SUB DUP #80 GTH ?&skip
+		INCk .year LDZ2 .month LDZ diam GTH ?&skip
+		STHk .year LDZ2 .month LDZ STHr INC is-today STH
+		#0c0e STHr [ JMP SWP POP ] ;draw-chr/color STA
+		#00 OVR INC draw-dec &skip POP INC GTHk ?&l
+	POP2 POP2r POP2r JMP2r
 
 (
 @|stdlib )
 
-@scmp ( a* b* -- f ) STH2 &l LDAk LDAkr STHr ANDk #00 EQU ?&e NEQk ?&e POP2 INC2 INC2r !&l &e NIP2 POP2r EQU JMP2r
-@pstr ( str* -- ) &w LDAk #18 DEO INC2 LDAk ?&w POP2 JMP2r
-@msfl ( a* b* len* -- ) STH2 SWP2 EQU2k ?&e &l DUP2k STH2kr ADD2 LDA ROT ROT STA INC2 GTH2k ?&l POP2 POP2 &e POP2r JMP2r
-@msfr ( a* b* len* -- ) STH2 EQU2k ?&e &l DUP2 LDAk ROT ROT STH2kr ADD2 STA #0001 SUB2 LTH2k ?&l POP2 POP2 &e POP2r JMP2r
-@mcpy ( src* dst* len* -- ) SWP2 STH2 OVR2 ADD2 SWP2 &l LDAk STH2kr STA INC2r INC2 GTH2k ?&l POP2 POP2 POP2r JMP2r
+@scmp ( a* b* -- f )
+	STH2
+	&l LDAk LDAkr STHr ANDk #00 EQU ?&e
+	NEQk ?&e
+	POP2 INC2 INC2r !&l
+	&e NIP2 POP2r EQU JMP2r
+
+@pstr ( str* -- )
+	&w LDAk #18 DEO
+	INC2 LDAk ?&w
+	POP2 JMP2r
+
+@msfl ( a* b* len* -- )
+	STH2
+	SWP2 EQU2k ?&e
+	&l DUP2k STH2kr ADD2 LDA ROT ROT STA
+	INC2 GTH2k ?&l
+	POP2 POP2 &e POP2r JMP2r
+
+@msfr ( a* b* len* -- )
+	STH2
+	EQU2k ?&e
+	&l DUP2 LDAk ROT ROT STH2kr ADD2 STA
+	#0001 SUB2 LTH2k ?&l
+	POP2 POP2 &e POP2r JMP2r
+
+@mcpy ( src* dst* len* -- )
+	SWP2 STH2
+	OVR2 ADD2 SWP2 &l LDAk STH2kr STA
+	INC2r INC2 GTH2k ?&l
+	POP2 POP2 POP2r JMP2r
 
 @fcpy ( src* dst* -- )
-
-	.Disk/name DEO2 #0001 .Disk/length DEO2
-	.File/name DEO2 #0001 .File/length DEO2
-	;&b
-	&stream
-		DUP2 .File/read DEO2
-		.File/success DEI2 ORA ?&continue
-			POP2 JMP2r
-			&continue
-		DUP2 .Disk/write DEO2
-		,&stream JMP
-
-JMP2r
+	.Disk/name DEO2
+	#0001 .Disk/length DEO2
+	.File/name DEO2
+	#0001 .File/length DEO2
+	;&b &stream DUP2 .File/read DEO2
+	.File/success DEI2 ORA ?&continue
+	POP2 JMP2r
+	&continue DUP2 .Disk/write DEO2
+	,&stream JMP
+	JMP2r
 	&b $1
 
 @fdel ( src* -- )
-
 	.File/name DEO2
 	#01 .File/delete DEO
-
-JMP2r
+	JMP2r
 
 @flen ( src* -- len* )
-
 	.File/name DEO2
 	#0040 .File/length DEO2
 	;&buf .File/stat DEO2
 	#00 ;&buf #0004 ADD2 STA
-	;&buf ;shex ( .. )
-
-JMP2
+	;&buf ;shex JMP2
 	&buf $40
 
 @mswp ( len* a* b* -- )
-
-	,&b STR2 ,&a STR2
+	,&b STR2
+	,&a STR2
 	#0000
-	&l
+	&l ( -- )
 		DUP2 [ LIT2 &a $2 ] ADD2 LDAk STH
 		OVR2 [ LIT2 &b $2 ] ADD2 LDAk STH
-		SWPr
-		STHr ROT ROT STA
+		SWPr STHr ROT ROT STA
 		STHr ROT ROT STA
 		INC2 GTH2k ?&l
-	POP2 POP2
-
-JMP2r
+	POP2 POP2 JMP2r
 
 @sbyte ( str* -- byte )
-
 	LDAk chex #40 SFT STH
-	INC2 LDA chex STHr ADD
-
-JMP2r
+	INC2 LDA chex STHr ADD JMP2r
 
 @shex ( str* -- val* )
-
-	LIT2r 0000
-	&w
-		LITr 40 SFT2r
-		LITr 00
-		LDAk chex STH ADD2r
-		INC2 LDAk ?&w
-	POP2
-	STH2r
-
-JMP2r
+	LIT2r 0000 &w LITr 40 SFT2r LITr 00 LDAk chex STH
+	ADD2r INC2 LDAk ?&w
+	POP2 STH2r JMP2r
 
 @chex ( c -- val|ff )
-
-	LIT "0 SUB DUP #09 GTH [ JMP JMP2r ]
-	#27 SUB DUP #0f GTH [ JMP JMP2r ]
-	POP #ff
-
-JMP2r
+	LIT "0 SUB DUP #09 GTH [ JMP JMP2r ] #27 SUB DUP #0f GTH [ JMP JMP2r ] POP #ff JMP2r
 
 @wlen ( str* -- len* )
-
-	LIT2r 0000
-	&w
-		INC2r
-		INC2 LDAk is-alphanum ?&w
-	POP2
-	STH2r
-
-JMP2r
+	LIT2r 0000 &w INC2r INC2 LDAk is-alphanum ?&w
+	POP2 STH2r JMP2r
 
 @phex ( short* -- )
-
 	SWP ,&b JSR
-	&b ( byte -- ) DUP #04 SFT ,&c JSR
-	&c ( char -- ) #0f AND DUP #09 GTH #27 MUL ADD #30 ADD #18 DEO
-
-JMP2r
+	&b ( byte -- )
+		DUP #04 SFT ,&c JSR
+	&c ( char -- )
+		#0f AND DUP #09 GTH #27 MUL ADD #30 ADD #18 DEO
+		JMP2r
 
 @is-alphanum ( char -- bool )
-
 	( num ) DUP #2f GTH OVR #3a LTH AND ?&pass
 	( uc ) DUP #40 GTH OVR #5b LTH AND ?&pass
 	( lc ) DUP #60 GTH OVR #7b LTH AND ?&pass
-	POP #00
-
-JMP2r
+	POP #00 JMP2r
 	&pass POP #01 JMP2r
 
 @get-chr ( addr* pixel -- color )
-
-	STH DUP2 STHkr get-icn
-	ROT ROT #0008 ADD2 STHr get-icn DUP ADD ORA
-
-JMP2r
+	STH
+	DUP2 STHkr get-icn ROT ROT #0008 ADD2 STHr get-icn DUP ADD ORA JMP2r
 
 @get-icn ( addr* pixel -- color )
-
 	( y ) STHk #00 SWP #03 SFT2 ADD2 LDA
-	( x ) STHr #07 AND #07 SWP SUB SFT #01 AND
-
-JMP2r
+	( x ) STHr #07 AND #07 SWP SUB SFT #01 AND JMP2r
 
 @rel-mouse ( x* y* win* -- x* y* win* )
-
 	STH2k
-	( y ) INC2 INC2 LDA2 SUB2 #0012 SUB2
-	SWP2
-	( x ) STH2kr LDA2 SUB2 #0008 SUB2
-	SWP2
-	STH2r
-
-JMP2r
+	( y ) INC2 INC2 LDA2 SUB2 #0012 SUB2 SWP2
+	( x ) STH2kr LDA2 SUB2 #0008 SUB2 SWP2 STH2r JMP2r
 
 @skey ( key buf* len* -- )
-
 	,&len STR2
-	STH2 DUP STH2r ROT
-	DUP #08 EQU ?&erase
+	STH2
+	DUP STH2r ROT DUP #08 EQU ?&erase
 	DUP #20 LTH ?&invalid
 	DUP #7e GTH ?&invalid
-	POP
-	OVR2 slen [ LIT2 &len $2 ] LTH2 ?&ok
-		POP2 POP JMP2r
-		&ok
-	;sput ( .. )
-
-JMP2
+	POP OVR2 slen [ LIT2 &len $2 ] LTH2 ?&ok
+	POP2 POP JMP2r
+	&ok ;sput JMP2
 	&erase POP spop POP JMP2r
 	&invalid POP2 POP2 JMP2r
 
-@has-ext ( str* ext* -- b ) SWP2 get-ext !scmp
-@get-ext ( str* -- ext* ) scap #0004 SUB2 JMP2r
+@has-ext ( str* ext* -- b )
+	SWP2 get-ext !scmp
+
+@get-ext ( str* -- ext* )
+	scap #0004 SUB2 JMP2r
 
 (
 @|metadata )
 
 @has-metadata ( src* -- bool )
-
 	.File/name DEO2
 	#0006 .File/length DEO2
 	;metadata/header .File/read DEO2
-	;metadata/deo LDA2 #0637 EQU2
-
-JMP2r
+	;metadata/deo LDA2 #0637 EQU2 JMP2r
 
 @load-metadata ( -- )
-
 	;metadata/start LDA2 #0100 SUB2 seek
-
-	( version )
-	#0001 .File/length DEO2
+	( version ) #0001 .File/length DEO2
 	;metadata/version .File/read DEO2
-
-	( body )
-	;metadata/body STH2
-	&s
-		STH2kr
-			DUP2 .File/read DEO2
-			INC2r LDA ?&s
+	( body ) ;metadata/body STH2
+	&s STH2kr DUP2 .File/read DEO2
+	INC2r LDA ?&s
 	POP2r
-
-	( fields )
-	;metadata/fields
-		DUP2 .File/read DEO2
-		LDAk #03 MUL #00 SWP .File/length DEO2
-		INC2 .File/read DEO2
-
-JMP2r
+	( fields ) ;metadata/fields DUP2 .File/read DEO2
+	LDAk #03 MUL #00 SWP .File/length DEO2
+	INC2 .File/read DEO2
+	JMP2r
 
 @save-theme ( -- )
-
 	;dict/theme-ext make-src .File/name DEO2
 	#0002 .File/length DEO2
-	.System/r DEI2 ,&w JSR
-	.System/g DEI2 ,&w JSR
-	.System/b DEI2 ,&w JSR
-	#0010 .File/length DEO2
+	.System/r DEI2 ,&w JSR .System/g DEI2 ,&w JSR .System/b DEI2 ,&w JSR #0010 .File/length DEO2
 	;patt-chr .File/write DEO2
-	;draw-desktop ( .. )
-
-JMP2
-	&w ,&b STR2 ;&b .File/write DEO2 JMP2r
+	;draw-desktop JMP2
+	&w ,&b STR2
+	;&b .File/write DEO2
+	JMP2r
 	&b $2
 
 @no-name $1
@@ -1537,68 +993,40 @@ JMP2
 @|dates )
 
 @is-today ( year* month day -- bool )
-
 	.DateTime/month DEI2 EQU2 STH
-	.DateTime/year DEI2 EQU2 STHr AND
-
-JMP2r
+	.DateTime/year DEI2 EQU2 STHr AND JMP2r
 
 @is-month ( year* month -- bool )
-
 	.DateTime/month DEI EQU STH
-	.DateTime/year DEI2 EQU2 STHr AND
-
-JMP2r
+	.DateTime/year DEI2 EQU2 STHr AND JMP2r
 
 @dotw ( y* m d -- dotw )
-
-	( y -= m < 3; )
-	OVR STH SWP2 #00 STHr #02 LTH SUB2
-	STH2
-	( t[m-1] + d )
-	#00 ROT ;&t ADD2 LDA #00 SWP
-	ROT #00 SWP ADD2
-	( y  + y/4 - y/100 + y/400 )
-	STH2kr
-	STH2kr #02 SFT2 ADD2
-	STH2kr #0064 DIV2 SUB2
-	STH2r #0190 DIV2 ADD2
-	ADD2
-	( % 7 )
-	#0007 DIV2k MUL2 SUB2 NIP
-
-JMP2r
+	( y -= m < 3; ) OVR STH
+	SWP2 #00 STHr #02 LTH SUB2 STH2
+	( t[m-1] + d ) #00 ROT ;&t ADD2 LDA #00 SWP ROT #00 SWP ADD2
+	( y + y/4 - y/100 + y/400 ) STH2kr STH2kr #02 SFT2 ADD2 STH2kr #0064 DIV2 SUB2 STH2r #0190 DIV2 ADD2 ADD2
+	( % 7 ) #0007 DIV2k MUL2 SUB2 NIP JMP2r
 	&t 00 03 02 05 00 03 05 01 04 06 02 04
 
 @diam ( year* month -- days )
-
-	#00 OVR ;&m ADD2 LDA
-
-	SWP #01 NEQ ?&no-feb
-		STH DUP2 is-leap-year STHr ADD
-		&no-feb
-	NIP NIP
-
-JMP2r
+	#00 OVR ;&m ADD2 LDA SWP #01 NEQ ?&no-feb
+	STH
+	DUP2 is-leap-year STHr ADD &no-feb NIP NIP JMP2r
 	&m 1f 1c 1f 1e 1f 1e 1f 1f 1e 1f 1e 1f
 
 @is-leap-year ( year* -- bool )
-
-	( leap year if perfectly divisible by 400 )
-	DUP2 #0190 ( MOD2 ) DIV2k MUL2 SUB2 #0000 EQU2 ?&leap
+	( leap year if perfectly divisible by 400 ) DUP2 #0190
+	( MOD2 ) DIV2k MUL2 SUB2 #0000 EQU2 ?&leap
 	( not a leap year if divisible by 100 )
-	( but not divisible by 400 )
-	DUP2 #0064 ( MOD2 ) DIV2k MUL2 SUB2 #0000 EQU2 ?&not-leap
+	( but not divisible by 400 ) DUP2 #0064
+	( MOD2 ) DIV2k MUL2 SUB2 #0000 EQU2 ?&not-leap
 	( leap year if not divisible by 100 )
-	( but divisible by 4 )
-	DUP2 #0003 AND2 #0000 EQU2 ?&leap
-	( all other years are not leap years )
-	&not-leap
-	POP2 #00
+	( but divisible by 4 ) DUP2 #0003 AND2 #0000 EQU2 ?&leap
+	( all other years are not leap years ) &not-leap POP2 #00 JMP2r
+	&leap POP2 #01 JMP2r
+	( do not remove )
 
-JMP2r
-&leap POP2 #01 JMP2r
-
-( do not remove ) @size-system-end
+@size-system-end
 
 ~src/desktop.tal
+

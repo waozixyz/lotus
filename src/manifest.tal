@@ -93,10 +93,10 @@
 @get-sub ( sub -- sub* )
 	STH
 	;<draw-menu>/sel LDA get-cat LDAk STH
-	INC2 skip-str STHr #00
+	INC2 skip-str/ STHr #00
 	&subcat ( -- )
 		DUP STHkr EQU ?&end
-		SWP2 #0004 ADD2 skip-str SWP2 INC GTHk ?&subcat
+		SWP2 #0004 ADD2 skip-str/ SWP2 INC GTHk ?&subcat
 	POP2 POP2
 	( | TODO: merge tails )
 	POPr #0000 JMP2r
@@ -131,23 +131,23 @@
 	;<draw-menu>/manifest LDA2
 	&cat ( -- )
 		LDAk STH
-		INC2 skip-str STHr #00
+		INC2 skip-str/ STHr #00
 	&subcat ( -- )
 		OVR2 LDA2 [ LIT2 &mk $2 ] NEQ2 ?{
 			POP2 INC2 INC2 LDA2 JMP2r }
-		SWP2 #0004 ADD2 skip-str SWP2 INC GTHk ?&subcat
+		SWP2 #0004 ADD2 skip-str/ SWP2 INC GTHk ?&subcat
 	POP2 LDAk ?&cat
 	POP2 #0000 JMP2r
 
 @skip-sub ( sub* -- sub* )
 	LDAk STH
-	INC2 skip-str STHr #00
+	INC2 skip-str/ STHr #00
 	&subcat ( -- )
-		SWP2 #0004 ADD2 skip-str SWP2 INC GTHk ?&subcat
+		SWP2 #0004 ADD2 skip-str/ SWP2 INC GTHk ?&subcat
 	POP2 JMP2r
 
 @skip-str ( str* -- str* )
-	&skip INC2 LDAk ?&skip
+	INC2 & LDAk ?skip-str
 	INC2 JMP2r
 
 @get-modkey-str ( mod key -- str* )
@@ -200,7 +200,7 @@
 	POP ;<draw-menu>/sel LDA get-cat ORAk #00 EQU ?&skip
 	;<draw-menu>/sel LDA get-catx ,&anchor STR2
 	LDAk STH
-	INC2 skip-str STHr #00
+	INC2 skip-str/ STHr #00
 	&subcat ( -- )
 		STHk #030b STHr [ LIT &sel ff ] EQU [ JMP SWP POP ] [ LIT &mask $1 ] AND ;draw-chr/color STA
 		[ LIT2 &anchor $2 ] .Screen/x DEO2
@@ -235,20 +235,17 @@
 	JMP2r
 	( theme )
 
-@load-theme ( name* -- )
+@<load-theme> ( name* -- )
 	.File/name DEO2
 	#0002 .File/length DEO2
 	;&r .File/read DEO2
 	;&g .File/read DEO2
 	;&b .File/read DEO2
-	.File/success DEI2 ORA #01 JCN
-	JMP2r
-	LIT2 &r $2
-	.System/r DEO2
-	LIT2 &g $2
-	.System/g DEO2
-	LIT2 &b $2
-	.System/b DEO2
+	.File/success DEI2 ORA ?{ JMP2r }
+	[ LIT2 &r $2 ] .System/r DEO2
+	[ LIT2 &g $2 ] .System/g DEO2
+	[ LIT2 &b $2 ] .System/b DEO2
+	( | pattern )
 	#0010 .File/length DEO2
 	;patt-chr .File/read DEO2
 	JMP2r
