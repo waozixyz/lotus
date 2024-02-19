@@ -12,8 +12,8 @@
 	.Mouse/state DEI #00 EQU ?&no-touch-cat
 	.Mouse/y DEI2 #000c GTH2 ?&no-touch-cat
 	.Mouse/x DEI2 .Screen/width DEI2 #0098 SUB2 GTH2 ?on-touch-clock
-	.Mouse/x DEI2 get-xcat menu-select
-	( release ) #00 .Mouse/state DEO
+	.Mouse/x DEI2 get-xcat <menu-select>
+	[ LIT2 00 -Mouse/state ] DEO
 	BRK
 	&no-touch-cat ( -- )
 		;<draw-menu>/sel LDA #ff EQU ?&no-sub
@@ -24,13 +24,14 @@
 		POP
 		( | when touch sub )
 		.Mouse/state DEI #00 EQU ?{
-			;<draw-sub>/sel LDA menu-select-sub
-			( release ) #00 .Mouse/state DEO }
+			;<draw-sub>/sel LDA <menu-select-sub>
+			[ LIT2 00 -Mouse/state ] DEO }
 		BRK
 	&no-sub ( -- )
 		;<draw-menu>/sel LDA #ff NEQ ?&no-leave
 		.Mouse/y DEI2 #000c LTH2 ?&no-leave
-		menu-close &no-leave BRK
+		<menu-close>
+		&no-leave BRK
 
 @on-touch-clock ( -> )
 	( | unique )
@@ -47,35 +48,37 @@
 (
 @|controls )
 
-@menu-close ( -- )
+@<menu-close> ( -- )
 	untrap ;<draw-menu>/sel LDA DUP #ff EQU ?{
 		DUP #00 <draw-sub>
 		#ff ;<draw-menu>/sel STA
 		redraw-all <draw-menu> }
 	POP JMP2r
 
-@menu-select ( cat -- )
+@<menu-select> ( cat -- )
 	( | exists )
 	DUP get-cat ORA ?{ POP JMP2r }
 	( | clear )
 	;<draw-menu>/sel LDA
-	( unchanged ) EQUk ?menu-deselect
+	( unchanged ) EQUk ?<menu-deselect>
 	( unselected ) DUP #ff EQU ?{ DUP #00 <draw-sub> }
 	POP
 	( | draw )
 	redraw-all #ff ;<draw-sub>/sel STA
 	DUP ;<draw-menu>/sel STA
 	#ff <draw-sub>
-	;<draw-menu>
-	( .. ) JMP2
+	!<draw-menu>
 
-@menu-deselect ( cat cat -- )
-	POP2 ;menu-close
-	( .. ) JMP2
+@<menu-deselect> ( cat cat -- )
+	POP2 !<menu-close>
 
-@menu-select-sub ( sub -- )
-	get-sub menu-close ORAk ROT ROT JCN2
+@<menu-select-sub> ( sub -- )
+	get-sub <menu-close>
+	ORAk ROT ROT JCN2
 	JMP2r
+
+(
+@|helpers )
 
 @get-cat ( cat -- cat* )
 	STH
@@ -215,8 +218,7 @@
 	( | mod )
 	STH2k #0078 ADD2 .Screen/x DEO2
 	LDA2k get-modkey-str draw-str-right POP2 STH2r .Screen/x DEO2
-	#0004 ADD2 ;draw-str
-	( .. ) JMP2
+	#0004 ADD2 !draw-str
 
 @<update-cursor> ( color addr* -- )
 	[ LIT2 00 -Screen/auto ] DEO
