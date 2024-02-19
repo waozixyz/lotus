@@ -580,7 +580,7 @@
 	.Screen/x DEO2
 	( circle ) ;knob-icns .Screen/addr DEO2
 	[ LIT2 16 -Screen/auto ] DEO
-	#0e .Screen/sprite DEOk DEO
+	[ LIT2 0e -Screen/sprite ] DEOk DEO
 	[ LIT2 00 -Screen/auto ] DEO
 	( value ) #0010 ADD2 .Screen/y DEO2
 	#0004 ADD2 .Screen/x DEO2
@@ -629,7 +629,7 @@
 @draw-flip ( bool -- )
 	[ LIT2 16 -Screen/auto ] DEO
 	#00 SWP #50 SFT2 ;flip-icns ADD2 .Screen/addr DEO2
-	#0e .Screen/sprite DEOk DEO
+	[ LIT2 0e -Screen/sprite ] DEOk DEO
 	JMP2r
 
 @draw-scrollbar ( pos h -- )
@@ -684,7 +684,7 @@
 	( draw ) [ LIT2 01 -Screen/auto ] DEO
 	[ LIT &height $1 ] #00 &v [ LIT2 &anchor $2 ] .Screen/x DEO2
 	[ LIT &width $1 ] #00 &h ;&buf .File/read DEO2
-	[ LIT &color $1 ] .Screen/sprite DEO
+	[ LIT2 &color $1 -Screen/sprite ] DEO
 	INC GTHk ?&h
 	POP2 draw-lb INC GTHk ?&v
 	POP2 JMP2r
@@ -696,7 +696,7 @@
 	,&c STR
 	#00
 	&l ( -- )
-		[ LIT &c $1 ] .Screen/sprite DEO
+		[ LIT2 &c $1 -Screen/sprite ] DEO
 		INC GTHk ?&l
 	POP2 JMP2r
 
@@ -749,7 +749,7 @@
 
 @draw-chr ( char -- )
 	#00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
-	[ LIT &color 03 ] .Screen/sprite DEO
+	[ LIT2 &color 03 -Screen/sprite ] DEO
 	JMP2r
 
 @draw-txt ( txt* -- end* )
