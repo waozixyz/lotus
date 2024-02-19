@@ -195,7 +195,6 @@
 	&err #0005 ADD2 !add-err
 	&callback ( -- )
 		( a* ) [ LIT2 &target $2 ] make-src !fdel
-
 		( open a file )
 
 @open-file ( file* -- )
@@ -328,11 +327,11 @@
 	#0000 DUP2 .Screen/x DEO2
 	.Screen/y DEO2
 	;menu-chr .Screen/addr DEO2
-	#15 .Screen/auto DEO
+	[ LIT2 15 -Screen/auto ] DEO
 	.Screen/width DEI2 #03 SFT2 NIP #00
 	&l ( -- )
 		;menu-chr .Screen/addr DEO2
-		#81 .Screen/sprite DEO
+		[ LIT2 81 -Screen/sprite ] DEO
 		INC GTHk ?&l
 	POP2 !draw-clock
 
@@ -368,9 +367,9 @@
 
 @draw-dotted ( w color -- )
 	.Screen/x DEI2 SWP2 ,&color STR
-	#01 .Screen/auto DEO
+	[ LIT2 01 -Screen/auto ] DEO
 	;line-icn .Screen/addr DEO2
-	#00 &l [ LIT &color 0a ] .Screen/sprite DEO
+	#00 &l [ LIT2 &color 0a -Screen/sprite ] DEO
 	INC GTHk ?&l
 	POP2 .Screen/x DEO2
 	JMP2r
@@ -395,14 +394,14 @@
 	POP2 JMP2r
 
 @draw-memory ( -- )
-	#01 .Screen/auto DEO
+	[ LIT2 01 -Screen/auto ] DEO
 	.Screen/x DEI2 ,&x STR2
 	;vert-icn .Screen/addr DEO2
 	#8000
 	&l ( -- )
 		#00 OVRk ADD2 [ LIT2 &x $2 ] ADD2 .Screen/x DEO2
 		#00 OVR #90 SFT2 mem-type #00 SWP #40 SFT2 ;prog-chrs ADD2 .Screen/addr DEO2
-		#81 .Screen/sprite DEO
+		[ LIT2 81 -Screen/sprite ] DEO
 		INC GTHk ?&l
 	POP2 JMP2r
 
@@ -429,24 +428,24 @@
 	#0f !draw-text-color
 
 @draw-capped ( w sprite* -- )
-	#15 .Screen/auto DEO
+	[ LIT2 15 -Screen/auto ] DEO
 	DUP2 .Screen/addr DEO2
-	#0010 ADD2 #0a .Screen/sprite DEO
+	#0010 ADD2 [ LIT2 0a -Screen/sprite ] DEO
 	ROT #00
 	&l ( -- )
 		OVR2 .Screen/addr DEO2
-		#0a .Screen/sprite DEO
+		[ LIT2 0a -Screen/sprite ] DEO
 		INC GTHk ?&l
-	POP2 #15 .Screen/auto DEO
+	POP2 [ LIT2 15 -Screen/auto ] DEO
 	#0010 ADD2 .Screen/addr DEO2
-	#0a .Screen/sprite DEO
+	[ LIT2 0a -Screen/sprite ] DEO
 	JMP2r
 
 @draw-fill ( w h -- )
-	#01 .Screen/auto DEO
+	[ LIT2 01 -Screen/auto ] DEO
 	;fill-icn .Screen/addr DEO2
 	SWP ,&x STR
-	#00 &h [ LIT &x $1 ] #00 &w [ LIT &color 03 ] .Screen/sprite DEO
+	#00 &h [ LIT &x $1 ] #00 &w [ LIT2 &color 03 -Screen/sprite ] DEO
 	INC GTHk ?&w
 	POP2 draw-lb .Screen/x DEI2k #00 ,&x LDR #30 SFT2 SUB2 ROT DEO2
 	INC GTHk ?&h
@@ -498,8 +497,8 @@
 
 @draw-icon ( addr* -- )
 	.Screen/addr DEO2
-	#26 .Screen/auto DEO
-	#85 .Screen/sprite DEOk DEOk DEO
+	[ LIT2 26 -Screen/auto ] DEO
+	[ LIT2 85 -Screen/sprite ] DEOk DEOk DEO
 	JMP2r
 
 @draw-icon-size ( size* name* icon* -- )
@@ -545,7 +544,7 @@
 
 @draw-swatches ( -- )
 	.cursor/color LDZ STH
-	#05 .Screen/auto DEO
+	[ LIT2 05 -Screen/auto ] DEO
 	#0c ;swatch-icns/fill #00 STHkr EQU draw-swatch #0d ;swatch-icns/fill #01 STHkr EQU draw-swatch #0e ;swatch-icns/fill #02 STHkr EQU draw-swatch #0e ;swatch-icns/line #03 STHkr EQU draw-swatch POPr .Screen/x DEI2k #0040 SUB2 ROT DEO2
 	.Screen/y DEI2k #0010 ADD2 ROT DEO2
 	JMP2r
@@ -561,7 +560,7 @@
 	( draw mid ) .Screen/y DEI2k #001f ADD2 ROT DEO2
 	#200c draw-dotted
 	( draw wav ) ,&zoom STR2
-	#01 .Screen/auto DEO
+	[ LIT2 01 -Screen/auto ] DEO
 	LITr 00 ADD2k NIP2 SWP2
 	&l ( -- )
 		LDAk #00 SWP #02 SFT2 [ LIT2 &y $2 ] ADD2 .Screen/y DEO2
@@ -580,32 +579,32 @@
 	OVR2 OVR2 .Screen/y DEO2
 	.Screen/x DEO2
 	( circle ) ;knob-icns .Screen/addr DEO2
-	#16 .Screen/auto DEO
+	[ LIT2 16 -Screen/auto ] DEO
 	#0e .Screen/sprite DEOk DEO
-	#00 .Screen/auto DEO
+	[ LIT2 00 -Screen/auto ] DEO
 	( value ) #0010 ADD2 .Screen/y DEO2
 	#0004 ADD2 .Screen/x DEO2
-	STHkr draw-hex #0e .Screen/sprite DEO
+	STHkr draw-hex [ LIT2 0e -Screen/sprite ] DEO
 	( marker ) .Screen/x DEI2 #0004 SUB2 #0000 STHkr ;knob-offsetx ADD2 LDA ADD2 .Screen/x DEO2
 	.Screen/y DEI2 #0010 SUB2 #0000 STHr ;knob-offsety ADD2 LDA ADD2 .Screen/y DEO2
 	;knob-icns #0020 ADD2 .Screen/addr DEO2
-	#0a .Screen/sprite DEO
+	[ LIT2 0a -Screen/sprite ] DEO
 	[ LIT2 &x $2 ] #0010 ADD2 .Screen/x DEO2
 	[ LIT2 &y $2 ] .Screen/y DEO2
 	JMP2r
 
 @draw-octave ( -- )
-	.Screen/x DEI2 .Screen/y DEI2 #02 .Screen/auto DEO
+	.Screen/x DEI2 .Screen/y DEI2 [ LIT2 02 -Screen/auto ] DEO
 	OVR2 #0040 ADD2 .Screen/x DEO2
 	;arrow-icns/v .Screen/addr DEO2
 	DUP2 .Screen/y DEO2
-	#0e .Screen/sprite DEO
+	[ LIT2 0e -Screen/sprite ] DEO
 	[ LIT &octave 03 ] draw-hex ;arrow-icns/v .Screen/addr DEO2
 	DUP2 #0010 ADD2 .Screen/y DEO2
-	#2e .Screen/sprite DEO
+	[ LIT2 2e -Screen/sprite ] DEO
 	.Screen/y DEO2
 	.Screen/x DEO2
-	#25 .Screen/auto DEO
+	[ LIT2 25 -Screen/auto ] DEO
 	[ LIT &last ff ] DUP #00 EQU ;octave-icns/a draw-octave-key DUP #02 EQU ;octave-icns/b draw-octave-key DUP #04 EQU ;octave-icns/c draw-octave-key DUP #05 EQU ;octave-icns/a draw-octave-key DUP #07 EQU ;octave-icns/b draw-octave-key DUP #09 EQU ;octave-icns/b draw-octave-key #0b EQU ;octave-icns/c draw-octave-key #00 ;octave-icns/d
 
 @draw-octave-key ( color addr* -- )
@@ -615,12 +614,12 @@
 
 @draw-slider ( value name* -- )
 	( TODO: Add name and write value ) .Screen/x DEI2 SWP2 draw-text .Screen/x DEO2
-	draw-lb #00 .Screen/auto DEO
+	draw-lb [ LIT2 00 -Screen/auto ] DEO
 	STH
 	#1000
 	&l ( -- )
 		#00 OVR STHkr GTH #30 SFT ;slider-icns ADD2 .Screen/addr DEO2
-		#0a .Screen/sprite DEO
+		[ LIT2 0a -Screen/sprite ] DEO
 		.Screen/x DEI2k #0004 ADD2 ROT DEO2
 		INC GTHk ?&l
 	POP2 POPr .Screen/x DEI2k #0040 SUB2 ROT DEO2
@@ -628,7 +627,7 @@
 	JMP2r
 
 @draw-flip ( bool -- )
-	#16 .Screen/auto DEO
+	[ LIT2 16 -Screen/auto ] DEO
 	#00 SWP #50 SFT2 ;flip-icns ADD2 .Screen/addr DEO2
 	#0e .Screen/sprite DEOk DEO
 	JMP2r
@@ -636,24 +635,24 @@
 @draw-scrollbar ( pos h -- )
 	.Screen/x DEI2 ;&x STA2
 	.Screen/y DEI2 ;&y STA2
-	#01 SUB #06 .Screen/auto DEO
+	#01 SUB [ LIT2 06 -Screen/auto ] DEO
 	;arrow-icns/v .Screen/addr DEO2
-	#0e .Screen/sprite DEO
-	#02 .Screen/auto DEO
+	[ LIT2 0e -Screen/sprite ] DEO
+	[ LIT2 02 -Screen/auto ] DEO
 	#00
 	&l ( -- )
-		#0e .Screen/sprite DEO
+		[ LIT2 0e -Screen/sprite ] DEO
 		INC GTHk ?&l
-	POP #01 .Screen/auto DEO
+	POP [ LIT2 01 -Screen/auto ] DEO
 	;arrow-icns/v .Screen/addr DEO2
-	#2e .Screen/sprite DEO
+	[ LIT2 2e -Screen/sprite ] DEO
 	( recover y ) INC #00 SWP #30 SFT2 STH2
 	.Screen/y DEI2k STH2r SUB2 ROT DEO2
 	( marker ) .Screen/y DEI2 ,&y STR2
 	,&x LDR2 .Screen/x DEO2
 	;fill-icn .Screen/addr DEO2
 	#00 SWP #10 SFT2 .Screen/y DEI2 ADD2 #0008 ADD2 .Screen/y DEO2
-	#06 .Screen/sprite DEO
+	[ LIT2 06 -Screen/sprite ] DEO
 	[ LIT2 &x $2 ] #0008 ADD2 .Screen/y DEO2
 	[ LIT2 &y $2 ] .Screen/y DEO2
 	JMP2r
@@ -682,7 +681,7 @@
 	,&width STR
 	.Screen/x DEI2 ,&anchor STR2
 	;&buf .Screen/addr DEO2
-	( draw ) #01 .Screen/auto DEO
+	( draw ) [ LIT2 01 -Screen/auto ] DEO
 	[ LIT &height $1 ] #00 &v [ LIT2 &anchor $2 ] .Screen/x DEO2
 	[ LIT &width $1 ] #00 &h ;&buf .File/read DEO2
 	[ LIT &color $1 ] .Screen/sprite DEO
@@ -702,7 +701,7 @@
 	POP2 JMP2r
 
 @draw-dec ( short* -- )
-	#01 .Screen/auto DEO
+	[ LIT2 01 -Screen/auto ] DEO
 	#00 ,&z STR
 	#2710 ,&parse JSR #03e8 ,&parse JSR #0064 ,&parse JSR #000a ,&parse JSR NIP #30 ADD !draw-chr
 	&parse DIV2k DUPk [ LIT &z $1 ] EQU ?&skip
@@ -718,7 +717,7 @@
 
 @draw-str ( str* -- str* )
 	LDAk #00 EQU ?&skip
-	#01 .Screen/auto DEO
+	[ LIT2 01 -Screen/auto ] DEO
 	&w LDAk draw-chr INC2 LDAk ?&w
 	&skip INC2 JMP2r
 
@@ -730,7 +729,7 @@
 
 @draw-line ( str* -- str* )
 	.Screen/x DEI2 ,&x STR2
-	#01 .Screen/auto DEO
+	[ LIT2 01 -Screen/auto ] DEO
 	&w LDAk #00 EQU ?&end
 	LDAk draw-chr INC2 LDAk #0a NEQ ?&w
 	&end INC2 [ LIT2 &x $2 ] .Screen/x DEO2
@@ -754,14 +753,14 @@
 	JMP2r
 
 @draw-txt ( txt* -- end* )
-	#01 .Screen/auto DEO
+	[ LIT2 01 -Screen/auto ] DEO
 	.Screen/x DEI2 ,&anchor STR2
 	&w LDAk #0a NEQ ?&no-lb
 	[ LIT2 &anchor $2 ] .Screen/x DEO2
 	.Screen/y DEI2k #0008 ADD2 ROT DEO2
 	,&continue JMP
 	&no-lb LDAk #00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
-	#0e .Screen/sprite DEO
+	[ LIT2 0e -Screen/sprite ] DEO
 	&continue INC2 LDAk ?&w
 	JMP2r
 
