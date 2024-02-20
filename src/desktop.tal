@@ -284,22 +284,22 @@
 	.Screen/height DEI2 #0018 SUB2 #0018 DIV2 NIP JMP2r
 
 @sel-left ( -- )
-	;draw-item-text/sel LDA get-rows SUB !<sel-icon>
+	;<draw-item-text>/sel LDA get-rows SUB !<sel-icon>
 
 @sel-right ( -- )
-	;draw-item-text/sel LDA get-rows ADD !<sel-icon>
+	;<draw-item-text>/sel LDA get-rows ADD !<sel-icon>
 
 @sel-up ( -- )
-	;draw-item-text/sel LDA #01 SUB !<sel-icon>
+	;<draw-item-text>/sel LDA #01 SUB !<sel-icon>
 
 @sel-down ( -- )
-	;draw-item-text/sel LDA INC !<sel-icon>
+	;<draw-item-text>/sel LDA INC !<sel-icon>
 
 @<sel-icon> ( id -- )
 	( min ) DUP #80 LTH ?&min-ok
 	POP #00
 	&min-ok ( max )
-		desk-len LTHk [ JMP SWP POP ] ;draw-item-text/sel STA
+		desk-len LTHk [ JMP SWP POP ] ;<draw-item-text>/sel STA
 		<draw-desktop>
 		!sel-desktop
 
@@ -310,7 +310,7 @@
 	POP2 STHr #01 SUB JMP2r
 
 @get-sel-file ( -- file*|ffff )
-	;draw-item-text/sel LDA
+	;<draw-item-text>/sel LDA
 
 @get-file ( id -- file*|ffff )
 	STH

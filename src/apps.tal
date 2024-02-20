@@ -628,7 +628,7 @@ BRK
 	( next name )
 	close-win
 	#01 SUB
-		DUP ;draw-item-text/sel STA
+		DUP ;<draw-item-text>/sel STA
 		get-file !open-pict
 
 &next ( -- )
@@ -645,7 +645,7 @@ BRK
 	( next name )
 	close-win
 	INC
-		DUP ;draw-item-text/sel STA
+		DUP ;<draw-item-text>/sel STA
 		get-file !open-pict
 
 (
@@ -715,7 +715,7 @@ JMP2r
 	( next name )
 	close-win
 	#01 SUB
-		DUP ;draw-item-text/sel STA
+		DUP ;<draw-item-text>/sel STA
 		get-file !open-font
 
 &next ( -- )
@@ -732,7 +732,7 @@ JMP2r
 	( next name )
 	close-win
 	INC
-		DUP ;draw-item-text/sel STA
+		DUP ;<draw-item-text>/sel STA
 		get-file !open-font
 
 (
@@ -829,7 +829,7 @@ BRK
 	( next name )
 	close-win
 	#01 SUB
-		DUP ;draw-item-text/sel STA
+		DUP ;<draw-item-text>/sel STA
 		get-file !open-sound
 
 &next ( -- )
@@ -846,7 +846,7 @@ BRK
 	( next name )
 	close-win
 	INC
-		DUP ;draw-item-text/sel STA
+		DUP ;<draw-item-text>/sel STA
 		get-file !open-sound
 
 &toggle-loop ( -- )

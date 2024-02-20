@@ -303,11 +303,16 @@
 @<draw-desktop> ( -- )
 	<draw-wallpaper>
 	load-dir
-	( draw icons ) get-rows STH
-	LITr 00 ;buf/dir &w #00 STHk2r SWP DIV #00a0 MUL2 #0010 ADD2 .Screen/x DEO2
-	#00 STHk2r SWP
-	( MOD ) [ DIVk MUL SUB ] #0018 MUL2 #0018 ADD2 .Screen/y DEO2
-	DUP2 draw-item-icon DUP2 STHkr draw-item-text scap/ INCr INC2 LDAk ?&w
+	( | draw icons )
+	get-rows STH
+	LITr 00 ;buf/dir
+	&w ( -- )
+		#00 STHk2r SWP DIV #00a0 MUL2 #0010 ADD2 .Screen/x DEO2
+		#00 STHk2r SWP
+		( MOD ) [ DIVk MUL SUB ] #0018 MUL2 #0018 ADD2 .Screen/y DEO2
+		DUP2 <draw-item-icon>
+		DUP2 STHkr <draw-item-text>
+		scap/ INCr INC2 LDAk ?&w
 	POP2 POP2r
 	( | draw windows )
 	.length LDZ #00 EQUk ?&no-win
@@ -518,7 +523,7 @@
 	#20 <draw-chr>
 	;dict/bytes !<draw-text>
 
-@draw-item-icon ( file* -- file* )
+@<draw-item-icon> ( file* -- file* )
 	LDAk LIT "- EQU ?&folder
 	LDAk LIT "? EQU ?&unknown
 	DUP2 #0005 ADD2 LDA LIT ". EQU ?&unknown
@@ -536,8 +541,8 @@
 	&font POP2 ;icons/font !<draw-icon>
 	&source POP2 ;icons/source !<draw-icon>
 
-@draw-item-text ( file* id -- file* )
-	[ LIT &sel 00 ] EQU #09 MUL INC INC ;<draw-chr>/color STA
+@<draw-item-text> ( file* id -- file* )
+	#0b02 ROT [ LIT &sel 00 ] EQU [ JMP SWP POP ] ;<draw-chr>/color STA
 	LDAk LIT "- EQU ?&no-size
 	LDAk LIT "? EQU ?&no-size
 	.Screen/x DEI2k #0020 ADD2 STH2k ROT DEO2
@@ -810,8 +815,6 @@
 	INC2 GTH2k ?&l
 	POP2 POP2 &e POP2r JMP2r
 
-
-
 @mcpy ( src* dst* len* -- )
 	SWP2 STH2
 	OVR2 ADD2 SWP2 &l LDAk STH2kr STA
@@ -836,8 +839,6 @@
 	.File/name DEO2
 	[ LIT2 01 -File/delete ] DEO
 	JMP2r
-
-
 
 @mswp ( len* a* b* -- )
 	,&b STR2
