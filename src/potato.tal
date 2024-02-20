@@ -242,7 +242,7 @@
 
 @open-about ( -- )
 	( unique ) ;app-about find-win INCk ?sel-win
-	POP ;no-name ;app-about #2213 #0000 DUP2 add-win !center-win
+	POP ;no-name ;app-about #2215 #0000 DUP2 add-win !center-win
 
 @open-tile ( -- )
 	;patt-chr ;paint-patt/addr STA2
