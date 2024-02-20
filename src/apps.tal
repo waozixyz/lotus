@@ -162,10 +162,13 @@
 		POP2 POP2 POP2 BRK
 	&on-click ( win* )
 		POP2 #03 SFT2 NIP ROT ROT #02 SFT2 NIP SWP OVR #0f GTH ?&skip
-		DUP #01 NEQ ?&no-r
-		OVR .System/r STHk ,&set-color JSR STHr ,&set-nibble JSR &no-r DUP #04 NEQ ?&no-g
-		OVR .System/g STHk ,&set-color JSR STHr ,&set-nibble JSR &no-g DUP #07 NEQ ?&no-b
-		OVR .System/b STHk ,&set-color JSR STHr ,&set-nibble JSR &no-b DUP #09 NEQ ?&no-swatch
+		DUP #01 NEQ ?{
+			OVR .System/r STHk app-color/set-color STHr app-color/set-nibble }
+		DUP #04 NEQ ?{
+			OVR .System/g STHk app-color/set-color STHr app-color/set-nibble }
+		DUP #07 NEQ ?{
+			OVR .System/b STHk app-color/set-color STHr app-color/set-nibble }
+		DUP #09 NEQ ?&no-swatch
 		OVR #02 SFT select-color [ LIT2 00 -Mouse/state ] DEO
 		&no-swatch &skip POP2 BRK
 	&set-nibble ( color port -- )
@@ -233,22 +236,22 @@
 		;patt-chr .File/read DEO2
 		!<draw-desktop>
 	&prev-tile ( -- )
-		;paint-patt/addr LDA2 #0010 SUB2 ,&sel-tile JSR JMP2r
+		;paint-patt/addr LDA2 #0010 SUB2 !&sel-tile
 	&next-tile ( -- )
 		;paint-patt/addr LDA2 #0010 ADD2
-	&sel-tile ( addr* -- )
-		;paint-patt/addr STA2
-		!<draw-desktop>
 	&clear-patt ( -- )
 		;paint-patt/addr LDA2 #0010 mclr !<draw-desktop>
 	&goto-pattern ( -- )
-		;patt-chr ;&sel-tile JSR2 JMP2r
+		;patt-chr !&sel-tile
 	&goto-font ( -- )
-		;font/visible ;&sel-tile JSR2 JMP2r
+		;font/visible !&sel-tile
 	&goto-window ( -- )
-		;frame1-chr ;&sel-tile JSR2 JMP2r
+		;frame1-chr !&sel-tile
 	&goto-icons ( -- )
-		;icons ;&sel-tile JSR2 JMP2r
+		;icons !&sel-tile
+	&sel-tile ( addr* -- )
+		;paint-patt/addr STA2
+		!<draw-desktop>
 
 @app-tile/on-draw ( win* -- )
 	POP2 .Screen/x DEI2 ,&x STR2
