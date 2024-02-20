@@ -395,18 +395,6 @@
 	INC GTHk ?&h
 	POP2 JMP2r
 
-@draw-memory ( -- )
-	[ LIT2 01 -Screen/auto ] DEO
-	.Screen/x DEI2 ,&x STR2
-	;vert-icn .Screen/addr DEO2
-	#8000
-	&l ( -- )
-		#00 OVRk ADD2 [ LIT2 &x $2 ] ADD2 .Screen/x DEO2
-		#00 OVR #90 SFT2 mem-type #00 SWP #40 SFT2 ;prog-chrs ADD2 .Screen/addr DEO2
-		[ LIT2 81 -Screen/sprite ] DEO
-		INC GTHk ?&l
-	POP2 JMP2r
-
 @scroll-text ( str* w -- str* w )
 	STHk ROT ROT DUP2 slen #00 STHr SUB2 DUP2 #8000 LTH2 ?&no-scroll
 	POP2 #0000 &no-scroll ADD2 ROT JMP2r
