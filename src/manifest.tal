@@ -293,11 +293,11 @@
 		INC2 GTH2k ?&l
 	POP2 POP2 JMP2r
 
-@print ( short* -- )
-	SWP print/byte
-	&byte ( byte -- )
-		DUP #04 SFT print/char
-	&char ( char -- )
+@<phex> ( short* -- )
+	SWP <phex>/b
+	&b ( -- )
+		DUP #04 SFT <phex>/c
+	&c ( -- )
 		#0f AND DUP #09 GTH #27 MUL ADD #30 ADD #18 DEO
 		JMP2r
 

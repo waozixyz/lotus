@@ -126,12 +126,12 @@
 
 @<set-dir> ( path* -- )
 	<validate-dir>
-	;dir scpy #00 !sel-icon
+	;dir scpy #00 !<sel-icon>
 
 @push-dir ( path* -- )
 	<validate-dir>
 	DUP2 ;dict/parent-ext scmp ?pop-dir
-	LIT "/ ;dir STH2k sput STH2r scat #00 !sel-icon
+	LIT "/ ;dir STH2k sput STH2r scat #00 !<sel-icon>
 
 @pop-dir ( path* -- )
 	<validate-dir>
@@ -141,7 +141,7 @@
 		LDAk LIT "/ EQU ?{
 			#0001 SUB2 LTH2k ?&l }
 	NIP2 #00 ROT ROT STA
-	&skip POP2 #00 !sel-icon
+	&skip POP2 #00 !<sel-icon>
 
 @<validate-dir> ( -- )
 	[ LIT2 00 -length ] LDZ EQUk ?&skip
