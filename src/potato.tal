@@ -147,10 +147,11 @@
 	POP2 JMP2r
 
 @has-active-paths ( -- f )
-	[ LIT2 00 -length ] LDZ EQUk ?&skip
+	.length LDZ #00 EQUk ?&skip
 	&l ( -- )
 		( win ) DUP get-win
-		( win/name ) #0008 ADD2 LDA2 ;no-name EQU2 ?{ POP2 #01 JMP2r }
+		( win/name ) #0008 ADD2 LDA2 ;no-name EQU2 ?{
+			NIP sel-win center-win #01 JMP2r }
 		INC GTHk ?&l
 	&skip ( -- )
 		POP2 #00 JMP2r

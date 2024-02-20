@@ -204,8 +204,7 @@
 
 @close-win ( -- )
 	.length LDZ ?{ JMP2r }
-	get-active-win DUP2 <phex>
-	#0a18 DEO
+	get-active-win
 	( win/mem-ptr ) #000a ADD2 LDA2k SWP2
 	( win/mem-len ) INC2 INC2 LDA2 mem-rel #00 .length LDZ #01 SUB #40 SFT2 ;windows ADD2 #0010 mclr .length LDZk #01 SUB SWP STZ
 	sel-desktop !<draw-desktop>
