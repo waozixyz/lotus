@@ -27,9 +27,9 @@
 	.Screen/y DEI2k #000c ADD2 ROT DEO2
 	;mem .bounds LDZ2 ADD2 <draw-dec>
 	LIT "/ draw-chr
-	;&full draw-text
+	;&full <draw-text>
 	#20 draw-chr
-	;dict/bytes draw-text
+	;dict/bytes <draw-text>
 
 	DUP2
 	LDA2k .Screen/x DEO2 POP2
@@ -65,7 +65,7 @@ JMP2r
 
 &manifest
 	03 "Calendar $1
-		1200 =expand-win "Expand $1
+		1200 =expand-win "Raise $1
 		2200 =tab-win "Tab $1
 		4200 =close-win "Close $1
 	03 "View $1
@@ -86,7 +86,7 @@ JMP2r
 
 	POP2
 
-!draw-month
+!&draw
 
 &select-now ( -- )
 
@@ -117,6 +117,38 @@ JMP2r
 			POP #00 .year LDZ2 ROT !app-calendar/select-month
 		&no-dec
 			INC .year LDZ2 ROT !app-calendar/select-month
+
+@app-calendar/draw ( -- )
+	( | start day )
+	.year LDZ2 .month LDZ #01 dotw ;&offset STA
+	.Screen/x DEI2 STH2k #0040 ADD2 .Screen/x DEO2
+	.Screen/y DEI2 STH2k #0012 SUB2 .Screen/y DEO2
+	( | month )
+	[ LIT2 00 -month ] LDZ #20 SFT2 ;dict/months ADD2 <draw-text>
+	( | year )
+	.Screen/x DEI2k #0008 ADD2 ROT DEO2
+	.year LDZ2 <draw-dec>
+	( | weeks )
+	STH2kr .Screen/y DEO2
+	( cache is-month ) .year LDZ2 .month LDZ is-month ,&is-month STR
+	#0700
+	&lw ( -- )
+		#00 OVR #50 SFT2 OVR2r STH2r ADD2 #0008 SUB2 .Screen/x DEO2
+		DUP .DateTime/dotw DEI EQU [ LIT &is-month $1 ] AND STH
+		#050c STHr [ JMP SWP POP ] ;draw-chr/color STA
+		#00 OVR #20 SFT2 ;dict/dotw ADD2 <draw-text> INC GTHk ?&lw
+	POP2
+	( | days ) LIT2r 0010 ADD2r #2a00
+	&l ( -- )
+		#00 OVR #07 DIVk MUL SUB #50 SFT2 OVR2r STH2r ADD2 .Screen/x DEO2
+		#00 OVR #07 DIV #40 SFT2 STH2kr ADD2 .Screen/y DEO2
+		DUP [ LIT &offset $1 ] SUB DUP #80 GTH ?&skip
+		INCk .year LDZ2 .month LDZ diam GTH ?&skip
+		STHk .year LDZ2 .month LDZ STHr INC is-today STH
+		#0c0e STHr [ JMP SWP POP ] ;draw-chr/color STA
+		#00 OVR INC <draw-dec>
+		&skip POP INC GTHk ?&l
+	POP2 POP2r POP2r JMP2r
 
 (
 @|color )

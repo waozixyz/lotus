@@ -38,9 +38,9 @@
 	;app-calendar find-win DUP #ff NEQ ?&reselect
 	POP
 	( | create window )
-	;no-name ;app-calendar #1d10
+	;no-name ;app-calendar #1c10
 	( y ) #0018
-	( x ) .Screen/width DEI2 #00f8 SUB2 add-win BRK &reselect sel-win BRK
+	( x ) .Screen/width DEI2 #00e8 SUB2 add-win BRK &reselect sel-win BRK
 
 @on-control-menu ( -> )
 	( TODO ) BRK

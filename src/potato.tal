@@ -523,7 +523,7 @@
 	.Screen/y DEI2k #0009 ADD2 ROT DEO2
 	[ LIT 05 ] ;draw-chr/color STA
 	<draw-dec>
-	#20 draw-chr ;dict/bytes !draw-text
+	#20 draw-chr ;dict/bytes !<draw-text>
 
 @draw-item-icon ( file* -- file* )
 	LDAk LIT "- EQU ?&folder
@@ -549,15 +549,15 @@
 	LDAk LIT "? EQU ?&no-size
 	.Screen/x DEI2k #0020 ADD2 STH2k ROT DEO2
 	.Screen/y DEI2k #0014 SUB2 ROT DEO2
-	#0005 ADD2 draw-text STH2r .Screen/x DEO2
+	#0005 ADD2 <draw-text> STH2r .Screen/x DEO2
 	.Screen/y DEI2k #0009 ADD2 ROT DEO2
 	#01 ;draw-chr/color STA
 	DUP2 ;&buf #0004 mcpy ;&buf shex <draw-dec>
-	#20 draw-chr ;dict/bytes !draw-text
+	#20 draw-chr ;dict/bytes !<draw-text>
 	&buf $5
 	&no-size .Screen/y DEI2k #0010 SUB2 ROT DEO2
 	.Screen/x DEI2k #0020 ADD2 ROT DEO2
-	#0005 ADD2 !draw-text
+	#0005 ADD2 !<draw-text>
 
 @draw-swatches ( -- )
 	.cursor/color LDZ STH
@@ -630,7 +630,7 @@
 	JMP2r
 
 @draw-slider ( value name* -- )
-	( TODO: Add name and write value ) .Screen/x DEI2 SWP2 draw-text .Screen/x DEO2
+	( TODO: Add name and write value ) .Screen/x DEI2 SWP2 <draw-text> .Screen/x DEO2
 	draw-lb [ LIT2 00 -Screen/auto ] DEO
 	STH
 	#1000
@@ -743,7 +743,7 @@
 	;draw-chr/color STA
 	( >> )
 
-@draw-text ( str* -- )
+@<draw-text> ( str* -- )
 	draw-str POP2 JMP2r
 
 @draw-line ( str* -- str* )
@@ -797,34 +797,6 @@
 	.Screen/y DEO2
 	[ LIT2 80 -Screen/sprite ] DEO
 	JMP2r
-
-(
-@|calendar )
-
-@draw-month ( -- )
-	( start day ) .year LDZ2 .month LDZ #01 dotw ;&offset STA
-	.Screen/x DEI2 STH2k #0040 ADD2 .Screen/x DEO2
-	.Screen/y DEI2 STH2k #0012 SUB2 .Screen/y DEO2
-	( month ) #00 .month LDZ #20 SFT2 ;dict/months ADD2 draw-str POP2
-	( year ) .Screen/x DEI2k #0008 ADD2 ROT DEO2
-	.year LDZ2 <draw-dec>
-	( week ) STH2kr .Screen/y DEO2
-	#0700 &lw #00 OVR #50 SFT2 OVR2r STH2r ADD2 .Screen/x DEO2
-	DUP .DateTime/dotw DEI EQU .year LDZ2 .month LDZ is-month AND STH
-	#050c STHr [ JMP SWP POP ] ;draw-chr/color STA
-	#00 OVR #20 SFT2 ;dict/dotw ADD2 draw-str POP2 INC GTHk ?&lw
-	POP2
-	( days ) LIT2r 0010 ADD2r #2a00
-	&l ( -- )
-		#00 OVR #07 DIVk MUL SUB #50 SFT2 OVR2r STH2r ADD2 .Screen/x DEO2
-		#00 OVR #07 DIV #40 SFT2 STH2kr ADD2 .Screen/y DEO2
-		DUP [ LIT &offset $1 ] SUB DUP #80 GTH ?&skip
-		INCk .year LDZ2 .month LDZ diam GTH ?&skip
-		STHk .year LDZ2 .month LDZ STHr INC is-today STH
-		#0c0e STHr [ JMP SWP POP ] ;draw-chr/color STA
-		#00 OVR INC <draw-dec>
-		&skip POP INC GTHk ?&l
-	POP2 POP2r POP2r JMP2r
 
 (
 @|stdlib )
@@ -1014,7 +986,7 @@
 	( t[m-1] + d ) #00 ROT ;&t ADD2 LDA #00 SWP ROT #00 SWP ADD2
 	( y + y/4 - y/100 + y/400 ) STH2kr STH2kr #02 SFT2 ADD2 STH2kr #0064 DIV2 SUB2 STH2r #0190 DIV2 ADD2 ADD2
 	( % 7 ) #0007 DIV2k MUL2 SUB2 NIP JMP2r
-	&t 00 03 02 05 00 03 05 01 04 06 02 04
+	&t [ 00 03 02 05 00 03 05 01 04 06 02 04 ]
 
 @diam ( year* month -- days )
 	#00 OVR ;&m ADD2 LDA SWP #01 NEQ ?&no-feb
