@@ -3,30 +3,30 @@
 @manifest
 
 	04 "Potato $1
-		01 "1 =open-about "About $1
-		01 "t =open-tile "Wallpaper $1
-		01 "k =open-color "Theme $1
-		01 "q =exit "Exit $1
+		( > ) 01 "1 =open-about "About $1
+		( > ) 01 "t =open-tile "Wallpaper $1
+		( > ) 01 "k =open-color "Theme $1
+		( > ) 01 "q =exit "Exit $1
 	04 "File $1
-		01 "n =file-create "Create $1
-		01 "r =file-rename "Rename $1
-		01 "d =file-clone "Clone $1
-		01 08 =file-delete "Delete $1
+		( > ) 01 "n =file-create "Create $1
+		( > ) 01 "r =file-rename "Rename $1
+		( > ) 01 "d =file-clone "Clone $1
+		( > ) 01 08 =file-delete "Delete $1
 	05 "Open $1
-		05 "D =open-as-meta "As 20 "Meta $1
-		05 "T =open-as-text "As 20 "Text $1
-		05 "P =open-as-pict "As 20 "Pict $1
-		05 "F =open-as-font "As 20 "Font $1
-		05 "S =open-as-sound "As 20 "Sound $1
+		( > ) 05 "D =open-as-meta "As 20 "Meta $1
+		( > ) 05 "T =open-as-text "As 20 "Text $1
+		( > ) 05 "P =open-as-pict "As 20 "Pict $1
+		( > ) 05 "F =open-as-font "As 20 "Font $1
+		( > ) 05 "S =open-as-sound "As 20 "Sound $1
 	04 "Select $1
-		10 00 =sel-up "Up $1
-		20 00 =sel-down "Down $1
-		40 00 =sel-left "Left $1
-		80 00 =sel-right "Right $1
+		( > ) 10 00 =sel-up "Up $1
+		( > ) 20 00 =sel-down "Down $1
+		( > ) 40 00 =sel-left "Left $1
+		( > ) 80 00 =sel-right "Right $1
 	03 "Go $1
-		12 00 =go-active "Active $1
-		42 00 =go-home "Home $1
-		82 00 =go-file "Open $1
+		( > ) 12 00 =go-active "Active $1
+		( > ) 42 00 =go-home "Home $1
+		( > ) 82 00 =go-file "Open $1
 	$1
 
 (
@@ -37,7 +37,7 @@
 	;on-mouse .Mouse/vector DEO2
 	;on-button .Controller/vector DEO2
 	;on-frame .Screen/vector DEO2
-	( release mouse ) #00 .Mouse/state DEO
+	[ LIT2 00 -Mouse/state ] DEO
 
 JMP2r
 
@@ -50,18 +50,18 @@ BRK
 @on-button ( -> )
 
 	.Controller/button DEI2 find-modkey
-	ORAk #00 EQU ?&skip
+	ORAk #00 EQU ?{
 		( blocking ) JSR2 BRK
-		&skip
+		}
 	POP2
 
 	( send button to active win )
 	( win ) ;get-active-win JSR2
-	DUP2 #ffff EQU2 ?&no-win
+	DUP2 #ffff EQU2 ?{
 		.Controller/button DEI2 SWP2 DUP2
 		( win/app ) #0006 ADD2 LDA2
 		( win/app/on-button ) #0008 ADD2 LDA2 JMP2
-	&no-win
+	}
 	POP2
 
 BRK
@@ -73,24 +73,24 @@ BRK
 	[ LIT2 00 -Mouse/state ] DEI NEQ #41 ADD ;cursor-icn <update-cursor>
 
 
-	( handle drag )
+	( | handle drag )
 	.drag LDZ #ff NEQ ?on-drag
 	.Mouse/state DEI .Controller/button DEI #0102 EQU2 ?on-drag-start
 
-	( pick window )
-	.Mouse/state DEI #00 EQU ?&no-touch-win
+	( | pick window )
+	.Mouse/state DEI #00 EQU ?{
 		.Mouse/x DEI2 .Mouse/y DEI2 ;pick-win JSR2
 		DUP #ff EQU ?touch-desktop
 		DUP ;sel-win JSR2
-		( pick dragbar )
+		( | pick dragbar )
 		( win ) ;get-win JSR2
 		( win/y ) INC2 INC2 LDA2
 			.Mouse/y DEI2 SWP2 SUB2 #000a GTH2 ?&no-bar
 			;set-drag JSR2
 			&no-bar
-		&no-touch-win
+		}
 
-	( send mouse to active win )
+	( | send mouse to active win )
 	.Mouse/x DEI2 .Mouse/y DEI2 ;get-active-win JSR2
 		DUP2 #ffff EQU2 ?&skip
 		ROT2k ROT2 ROT2 ;within-win JSR2 ?&send
@@ -109,10 +109,10 @@ BRK
 
 	POP
 	.Mouse/x DEI2 .Mouse/y DEI2 ;pick-icon JSR2 ;sel-icon JSR2
-	.Mouse/state DEI #02 LTH ?&no-launch
+	.Mouse/state DEI #02 LTH ?{
 		;go-file JSR2
-		&no-launch
-	#00 .Mouse/state DEO
+		}
+	[ LIT2 00 -Mouse/state ] DEO
 
 BRK
 
@@ -164,11 +164,11 @@ BRK
 
 @on-drag-start ( -> )
 
-	.Mouse/x DEI2 .Mouse/y DEI2 pick-win DUP #ff EQU ?&no-win
+	.Mouse/x DEI2 .Mouse/y DEI2 pick-win DUP #ff EQU ?{
 		sel-win set-drag
 
 BRK
-	&no-win BRK
+	} BRK
 
 @set-drag ( -- )
 
@@ -198,7 +198,7 @@ JMP2r
 
 	,&y STR2 ,&x STR2
 	#00 .length LDZ DUP #00 EQU ?&skip
-	&loop
+	&loop ( -- )
 		DUP #01 SUB get-win [ LIT2 &x $2 ] [ LIT2 &y $2 ] ROT2 ,within-win JSR ?&found
 		#01 SUB LTHk ?&loop
 		&skip
@@ -224,7 +224,7 @@ JMP2r
 
 	,&a STR2
 	.length LDZ #00
-	&loop
+	&loop ( -- )
 		( win ) DUP get-win
 		( win/app ) #0006 ADD2 LDA2 [ LIT2 &a $2 ] EQU2 ?&found
 		INC GTHk ?&loop
@@ -251,7 +251,7 @@ JMP2
 	;buf/form scpy
 	DUP2 ;app-form/action STA2
 		;app-form #1808 #0000 DUP2 add-win
-	;center-win ( .. )
+	;center-win 
 
 JMP2
 
@@ -261,7 +261,7 @@ JMP2
 	;app-option/target STA2
 	DUP2 ;app-option/action STA2
 		;app-option #1807 #0000 DUP2 add-win
-	;center-win ( .. )
+	;center-win 
 
 JMP2
 
@@ -274,13 +274,13 @@ JMP2
 	STH2kr STA2 INCr INCr
 	STH2r STA2
 
-	( init vector )
+	( | init vector )
 	.length LDZ get-win
 		( win/app ) DUP2 #0006 ADD2 LDA2
 		( win/app/on-init ) INC2 INC2 LDA2 JSR2
 
 	.length LDZk INC SWP STZ
-	.length LDZ #01 SUB
+	.length LDZ #01 SUB ( >> )
 
 @sel-win ( id -- )
 
@@ -289,12 +289,12 @@ JMP2
 
 	DUP ;get-win JSR2 #0010 SWP2 ;get-active-win JSR2 ;mswp JSR2
 
-	( draw menu )
+	( | draw menu )
 	;get-active-win JSR2
 		DUP2 <draw-win> 
 		#0006 ADD2 LDA2
 
-	( get manifest )
+	( | get manifest )
 	LDA2 ;<draw-menu>/manifest STA2
 
 	<draw-menu-bg>
@@ -307,9 +307,9 @@ JMP2r
 
 @close-win ( -- )
 
-	.length LDZ ?&continue
+	.length LDZ ?{
 		( nothing to close ) JMP2r
-		&continue
+	}
 
 	;get-active-win JSR2
 		( win/mem-ptr ) #000a ADD2 LDA2k SWP2
@@ -319,18 +319,18 @@ JMP2r
 
 	.length LDZk #01 SUB SWP STZ
 	;sel-desktop JSR2
-	;draw-desktop ( .. )
+	;draw-desktop 
 
 JMP2
 
 @sel-desktop ( -- )
 
-	.sel/win LDZ #ff EQU ?&skip
+	.sel/win LDZ #ff EQU ?{
 		;manifest ;<draw-menu>/manifest STA2
 		<draw-menu-bg>
 		<draw-menu> 
 		#ff .sel/win STZ
-		&skip
+		}
 
 JMP2r
 
@@ -339,7 +339,7 @@ JMP2r
 	.Screen/height DEI2 #000a SUB2
 		( win/y ) ;get-active-win JSR2 INC2 INC2 STA2
 	;sel-desktop JSR2
-	;draw-desktop ( .. )
+	;draw-desktop 
 
 JMP2
 
