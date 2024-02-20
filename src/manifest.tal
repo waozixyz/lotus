@@ -9,7 +9,7 @@
 @on-mouse-menu ( -> )
 	[ LIT2 00 -Mouse/state ] DEI NEQ #41 ADD ;hand-icn <update-cursor>
 	( | when touch cat )
-	.Mouse/state DEI #00 EQU ?&no-touch-cat
+	[ LIT2 00 -Mouse/state ] DEI EQU ?&no-touch-cat
 	.Mouse/y DEI2 #000c GTH2 ?&no-touch-cat
 	.Mouse/x DEI2 .Screen/width DEI2 #0098 SUB2 GTH2 ?on-touch-clock
 	.Mouse/x DEI2 get-xcat <menu-select>
@@ -23,19 +23,19 @@
 			;<draw-menu>/sel LDA #ff <draw-sub> }
 		POP
 		( | when touch sub )
-		.Mouse/state DEI #00 EQU ?{
+		[ LIT2 00 -Mouse/state ] DEI EQU ?{
 			;<draw-sub>/sel LDA <menu-select-sub>
 			[ LIT2 00 -Mouse/state ] DEO }
 		BRK
 	&no-sub ( -- )
-		;<draw-menu>/sel LDA #ff NEQ ?&no-leave
+		;<draw-menu>/sel LDA INC ?&no-leave
 		.Mouse/y DEI2 #000c LTH2 ?&no-leave
 		<menu-close>
 		&no-leave BRK
 
 @on-touch-clock ( -> )
 	( | unique )
-	;app-calendar find-win DUP #ff NEQ ?&reselect
+	;app-calendar find-win INCk ?&reselect
 	POP
 	( | create window )
 	;no-name ;app-calendar #1c10
@@ -82,7 +82,7 @@
 
 @get-cat ( cat -- cat* )
 	STH
-	#00 ,&id STR
+	[ LIT2 00 _&id ] STR
 	;<draw-menu>/manifest LDA2
 	&cat ( -- )
 		[ LIT &id 00 ] STHkr EQU ?&end
@@ -103,11 +103,11 @@
 	&end POP2 INC2 INC2 LDA2 POPr JMP2r
 
 @get-catx ( cat -- x* )
-	LIT2r 0000 ,&target STR
-	#00 ,&id STR
-	;<draw-menu>/manifest LDA2
+	,&target STR
+	[ LIT2 00 _&id ] STR
+	[ LIT2r 0000 ] ;<draw-menu>/manifest LDA2
 	&cat ( -- )
-		[ LIT &id 00 ] [ LIT &target $1 ] EQU ?&end
+		[ LIT2 &id $1 &target $1 ] EQU ?&end
 		INC2k get-strw #0008 ADD2 STH2
 		ADD2r skip-sub ,&id LDR INC ,&id STR
 		LDAk ?&cat
@@ -115,7 +115,7 @@
 
 @get-xcat ( x* -- <cat> )
 	#0010 SUB2 LIT2r 0000 ,&target STR2
-	#00 ,&id STR
+	[ LIT2 00 _&id ] STR
 	;<draw-menu>/manifest LDA2
 	&cat ( -- )
 		INC2k get-strw #0008 ADD2 STH2r ADD2 DUP2 [ LIT2 &target $2 ] LTH2 ?{
@@ -164,7 +164,7 @@
 	DUP #00 NEQ STHr #00 NEQ #0101 NEQ2 ?{
 		LIT "+ ;&buf sput }
 	( | key )
-	DUP #08 NEQ ?{ ;&bsp !&cat  }
+	DUP #08 NEQ ?{ ;&bsp !&cat }
 	DUP #09 NEQ ?{ ;&tab !&cat }
 	DUP #0d NEQ ?{ ;&ent !&cat }
 	DUP #20 NEQ ?{ ;&spc !&cat }
@@ -187,11 +187,12 @@
 @<draw-menu> ( mask -- )
 	#0010 .Screen/x DEO2
 	#0004 .Screen/y DEO2
-	#00 ,&id STR
+	[ LIT2 00 _&id ] STR
 	[ LIT2 &manifest =manifest ]
 	&cat ( -- )
-		#0b0a [ LIT &sel ff ] [ LIT &id $1 ] EQU [ JMP SWP POP ] ;<draw-chr>/color STA
-		INC2k draw-str POP2 #20 <draw-chr> skip-sub ,&id LDR INC ,&id STR
+		#0b0a [ LIT2 &sel ff &id $1 ] EQU [ JMP SWP POP ] ;<draw-chr>/color STA
+		INC2k draw-str POP2 #20 <draw-chr>
+		skip-sub ,&id LDR INC ,&id STR
 		LDAk ?&cat
 	POP2 JMP2r
 
@@ -210,7 +211,7 @@
 	POP2 POP2 &skip POP2 JMP2r
 
 @<draw-label> ( label* -- next-label* )
-	.Screen/x DEI2 .Screen/y DEI2 .Screen/auto DEI #f2 .Screen/auto DEO
+	.Screen/x DEI2 .Screen/y DEI2 .Screen/auto DEI [ LIT2 f2 -Screen/auto ] DEO
 	;blank-icn .Screen/addr DEO2
 	;<draw-chr>/color LDA .Screen/sprite DEO
 	.Screen/auto DEO
@@ -254,29 +255,26 @@
 @|stdlib )
 
 @scap ( str* -- end* )
-	LDAk #00 NEQ JMP
-	JMP2r
-	&w ( -- )
-		INC2 LDAk ?&w
+	INC2 & LDAk ?scap
 	JMP2r
 
 @spop ( str* -- )
 	LDAk ?&n
 	POP2 JMP2r
 	&n ( -- )
-		scap #0001 SUB2 #00 ROT ROT STA
+		scap/ #0001 SUB2 #00 ROT ROT STA
 		JMP2r
 
 @sput ( chr str* -- )
-	scap INC2k #00 ROT ROT STA
+	scap/ INC2k #00 ROT ROT STA
 	STA
 	JMP2r
 
 @slen ( str* -- len* )
-	DUP2 scap SWP2 SUB2 JMP2r
+	DUP2 scap/ SWP2 SUB2 JMP2r
 
 @scat ( src* dst* -- )
-	scap
+	scap/
 
 @scpy ( src* dst* -- )
 	STH2

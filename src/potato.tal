@@ -138,7 +138,7 @@
 @pop-dir ( path* -- )
 	has-active-paths ?{
 		;dir ;dict/home-ext scmp ?&skip
-		;dir DUP2 scap
+		;dir DUP2 scap/
 		&l ( -- )
 			LDAk LIT "/ EQU ?{
 				#0001 SUB2 LTH2k ?&l }
@@ -289,7 +289,7 @@
 	JMP2r
 
 @read-pict-size ( filename* -- size* )
-	scap #0009 SUB2 read-size ORAk ?&continue
+	scap/ #0009 SUB2 read-size ORAk ?&continue
 	POP2 #1010 &continue JMP2r
 
 @read-size ( 00x00* -- w h )
@@ -315,7 +315,7 @@
 	LITr 00 ;buf/dir &w #00 STHk2r SWP DIV #00a0 MUL2 #0010 ADD2 .Screen/x DEO2
 	#00 STHk2r SWP
 	( MOD ) [ DIVk MUL SUB ] #0018 MUL2 #0018 ADD2 .Screen/y DEO2
-	DUP2 draw-item-icon DUP2 STHkr draw-item-text scap INCr INC2 LDAk ?&w
+	DUP2 draw-item-icon DUP2 STHkr draw-item-text scap/ INCr INC2 LDAk ?&w
 	POP2 POP2r
 	( | draw windows )
 	.length LDZ #00 EQUk ?&no-win
@@ -937,7 +937,7 @@
 	SWP2 get-ext !scmp
 
 @get-ext ( str* -- ext* )
-	scap #0004 SUB2 JMP2r
+	scap/ #0004 SUB2 JMP2r
 
 (
 @|metadata )

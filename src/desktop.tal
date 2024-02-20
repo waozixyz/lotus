@@ -306,7 +306,7 @@
 @desk-len ( -- len )
 	LITr 00 ;buf/dir
 	&w ( -- )
-		scap INCr INC2 LDAk ?&w
+		scap/ INCr INC2 LDAk ?&w
 	POP2 STHr #01 SUB JMP2r
 
 @get-sel-file ( -- file*|ffff )
@@ -315,7 +315,7 @@
 @get-file ( id -- file*|ffff )
 	STH
 	LITr 00 ;buf/dir &w EQUkr STHr ?&found
-	scap INCr INC2 LDAk ?&w
+	scap/ INCr INC2 LDAk ?&w
 	POP2 POP2r #ffff JMP2r
 	&found POP2r JMP2r
 
@@ -337,7 +337,7 @@
 @find-name ( name* -- id|ff )
 	,&t STR2
 	LITr 00 ;buf/dir &w #0005 ADD2 DUP2 [ LIT2 &t $2 ] scmp ?&found
-	scap INCr INC2 LDAk ?&w
+	scap/ INCr INC2 LDAk ?&w
 	POP2 POPr #ff JMP2r
 	&found POP2 STHr JMP2r
 
