@@ -921,19 +921,16 @@
 	JMP2r
 
 @<save-theme> ( -- )
-	;dict/theme-ext make-src .File/name DEO2
-	#0002 .File/length DEO2
-	( r ) .System/r DEI2 <save-theme>/w
-	( g ) .System/g DEI2 <save-theme>/w
-	( b ) .System/b DEI2 <save-theme>/w
+	;dict/theme-ext .File/name DEO2
 	#0010 .File/length DEO2
-	;patt-chr .File/write DEO2
+	( r ) .System/r DEI2 ,&r STR2
+	( g ) .System/g DEI2 ,&g STR2
+	( b ) .System/b DEI2 ,&b STR2
+	;&theme .File/write DEO2
+	;assets-chr-end ;assets-chr SUB2 .File/length DEO2
+	;assets-chr .File/write DEO2
 	!<draw-desktop>
-	&w ( -- )
-		,&b STR2
-		;&b .File/write DEO2
-		JMP2r
-		&b $2
+	&theme [ &r $2 &g $2 &b $2 ]
 
 @no-name $1
 

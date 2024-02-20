@@ -212,9 +212,8 @@
 		( > ) 00 "2 =select-color/1 "Color1 $1
 		( > ) 00 "3 =select-color/2 "Color2 $1
 		( > ) 00 "4 =select-color/3 "Color3 $1
-		04 "Goto $1
+		03 "Goto $1
 		( > ) 00 00 =app-tile/goto-pattern "Pattern $1
-		( > ) 00 00 =app-tile/goto-font "Font $1
 		( > ) 00 00 =app-tile/goto-window "Window $1
 		( > ) 00 00 =app-tile/goto-icons "Icons $1
 		$1
@@ -250,8 +249,6 @@
 		;paint-patt/addr LDA2 #0010 mclr !<draw-desktop>
 	&goto-pattern ( -- )
 		;patt-chr !&sel-tile
-	&goto-font ( -- )
-		;font/visible !&sel-tile
 	&goto-window ( -- )
 		;frame1-chr !&sel-tile
 	&goto-icons ( -- )

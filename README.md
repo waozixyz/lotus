@@ -33,10 +33,12 @@ Since this is designed to be used principally on a handheld devices without a wi
 - Text Reader scrollbar
 - Hex Viewer
 - Screensaver
+- Wallpaper
 - Throw error when windows count is > #10
 - Windows names shouldn't leave window bar bounds
 - Throw error when dir is longer than $400
 - Fade animation when launching rom
+- Load OS theme file
 
 ## Support
 
