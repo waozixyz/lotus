@@ -190,8 +190,8 @@
 	#00 ,&id STR
 	[ LIT2 &manifest =manifest ]
 	&cat ( -- )
-		#0b0a [ LIT &sel ff ] [ LIT &id $1 ] EQU [ JMP SWP POP ] ;draw-chr/color STA
-		INC2k draw-str POP2 #20 draw-chr skip-sub ,&id LDR INC ,&id STR
+		#0b0a [ LIT &sel ff ] [ LIT &id $1 ] EQU [ JMP SWP POP ] ;<draw-chr>/color STA
+		INC2k draw-str POP2 #20 <draw-chr> skip-sub ,&id LDR INC ,&id STR
 		LDAk ?&cat
 	POP2 JMP2r
 
@@ -202,7 +202,7 @@
 	LDAk STH
 	INC2 skip-str/ STHr #00
 	&subcat ( -- )
-		STHk #030b STHr [ LIT &sel ff ] EQU [ JMP SWP POP ] [ LIT &mask $1 ] AND ;draw-chr/color STA
+		STHk #030b STHr [ LIT &sel ff ] EQU [ JMP SWP POP ] [ LIT &mask $1 ] AND ;<draw-chr>/color STA
 		[ LIT2 &anchor $2 ] .Screen/x DEO2
 		#00 OVR INC #30 SFT2 #0004 ADD2 .Screen/y DEO2
 		SWP2 <draw-label>
@@ -212,7 +212,7 @@
 @<draw-label> ( label* -- next-label* )
 	.Screen/x DEI2 .Screen/y DEI2 .Screen/auto DEI #f2 .Screen/auto DEO
 	;blank-icn .Screen/addr DEO2
-	;draw-chr/color LDA .Screen/sprite DEO
+	;<draw-chr>/color LDA .Screen/sprite DEO
 	.Screen/auto DEO
 	.Screen/y DEO2
 	( | mod )

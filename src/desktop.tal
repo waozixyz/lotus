@@ -131,7 +131,7 @@
 	,&x STR2
 	#00 .length LDZ DUP #00 EQU ?&skip
 	&loop ( -- )
-		DUP #01 SUB get-win [ LIT2 &x $2 ] [ LIT2 &y $2 ] ROT2 ,within-win JSR ?&found
+		DUP #01 SUB get-win [ LIT2 &x $2 ] [ LIT2 &y $2 ] ROT2 within-win ?&found
 		#01 SUB LTHk ?&loop
 	&skip POP2 #ff JMP2r
 	&found NIP #01 SUB JMP2r
@@ -165,13 +165,13 @@
 @add-form ( action* target* callback* -- )
 	;app-form/callback STA2
 	;buf/form scpy DUP2 ;app-form/action STA2
-	;app-form #1808 #0000 DUP2 add-win ;center-win JMP2
+	;app-form #1808 #0000 DUP2 add-win !center-win
 
 @add-option ( action* target* callback* -- )
 	;app-option/callback STA2
 	;app-option/target STA2
 	DUP2 ;app-option/action STA2
-	;app-option #1807 #0000 DUP2 add-win ;center-win JMP2
+	;app-option #1807 #0000 DUP2 add-win !center-win
 
 @add-win ( name* app* h w y* x* -- )
 	.length LDZ #40 SFT #00 SWP ;windows ADD2 STH2k STA2
@@ -189,9 +189,9 @@
 @sel-win ( id -- )
 	DUP #ff EQU ?&desktop
 	DUP .sel/win LDZ EQU ?&unchanged
-	DUP ;get-win JSR2 #0010 SWP2 ;get-active-win JSR2 ;mswp JSR2
+	DUP get-win #0010 SWP2 get-active-win mswp
 	( | draw menu )
-	;get-active-win JSR2 DUP2 <draw-win>
+	get-active-win DUP2 <draw-win>
 	#0006 ADD2 LDA2
 	( | get manifest )
 	LDA2 ;<draw-menu>/manifest STA2
@@ -199,7 +199,7 @@
 	<draw-menu>
 	.sel/win STZ
 	JMP2r
-	&desktop POP ;sel-desktop JMP2
+	&desktop POP !sel-desktop
 	&unchanged POP JMP2r
 
 @close-win ( -- )
@@ -219,16 +219,16 @@
 
 @tab-win ( -- )
 	.Screen/height DEI2 #000a SUB2
-	( win/y ) ;get-active-win JSR2 INC2 INC2 STA2
-	;sel-desktop JSR2 ;<draw-desktop> JMP2
+	( win/y ) get-active-win INC2 INC2 STA2
+	sel-desktop !<draw-desktop>
 
 @expand-win ( -- )
 	#0018
-	( win/y ) ;get-active-win JSR2 INC2 INC2 STA2
+	( win/y ) get-active-win INC2 INC2 STA2
 	!<draw-desktop>
 
 @center-win ( -- )
-	;get-active-win JSR2 STH2k
+	get-active-win STH2k
 	( /w ) #0004 ADD2
 	( -x ) LDAk #00 SWP #31 SFT2 .Screen/width DEI2 #01 SFT2 SWP2 SUB2 STH2kr STA2
 	( /h ) INC2 INC2r INC2r
@@ -239,25 +239,25 @@
 @|open-as )
 
 @open-as-meta ( -- )
-	;open-meta ;open-as JMP2
+	;open-meta !open-as
 
 @open-as-text ( -- )
-	;open-text ,open-as JMP
+	;open-text !open-as
 
 @open-as-pict ( -- )
-	;open-pict ,open-as JMP
+	;open-pict !open-as
 
 @open-as-font ( -- )
-	;open-font ,open-as JMP
+	;open-font !open-as
 
 @open-as-sound ( -- )
-	;open-sound ,open-as JMP
+	;open-sound !open-as
 
 @open-as ( routine* -- )
-	;get-sel-file JSR2 LDAk LIT "- EQU ?&invalid
+	get-sel-file LDAk LIT "- EQU ?&invalid
 	LDAk LIT "? EQU ?&invalid
 	( run routine ) SWP2 JSR2 !center-win
-	&invalid NIP2 #0005 ADD2 ;dict/open SWP2 ;add-err JMP2
+	&invalid NIP2 #0005 ADD2 ;dict/open SWP2 !add-err
 
 (
 @|go )
@@ -265,13 +265,13 @@
 @go-active ( -- )
 	.length LDZ DUP ?&valid
 	POP JMP2r
-	&valid #01 SUB ;sel-win JMP2
+	&valid #01 SUB !sel-win
 
 @go-home ( -- )
 	;dict/parent-ext !push-dir
 
 @go-file ( -- )
-	;get-sel-file JSR2 !open-file
+	get-sel-file !open-file
 
 (
 @|icon-picking )
@@ -284,28 +284,29 @@
 	.Screen/height DEI2 #0018 SUB2 #0018 DIV2 NIP JMP2r
 
 @sel-left ( -- )
-	;draw-item-text/sel LDA ,get-rows JSR SUB ,<sel-icon> JMP
+	;draw-item-text/sel LDA ,get-rows JSR SUB !<sel-icon>
 
 @sel-right ( -- )
-	;draw-item-text/sel LDA ,get-rows JSR ADD ,<sel-icon> JMP
+	;draw-item-text/sel LDA ,get-rows JSR ADD !<sel-icon>
 
 @sel-up ( -- )
-	;draw-item-text/sel LDA #01 SUB ,<sel-icon> JMP
+	;draw-item-text/sel LDA #01 SUB !<sel-icon>
 
 @sel-down ( -- )
-	;draw-item-text/sel LDA INC ,<sel-icon> JMP
+	;draw-item-text/sel LDA INC !<sel-icon>
 
 @<sel-icon> ( id -- )
 	( min ) DUP #80 LTH ?&min-ok
 	POP #00
 	&min-ok ( max )
 		,desk-len JSR LTHk [ JMP SWP POP ] ;draw-item-text/sel STA
-		;<draw-desktop> JSR2 !sel-desktop
+		<draw-desktop>
+		!sel-desktop
 
 @desk-len ( -- len )
 	LITr 00 ;buf/dir
 	&w ( -- )
-		;scap JSR2 INCr INC2 LDAk ?&w
+		scap INCr INC2 LDAk ?&w
 	POP2 STHr #01 SUB JMP2r
 
 @get-sel-file ( -- file*|ffff )
@@ -314,7 +315,7 @@
 @get-file ( id -- file*|ffff )
 	STH
 	LITr 00 ;buf/dir &w EQUkr STHr ?&found
-	;scap JSR2 INCr INC2 LDAk ?&w
+	scap INCr INC2 LDAk ?&w
 	POP2 POP2r #ffff JMP2r
 	&found POP2r JMP2r
 
@@ -336,7 +337,7 @@
 @find-name ( name* -- id|ff )
 	,&t STR2
 	LITr 00 ;buf/dir &w #0005 ADD2 DUP2 [ LIT2 &t $2 ] scmp ?&found
-	;scap JSR2 INCr INC2 LDAk ?&w
+	scap INCr INC2 LDAk ?&w
 	POP2 POPr #ff JMP2r
 	&found POP2 STHr JMP2r
 
@@ -348,15 +349,21 @@
 @draw-clock ( -- )
 	#01 .Screen/auto DEO
 	#0004 .Screen/y DEO2
-	#0c ;draw-chr/color STA
+	#0c ;<draw-chr>/color STA
 	.Screen/width DEI2 #0098 SUB2 #00 .DateTime/day DEI #0a LTH #30 SFT2 ADD2 .Screen/x DEO2
-	#00 .DateTime/dotw DEI #20 SFT ;dict/dotw ADD2 <draw-text>  LIT ", ;draw-chr JSR2 #20 ;draw-chr JSR2 #00 .DateTime/day DEI <draw-dec>
-	#20 ;draw-chr JSR2 #00 .DateTime/month DEI #20 SFT ;dict/months ADD2 <draw-text>  #20 ;draw-chr JSR2 .DateTime/hour DEI ,&d JSR LIT ": ;draw-chr JSR2 .DateTime/minute DEI DUP ;update-clock/last STA
-	,&d
-	( .. ) JMP
+	#00 .DateTime/dotw DEI #20 SFT ;dict/dotw ADD2 <draw-text>
+	LIT ", <draw-chr>
+	#20 <draw-chr>
+	#00 .DateTime/day DEI <draw-dec>
+	#20 <draw-chr>
+	#00 .DateTime/month DEI #20 SFT ;dict/months ADD2 <draw-text>
+	#20 <draw-chr>
+	.DateTime/hour DEI ,&d JSR LIT ": <draw-chr>
+	.DateTime/minute DEI DUP ;update-clock/last STA
+	!&d
 	&d DUP #0a DIV ,&c JSR #0a
 	( MOD ) [ DIVk MUL SUB ]
-	&c #30 ADD ;draw-chr JMP2
+	&c #30 ADD !<draw-chr>
 
 @size-desktop-end
 

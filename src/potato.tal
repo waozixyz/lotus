@@ -349,7 +349,7 @@
 	( app ) LDA2k DUP2 ,&app STR2
 	( app/name ) LDA2 INC2 #05 <draw-text-color>
 	INC2 INC2
-	( space ) #20 draw-chr
+	( space ) #20 <draw-chr>
 	( win/name ) LDA2 #0a <draw-text-color>
 	( body )
 	( x ) [ LIT2 &x $2 ] #0008 ADD2 .Screen/x DEO2
@@ -521,9 +521,10 @@
 	[ LIT 0a ] <draw-text-color>
 	STH2r #0020 ADD2 .Screen/x DEO2
 	.Screen/y DEI2k #0009 ADD2 ROT DEO2
-	[ LIT 05 ] ;draw-chr/color STA
+	[ LIT 05 ] ;<draw-chr>/color STA
 	<draw-dec>
-	#20 draw-chr ;dict/bytes !<draw-text>
+	#20 <draw-chr>
+	;dict/bytes !<draw-text>
 
 @draw-item-icon ( file* -- file* )
 	LDAk LIT "- EQU ?&folder
@@ -544,16 +545,18 @@
 	&source POP2 ;icons/source !<draw-icon>
 
 @draw-item-text ( file* id -- file* )
-	[ LIT &sel 00 ] EQU #09 MUL INC INC ;draw-chr/color STA
+	[ LIT &sel 00 ] EQU #09 MUL INC INC ;<draw-chr>/color STA
 	LDAk LIT "- EQU ?&no-size
 	LDAk LIT "? EQU ?&no-size
 	.Screen/x DEI2k #0020 ADD2 STH2k ROT DEO2
 	.Screen/y DEI2k #0014 SUB2 ROT DEO2
-	#0005 ADD2 <draw-text> STH2r .Screen/x DEO2
+	#0005 ADD2 <draw-text>
+	STH2r .Screen/x DEO2
 	.Screen/y DEI2k #0009 ADD2 ROT DEO2
-	#01 ;draw-chr/color STA
+	#01 ;<draw-chr>/color STA
 	DUP2 ;&buf #0004 mcpy ;&buf shex <draw-dec>
-	#20 draw-chr ;dict/bytes !<draw-text>
+	#20 <draw-chr>
+	;dict/bytes !<draw-text>
 	&buf $5
 	&no-size .Screen/y DEI2k #0010 SUB2 ROT DEO2
 	.Screen/x DEI2k #0020 ADD2 ROT DEO2
@@ -630,7 +633,8 @@
 	JMP2r
 
 @draw-slider ( value name* -- )
-	( TODO: Add name and write value ) .Screen/x DEI2 SWP2 <draw-text> .Screen/x DEO2
+	( TODO: Add name and write value ) .Screen/x DEI2 SWP2 <draw-text>
+	.Screen/x DEO2
 	draw-lb [ LIT2 00 -Screen/auto ] DEO
 	STH
 	#1000
@@ -719,10 +723,11 @@
 	#03e8 <draw-dec>/parse
 	#0064 <draw-dec>/parse
 	#000a <draw-dec>/parse
-	NIP #30 ADD !draw-chr
+	NIP #30 ADD !<draw-chr>
 	&parse ( -- )
 		DIV2k DUPk [ LIT &z $1 ] EQU ?&skip
-		DUP #30 ADD draw-chr [ LIT2 ff _&z ] STR
+		DUP #30 ADD <draw-chr>
+		[ LIT2 ff _&z ] STR
 		&skip POP MUL2 SUB2 JMP2r
 
 @get-strw ( str* -- width* )
@@ -736,11 +741,12 @@
 	LDAk #00 EQU ?&skip
 	[ LIT2 01 -Screen/auto ] DEO
 	&w ( -- )
-		LDAk draw-chr INC2 LDAk ?&w
+		LDAk <draw-chr>
+		INC2 LDAk ?&w
 	&skip INC2 JMP2r
 
 @<draw-text-color> ( str* color -- )
-	;draw-chr/color STA
+	;<draw-chr>/color STA
 	( >> )
 
 @<draw-text> ( str* -- )
@@ -751,7 +757,8 @@
 	[ LIT2 01 -Screen/auto ] DEO
 	&w ( -- )
 		LDAk #00 EQU ?&end
-		LDAk draw-chr INC2 LDAk #0a NEQ ?&w
+		LDAk <draw-chr>
+		INC2 LDAk #0a NEQ ?&w
 	&end INC2 [ LIT2 &x $2 ] .Screen/x DEO2
 
 @draw-lb ( -- )
@@ -770,7 +777,7 @@
 	#0f AND DUP #09 GTH #07 MUL ADD #30 ADD
 	( >> )
 
-@draw-chr ( char -- )
+@<draw-chr> ( char -- )
 	#00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
 	[ LIT2 &color 03 -Screen/sprite ] DEO
 	JMP2r

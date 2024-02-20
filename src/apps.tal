@@ -26,9 +26,9 @@
 	LDA2k #0008 ADD2 .Screen/x DEO2 POP2
 	.Screen/y DEI2k #000c ADD2 ROT DEO2
 	;mem .bounds LDZ2 ADD2 <draw-dec>
-	LIT "/ draw-chr
+	LIT "/ <draw-chr>
 	;&full <draw-text>
-	#20 draw-chr
+	#20 <draw-chr>
 	;dict/bytes <draw-text>
 
 	DUP2
@@ -135,7 +135,7 @@ JMP2r
 	&lw ( -- )
 		#00 OVR #50 SFT2 OVR2r STH2r ADD2 #0008 SUB2 .Screen/x DEO2
 		DUP .DateTime/dotw DEI EQU [ LIT &is-month $1 ] AND STH
-		#050c STHr [ JMP SWP POP ] ;draw-chr/color STA
+		#050c STHr [ JMP SWP POP ] ;<draw-chr>/color STA
 		#00 OVR #20 SFT2 ;dict/dotw ADD2 <draw-text> INC GTHk ?&lw
 	POP2
 	( | days ) LIT2r 0010 ADD2r #2a00
@@ -145,7 +145,7 @@ JMP2r
 		DUP [ LIT &offset $1 ] SUB DUP #80 GTH ?&skip
 		INCk .year LDZ2 .month LDZ diam GTH ?&skip
 		STHk .year LDZ2 .month LDZ STHr INC is-today STH
-		#0c0e STHr [ JMP SWP POP ] ;draw-chr/color STA
+		#0c0e STHr [ JMP SWP POP ] ;<draw-chr>/color STA
 		#00 OVR INC <draw-dec>
 		&skip POP INC GTHk ?&l
 	POP2 POP2r POP2r JMP2r
@@ -527,7 +527,7 @@ JMP2r
 	DUP2 ( win/size ) #0004 ADD2 LDA2
 		( x2 ) #00 ROT #02 SUB #30 SFT2 .Screen/x DEI2 ADD2 ,&bound-x STR2
 		( y2 ) #00 SWP #03 SUB #30 SFT2 .Screen/y DEI2 ADD2 ,&bound-y STR2
-	#0e ;draw-chr/color STA
+	#0e ;<draw-chr>/color STA
 
 	DUP2 ( win/scroll ) #000e ADD2 LDA2
 	OVR2 ( win/mem-ptr ) #000a ADD2 LDA2 find-line
@@ -539,14 +539,14 @@ JMP2r
 			,&resume JMP
 			&no-lb
 		DUP2 wlen #30 SFT2 .Screen/x DEI2 ADD2 [ LIT2 &bound-x $2 ] LTH2 ,&no-wrap JCN
-			#0c ;draw-chr/color STA
-			#0b draw-chr
+			#0c ;<draw-chr>/color STA
+			#0b <draw-chr>
 			,&anchor LDR2 .Screen/x DEO2
 			.Screen/y DEI2k #0008 ADD2 ROT DEO2
-			#06 draw-chr
-			#0e ;draw-chr/color STA
+			#06 <draw-chr>
+			#0e ;<draw-chr>/color STA
 			&no-wrap
-		LDAk draw-chr
+		LDAk <draw-chr>
 		&resume
 		INC2 LDAk ,&w JCN
 	&end
