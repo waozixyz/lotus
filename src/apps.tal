@@ -664,7 +664,7 @@
 	=&on-button ]
 	&manifest ( * )
 		01 "Error $1
-		( > ) 42 00 =close-win "Cancel $1
+		( > ) 42 00 =close-win "Ok $1
 		$1
 	&on-draw ( win* -- )
 		POP2 ;&invalid-txt draw-line POP2 draw-lb [ LIT2 &target $2 ] draw-line POP2 draw-lb .Screen/x DEI2k #0030 ADD2 ROT DEO2
@@ -694,9 +694,10 @@
 	( > ) 42 00 =close-win "Close $1
 	$1
 
-@app-void
-	=void-manifest =void-init =void-draw =void-mouse =void-button
-	( defaults )
+@app-void [
+	=void-manifest =void-init
+	=void-draw =void-mouse
+	=void-button ]
 
 @void-init ( win* -- )
 	POP2 JMP2r
