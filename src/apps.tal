@@ -47,7 +47,7 @@
 		STH2kr LDA2 SUB2 INC2r INC2r
 		STH2kr LDA2 INC2r INC2r
 		STH2r LDA2 draw-icon-size
-		INC GTHk ,&loop JCN
+		INC GTHk ?&loop
 	POP2
 
 JMP2r
@@ -103,7 +103,7 @@ JMP2r
 &select-prev ( -- )
 
 	.month LDZ
-		DUP ,&no-jan JCN
+		DUP ?&no-jan
 			.year LDZ2k #0001 SUB2 ROT STZ2
 			POP #0b .year LDZ2 ROT !app-calendar/select-month
 	&no-jan
@@ -112,7 +112,7 @@ JMP2r
 &select-next ( -- )
 
 	.month LDZ
-		DUP #0b NEQ ,&no-dec JCN
+		DUP #0b NEQ ?&no-dec
 			.year LDZ2k INC2 ROT STZ2
 			POP #00 .year LDZ2 ROT !app-calendar/select-month
 		&no-dec
@@ -172,26 +172,26 @@ JMP2r
 
 &on-mouse ( x* y* win* -> )
 
-	.Mouse/state DEI ,&on-click JCN
+	.Mouse/state DEI ?&on-click
 		POP2 POP2 POP2 BRK
 		&on-click
 
 	( win* ) POP2
 	#03 SFT2 NIP ROT ROT #02 SFT2 NIP SWP
-	OVR #0f GTH ,&skip JCN
-	DUP #01 NEQ ,&no-r JCN
+	OVR #0f GTH ?&skip
+	DUP #01 NEQ ?&no-r
 		OVR .System/r STHk ,&set-color JSR
 			STHr ,&set-nibble JSR
 		&no-r
-	DUP #04 NEQ ,&no-g JCN
+	DUP #04 NEQ ?&no-g
 		OVR .System/g STHk ,&set-color JSR
 			STHr ,&set-nibble JSR
 		&no-g
-	DUP #07 NEQ ,&no-b JCN
+	DUP #07 NEQ ?&no-b
 		OVR .System/b STHk ,&set-color JSR
 			STHr ,&set-nibble JSR
 		&no-b
-	DUP #09 NEQ ,&no-swatch JCN
+	DUP #09 NEQ ?&no-swatch
 		OVR #02 SFT select-color
 		#00 .Mouse/state DEO
 		&no-swatch
@@ -268,64 +268,30 @@ JMP2r
 		00 00 =app-tile/goto-icons "Icons $1
 	$1
 
-&on-draw ( win* -- )
-
-	POP2
-
-	.Screen/x DEI2 ,&x STR2
-	.Screen/y DEI2 ,&y STR2
-	;bigpixel-icn .Screen/addr DEO2
-	#4000
-	&v
-		#00 OVR #07 AND #30 SFT2 [ LIT2 &x $2 ] ADD2 .Screen/x DEO2
-		#00 OVR #33 SFT2 [ LIT2 &y $2 ] ADD2 .Screen/y DEO2
-		DUP ;paint-patt/addr LDA2 ROT get-chr
-		#8c ADD .Screen/sprite DEO
-		INC GTHk ,&v JCN
-	POP2
-
-	,&x LDR2 .Screen/x DEO2
-	.Screen/y DEI2k #0010 ADD2 ROT DEO2
-
-	( swatches )
-	draw-swatches
-
-	( addr )
-	#01 .Screen/auto DEO
-	;arrow-icns/h .Screen/addr DEO2
-	#0a .Screen/sprite DEO
-	#0f .Screen/sprite DEO
-	;paint-patt/addr LDA2 draw-short
-	#0f .Screen/sprite DEO
-	;arrow-icns/h .Screen/addr DEO2
-	#1a .Screen/sprite DEO
-
-JMP2r
-
 &on-mouse ( x* y* win* -> )
 
-	.Mouse/state DEI ,&on-click JCN
+	.Mouse/state DEI ?&on-click
 		POP2 POP2 POP2 BRK
 		&on-click
 	POP2
 	#03 SFT2 NIP ROT ROT #03 SFT2 NIP SWP
-	OVR #07 GTH ,&skip JCN
-	DUP #07 GTH ,&no-paint JCN
+	OVR #07 GTH ?&skip
+	DUP #07 GTH ?&no-paint
 		paint-patt BRK
 		&no-paint
-	DUP #09 NEQ ,&no-swatch JCN
+	DUP #09 NEQ ?&no-swatch
 		OVR #01 SFT select-color
 		#ffff ;paint-patt/last STA2
 		get-active-win <draw-win>
-		,&release JMP
+		!&release 
 		&no-swatch
-	DUP2 #000b NEQ2 ,&no-l JCN
+	DUP2 #000b NEQ2 ?&no-l
 		app-tile/prev-tile
-		,&release JMP
+		!&release 
 		&no-l
-	DUP2 #070b NEQ2 ,&no-r JCN
+	DUP2 #070b NEQ2 ?&no-r
 		app-tile/next-tile
-		,&release JMP
+		!&release 
 		&no-r
 	&skip
 	POP2
@@ -346,9 +312,9 @@ JMP2r
 	;dict/snarf-ext .File/name DEO2
 	#0010 .File/length DEO2
 	;patt-chr .File/read DEO2
-	;<draw-desktop> ( .. )
+	!<draw-desktop> 
 
-JMP2
+
 
 &prev-tile ( -- )
 
@@ -362,15 +328,11 @@ JMP2r
 
 &sel-tile ( addr* -- )
 
-	;paint-patt/addr STA2 ;<draw-desktop> ( .. )
-
-JMP2
+	;paint-patt/addr STA2 !<draw-desktop> 
 
 &clear-patt ( -- )
 
-	;paint-patt/addr LDA2 #0010 mclr ;<draw-desktop> ( .. )
-
-JMP2
+	;paint-patt/addr LDA2 #0010 mclr !<draw-desktop> 
 
 &goto-pattern ( -- )
 
@@ -396,9 +358,43 @@ JMP2r
 
 JMP2r
 
+@app-tile/on-draw ( win* -- )
+
+	POP2
+
+	.Screen/x DEI2 ,&x STR2
+	.Screen/y DEI2 ,&y STR2
+	;bigpixel-icn .Screen/addr DEO2
+	#4000
+	&v
+		#00 OVR #07 AND #30 SFT2 [ LIT2 &x $2 ] ADD2 .Screen/x DEO2
+		#00 OVR #33 SFT2 [ LIT2 &y $2 ] ADD2 .Screen/y DEO2
+		DUP ;paint-patt/addr LDA2 ROT get-chr
+		#8c ADD .Screen/sprite DEO
+		INC GTHk ?&v
+	POP2
+
+	,&x LDR2 .Screen/x DEO2
+	.Screen/y DEI2k #0010 ADD2 ROT DEO2
+
+	( swatches )
+	draw-swatches
+
+	( addr )
+	#01 .Screen/auto DEO
+	;arrow-icns/h .Screen/addr DEO2
+	#0a .Screen/sprite DEO
+	#0f .Screen/sprite DEO
+	;paint-patt/addr LDA2 draw-short
+	#0f .Screen/sprite DEO
+	;arrow-icns/h .Screen/addr DEO2
+	#1a .Screen/sprite DEO
+
+JMP2r
+
 @paint-patt ( x y -- )
 
-	DUP2 [ LIT2 &last ffff ] NEQ2 ,&changed JCN
+	DUP2 [ LIT2 &last ffff ] NEQ2 ?&changed
 		POP2 JMP2r
 		&changed
 
@@ -410,9 +406,7 @@ JMP2r
 	OVR2 OVR2
 	( ch1 ) .cursor/color LDZ #00 ,toggle-pixel JSR
 	( ch2 ) #0008 ADD2 .cursor/color LDZ #01 ,toggle-pixel JSR
-	;<draw-desktop> ( .. )
-
-JMP2
+	!<draw-desktop> 
 
 @toggle-pixel ( x* addr* color index -- )
 
@@ -420,7 +414,7 @@ JMP2
 	LDAk
 	STH SWP2 NIP
 	STHr SWP
-	STH2r SFT #01 AND ,&do-set JCN
+	STH2r SFT #01 AND ?&do-set
 		( mask ) #0107 ROT #07 AND SUB #40 SFT SFT #ff EOR AND
 		( save ) ROT ROT STA
 		JMP2r
@@ -452,7 +446,7 @@ JMP2r
 	INC2k INC2 LDA2 #001c ADD2 .Screen/y DEO2
 
 	DUP2 #0008 ADD2 LDA2 make-src
-		has-metadata ,&valid-metadata JCN
+		has-metadata ?&valid-metadata
 	( TODO: make prettier )
 	;dict/no-metadata draw-str POP2
 	POP2
@@ -471,10 +465,10 @@ JMP2r
 	;metadata/fields LDAk LITr 00 STH
 	INC2 DUP2 STH2r ADD2 SWP2
 	&l
-		LDAk #83 NEQ ,&no-pict JCN
+		LDAk #83 NEQ ?&no-pict
 			INC2k LDA2 #0100 SUB2 draw-metaicon
 			&no-pict
-		INC2 GTH2k ,&l JCN
+		INC2 GTH2k ?&l
 	POP2 POP2
 	( win* ) POP2
 
@@ -532,13 +526,13 @@ JMP2r
 	DUP2 ( win/scroll ) #000e ADD2 LDA2
 	OVR2 ( win/mem-ptr ) #000a ADD2 LDA2 find-line
 	&w
-		.Screen/y DEI2 [ LIT2 &bound-y $2 ] GTH2 ,&end JCN
-		LDAk #0a NEQ ,&no-lb JCN
+		.Screen/y DEI2 [ LIT2 &bound-y $2 ] GTH2 ?&end
+		LDAk #0a NEQ ?&no-lb
 			[ LIT2 &anchor $2 ] .Screen/x DEO2
 			.Screen/y DEI2k #0008 ADD2 ROT DEO2
-			,&resume JMP
+			!&resume 
 			&no-lb
-		DUP2 wlen #30 SFT2 .Screen/x DEI2 ADD2 [ LIT2 &bound-x $2 ] LTH2 ,&no-wrap JCN
+		DUP2 wlen #30 SFT2 .Screen/x DEI2 ADD2 [ LIT2 &bound-x $2 ] LTH2 ?&no-wrap
 			#0c ;<draw-chr>/color STA
 			#0b <draw-chr>
 			,&anchor LDR2 .Screen/x DEO2
@@ -548,7 +542,7 @@ JMP2r
 			&no-wrap
 		LDAk <draw-chr>
 		&resume
-		INC2 LDAk ,&w JCN
+		INC2 LDAk ?&w
 	&end
 	POP2
 	( scrollbar )
@@ -556,15 +550,13 @@ JMP2r
 	DUP2 #0002 ADD2 LDA2 #0012 ADD2 .Screen/y DEO2
 	( scroll, height )
 	DUP2 #000e ADD2 LDA2 NIP
-	ROT ROT #0005 ADD2 LDA #03 SUB ;draw-scrollbar ( .. )
-
-JMP2
+	ROT ROT #0005 ADD2 LDA #03 SUB !draw-scrollbar 
 
 &on-mouse ( x* y* win* -> )
 
-	.Mouse/scrolly DEI2 ORAk ,&on-scroll JCN POP2
+	.Mouse/scrolly DEI2 ORAk ?&on-scroll POP2
 
-	.Mouse/state DEI ,&on-click JCN
+	.Mouse/state DEI ?&on-click
 		POP2 POP2 POP2 BRK
 		&on-click
 
@@ -576,7 +568,7 @@ BRK
 
 	STH2
 	DUP2 ( app/misc ) #000e ADD2 LDA2k STH2r ADD2
-		DUP2 #ffff NEQ2 ,&valid JCN
+		DUP2 #ffff NEQ2 ?&valid
 			POP2 POP2 POP2 POP2 POP2 BRK
 			&valid
 		SWP2 STA2
@@ -613,9 +605,7 @@ BRK
 	.Screen/y DEI2k #0002 SUB2 ROT DEO2
 
 	( image )
-	#0008 ADD2 LDA2 make-src ;draw-pict ( .. )
-
-JMP2
+	#0008 ADD2 LDA2 make-src !draw-pict 
 
 &invert ( -- )
 
@@ -623,9 +613,7 @@ JMP2
 
 	get-active-win
 		DUP2 set-anchor-body POP2
-	;app-pict/on-draw ( .. )
-
-JMP2
+	!app-pict/on-draw 
 
 &prev ( -- )
 
@@ -634,7 +622,7 @@ JMP2
 		( desktop id ) find-name
 
 	( check start )
-	DUP ,&no-start JCN
+	DUP ?&no-start
 		POP JMP2r
 		&no-start
 
@@ -642,9 +630,7 @@ JMP2
 	close-win
 	#01 SUB
 		DUP ;draw-item-text/sel STA
-		get-file ;open-pict ( .. )
-
-JMP2
+		get-file !open-pict 
 
 &next ( -- )
 
@@ -653,7 +639,7 @@ JMP2
 		( desktop id ) find-name
 
 	( check end )
-	DUP desk-len LTH ,&no-end JCN
+	DUP desk-len LTH ?&no-end
 		POP JMP2r
 		&no-end
 
@@ -661,9 +647,7 @@ JMP2
 	close-win
 	INC
 		DUP ;draw-item-text/sel STA
-		get-file ;open-pict ( .. )
-
-JMP2
+		get-file !open-pict 
 
 (
 @|font )
@@ -713,7 +697,7 @@ JMP2r
 		#00 OVR #0f AND #40 SFT2 [ LIT2 &x $2 ] ADD2 .Screen/x DEO2
 		#00 OVR #44 SFT2 [ LIT2 &y $2 ] ADD2 .Screen/y DEO2
 		#0a .Screen/sprite DEOk DEO
-		INC NEQk ,&loop JCN
+		INC NEQk ?&loop
 	POP2
 
 JMP2r
@@ -725,7 +709,7 @@ JMP2r
 		( desktop id ) find-name
 
 	( check start )
-	DUP ,&no-start JCN
+	DUP ?&no-start
 		POP JMP2r
 		&no-start
 
@@ -733,28 +717,24 @@ JMP2r
 	close-win
 	#01 SUB
 		DUP ;draw-item-text/sel STA
-		get-file ;open-font ( .. )
-
-JMP2
+		get-file !open-font 
 
 &next ( -- )
 
 	get-active-win
 		( /name ) #0008 ADD2 LDA2
-		( desktop id ) ;find-name JSR2
+		( desktop id ) find-name
 
 	( check end )
-	DUP ;desk-len JSR2 LTH ,&no-end JCN
+	DUP desk-len LTH ?&no-end
 		POP JMP2r
 		&no-end
 
 	( next name )
-	;close-win JSR2
+	close-win
 	INC
 		DUP ;draw-item-text/sel STA
-		;get-file JSR2 ;open-font ( .. )
-
-JMP2
+		get-file !open-font 
 
 (
 @|play )
@@ -796,12 +776,12 @@ JMP2
 
 &on-draw ( win* -- )
 
-	( win/name ) #0008 ADD2 LDA2 ;make-src JSR2 .File/name DEO2
+	( win/name ) #0008 ADD2 LDA2 make-src .File/name DEO2
 	#8000 .File/length DEO2
 	;mem .File/read DEO2
 	.File/success DEI2 .Audio0/length DEO2
-	;mem .File/success DEI2 [ LIT2 &zoom 0001 ] ;draw-waveform JSR2
-	;draw-octave JSR2
+	;mem .File/success DEI2 [ LIT2 &zoom 0001 ] draw-waveform
+	draw-octave
 	.Screen/x DEI2 #0010 ADD2
 	.Screen/y DEI2
 	( env )
@@ -821,13 +801,13 @@ JMP2r
 
 &on-mouse ( x* y* win* -> )
 
-	.Mouse/state DEI ,&on-click JCN
+	.Mouse/state DEI ?&on-click
 		POP2 POP2 POP2 BRK
 		&on-click
 	STH2
 	POP2
 	#03 SFT2
-	DUP2 #0006 GTH2 ,&no-oct JCN
+	DUP2 #0006 GTH2 ?&no-oct
 		DUP2 ;&notes ADD2 LDA ;&press-key JSR2
 		&no-oct
 	POP2
@@ -840,39 +820,35 @@ BRK
 
 	get-active-win
 		( /name ) #0008 ADD2 LDA2
-		( desktop id ) ;find-name JSR2
+		( desktop id ) find-name
 
 	( check start )
-	DUP ,&no-start JCN
+	DUP ?&no-start
 		POP JMP2r
 		&no-start
 
 	( next name )
-	;close-win JSR2
+	close-win
 	#01 SUB
 		DUP ;draw-item-text/sel STA
-		;get-file JSR2 ;open-sound ( .. )
-
-JMP2
+		get-file !open-sound 
 
 &next ( -- )
 
 	get-active-win
 		( /name ) #0008 ADD2 LDA2
-		( desktop id ) ;find-name JSR2
+		( desktop id ) find-name
 
 	( check end )
-	DUP ;desk-len JSR2 LTH ,&no-end JCN
+	DUP desk-len LTH ?&no-end
 		POP JMP2r
 		&no-end
 
 	( next name )
-	;close-win JSR2
+	close-win
 	INC
 		DUP ;draw-item-text/sel STA
-		;get-file JSR2 ;open-sound ( .. )
-
-JMP2
+		get-file !open-sound 
 
 &toggle-loop ( -- )
 
@@ -882,23 +858,23 @@ JMP2
 !<draw-win>
 
 
-&notec ( -- ) #00 ,&press-key JMP
-&notecs ( -- ) #01 ,&press-key JMP
-&noted ( -- ) #02 ,&press-key JMP
-&noteds ( -- ) #03 ,&press-key JMP
-&notee ( -- ) #04 ,&press-key JMP
-&notef ( -- ) #05 ,&press-key JMP
-&notefs ( -- ) #06 ,&press-key JMP
-&noteg ( -- ) #07 ,&press-key JMP
-&notegs ( -- ) #08 ,&press-key JMP
-&notea ( -- ) #09 ,&press-key JMP
-&noteas ( -- ) #0a ,&press-key JMP
-&noteb ( -- ) #0b ,&press-key JMP
+&notec ( -- ) #00 !&press-key
+&notecs ( -- ) #01 !&press-key
+&noted ( -- ) #02 !&press-key
+&noteds ( -- ) #03 !&press-key
+&notee ( -- ) #04 !&press-key
+&notef ( -- ) #05 !&press-key
+&notefs ( -- ) #06 !&press-key
+&noteg ( -- ) #07 !&press-key
+&notegs ( -- ) #08 !&press-key
+&notea ( -- ) #09 !&press-key
+&noteas ( -- ) #0a !&press-key
+&noteb ( -- ) #0b !&press-key
 
 &press-key ( key -- )
 
 	;mem .Audio0/addr DEO2
-	;play-note JSR2
+	play-note
 	#00 .Mouse/state DEO
 	get-active-win
 
@@ -906,7 +882,7 @@ JMP2
 
 &zoomin ( -- )
 
-	;&zoom LDA2 #0001 EQU2 ,&skip JCN
+	;&zoom LDA2 #0001 EQU2 ?&skip
 		;&zoom LDA2 #0001 SUB2 ;&zoom STA2
 		get-active-win <draw-win>
 		&skip
@@ -939,34 +915,32 @@ JMP2r
 &on-draw ( win* -- )
 
 	POP2
-	;buf/form #14 ;draw-input JSR2
+	;buf/form #14 draw-input
 	.Screen/x DEI2k #0030 ADD2 ROT DEO2
-	[ LIT2 &action $2 ] #08 ;draw-button ( .. )
-
-JMP2
+	[ LIT2 &action $2 ] #08 !draw-button 
 
 &on-mouse ( x* y* win* -> )
 
-	.Mouse/state DEI ,&on-click JCN
+	.Mouse/state DEI ?&on-click
 		POP2 POP2 POP2 BRK
 		&on-click
 	POP2
 	( focus button )
 	#0018 SUB2 SWP2 #0030 SUB2 SWP2
 	( collision )
-	#000f LTH2 ROT ROT #0050 LTH2 AND ,&validate-mouse JCN
+	#000f LTH2 ROT ROT #0050 LTH2 AND ?&validate-mouse
 
 BRK
 	&validate-mouse ( -- ) #00 .Mouse/state DEO ,&validate JMP JMP2r
 
 &on-button ( button key win* -> )
 
-	SWP2 NIP DUP ,&has-key JCN
+	SWP2 NIP DUP ?&has-key
 		POP POP2 BRK
 		&has-key
-	DUP #0d EQU ,&validate-key JCN
+	DUP #0d EQU ?&validate-key
 	( handle key )
-	;buf/form #0040 ;skey JSR2
+	;buf/form #0040 skey
 	<draw-win>
 
 BRK
@@ -974,17 +948,17 @@ BRK
 
 &validate ( -> )
 
-	;buf/form ;find-name JSR2 #ff NEQ ,&not-unique JCN
+	;buf/form find-name #ff NEQ ?&not-unique
 	[ LIT2 &callback $2 ] JSR2
-	;close-win JSR2
-	;buf/form ;find-name JSR2 <sel-icon>
+	close-win
+	;buf/form find-name <sel-icon>
 
 BRK
 
 &not-unique ( -> )
 
-	;close-win JSR2
-	;dict/create ;buf/form ;add-err JSR2
+	close-win
+	;dict/create ;buf/form add-err
 
 BRK
 
@@ -1007,29 +981,27 @@ BRK
 &on-draw ( win* -- )
 
 	POP2
-	[ LIT2 &target $2 ] ;draw-line JSR2 POP2
-	;draw-lb JSR2
+	[ LIT2 &target $2 ] draw-line POP2
+	draw-lb
 	.Screen/x DEI2k #0030 ADD2 ROT DEO2
-	[ LIT2 &action $2 ] #08 ;draw-button ( .. )
-
-JMP2
+	[ LIT2 &action $2 ] #08 !draw-button 
 
 &on-mouse ( x* y* win* -> )
 
-	.Mouse/state DEI ,&on-click JCN
+	.Mouse/state DEI ?&on-click
 		POP2 POP2 POP2 BRK
 		&on-click
 	POP2
 	( focus button )
 	#0010 SUB2 SWP2 #0030 SUB2 SWP2
 	( collision )
-	#000f LTH2 ROT ROT #0050 LTH2 AND ,&validate JCN
+	#000f LTH2 ROT ROT #0050 LTH2 AND ?&validate
 
 BRK
 
 &on-button ( button key win* -> )
 
-	POP2 NIP #0d EQU ,&validate JCN
+	POP2 NIP #0d EQU ?&validate
 
 BRK
 
@@ -1038,7 +1010,7 @@ BRK
 	#00 .Mouse/state DEO
 	#0000 .Controller/button DEO2
 	[ LIT2 &callback $2 ] JSR2
-	;close-win JSR2
+	close-win
 
 BRK
 
@@ -1061,32 +1033,30 @@ BRK
 &on-draw ( win* -- )
 
 	POP2
-	;&invalid-txt ;draw-line JSR2 POP2
-	;draw-lb JSR2
-	[ LIT2 &target $2 ] ;draw-line JSR2 POP2
-	;draw-lb JSR2
+	;&invalid-txt draw-line POP2
+	draw-lb
+	[ LIT2 &target $2 ] draw-line POP2
+	draw-lb
 	.Screen/x DEI2k #0030 ADD2 ROT DEO2
-	;dict/ok #08 ;draw-button ( .. )
-
-JMP2
+	;dict/ok #08 !draw-button 
 	&invalid-txt "Invalid 20 "Target: $1
 
 &on-mouse ( x* y* win* -> )
 
-	.Mouse/state DEI ,&on-click JCN
+	.Mouse/state DEI ?&on-click
 		POP2 POP2 POP2 BRK
 		&on-click
 	POP2
 	( focus button )
 	#0020 SUB2 SWP2 #0030 SUB2 SWP2
 	( collision )
-	#000f LTH2 ROT ROT #0050 LTH2 AND ,&validate JCN
+	#000f LTH2 ROT ROT #0050 LTH2 AND ?&validate
 
 BRK
 
 &on-button ( button key win* -> )
 
-	POP2 NIP ,&validate JCN
+	POP2 NIP ?&validate
 
 BRK
 
@@ -1094,7 +1064,7 @@ BRK
 
 	#00 .Mouse/state DEO
 	#0000 .Controller/button DEO2
-	;close-win JSR2
+	close-win
 
 BRK
 
@@ -1133,17 +1103,17 @@ BRK
 
 @find-line ( line* text* -- text* )
 
-	OVR2 #0000 NEQ2 ,&no-first JCN
+	OVR2 #0000 NEQ2 ?&no-first
 		NIP2 JMP2r
 		&no-first
 	SWP2 STH2
 	LIT2r 0000
 	&w
-		LDAk #0a NEQ ,&no-lb JCN
+		LDAk #0a NEQ ?&no-lb
 			INC2r
 			&no-lb
-		EQU2kr STHr ,&end JCN
-		INC2 LDAk ,&w JCN
+		EQU2kr STHr ?&end
+		INC2 LDAk ?&w
 	&end
 	POP2r POP2r
 	INC2
