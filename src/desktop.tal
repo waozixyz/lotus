@@ -47,7 +47,7 @@
 		( blocking ) JSR2 BRK }
 	POP2
 	( send button to active win )
-	( win ) ;get-active-win JSR2 DUP2 #ffff EQU2 ?{
+	( win ) get-active-win DUP2 #ffff EQU2 ?{
 		.Controller/button DEI2 SWP2 DUP2
 		( win/app ) #0006 ADD2 LDA2
 		( win/app/on-button ) #0008 ADD2 LDA2 JMP2 }
@@ -75,20 +75,24 @@
 	( win/app/on-mouse ) #0006 ADD2 LDA2 JMP2
 
 @touch-desktop ( win -> )
-	POP .Mouse/x DEI2 .Mouse/y DEI2 pick-icon <sel-icon> 
+	POP .Mouse/x DEI2 .Mouse/y DEI2 pick-icon <sel-icon>
 	.Mouse/state DEI #02 LTH ?{ go-file }
 	[ LIT2 00 -Mouse/state ] DEO
 	BRK
 
 @on-drag ( -> )
 	.Mouse/state DEI #00 EQU ?on-drag-end
-	.drag LDZ ;get-win JSR2 STH2k
-	( clear ) DUP2 #40 ;draw-drag JSR2
-	( move window ) #0008 .Mouse/x DEI2 [ LIT2 &x $2 ] SUB2 STH2kr LDA2 ADD2 ;clamp-win JSR2 STH2kr STA2
-	INC2r INC2r #0018 .Mouse/y DEI2 [ LIT2 &y $2 ] SUB2 STH2kr LDA2 ADD2 ;clamp-win JSR2 .Screen/height DEI2 #000a SUB2 LTH2k [ JMP SWP2 POP2 ] STH2r STA2
-	( update ) .Mouse/x DEI2 .Mouse/y DEI2 ;on-drag/y STA2
-	;on-drag/x STA2
-	( draw ) #cf ;draw-drag JSR2 BRK
+	.drag LDZ get-win STH2k
+	( clear ) DUP2 #40 <draw-drag>
+	( | move window )
+	( x ) #0008 .Mouse/x DEI2 [ LIT2 &x $2 ] SUB2 STH2kr LDA2 ADD2 clamp-win STH2kr STA2
+	INC2r INC2r
+	( y ) #0018 .Mouse/y DEI2 [ LIT2 &y $2 ] SUB2 STH2kr LDA2 ADD2 clamp-win .Screen/height DEI2 #000a SUB2 LTH2k [ JMP SWP2 POP2 ] STH2r STA2
+	( | update )
+	.Mouse/x DEI2 ;on-drag/x STA2
+	.Mouse/y DEI2 ;on-drag/y STA2
+	( draw ) #cf <draw-drag>
+	BRK
 
 @clamp-win ( x* -- x* )
 	DUP2 ROT2 STH2k SUB2 #8000 GTH2 ?&gth
@@ -96,8 +100,10 @@
 	&gth POP2 STH2r JMP2r
 
 @on-drag-end ( -> )
-	( clear ) .drag LDZ get-win #40 draw-drag #ff .drag STZ
-	draw-desktop BRK
+	( clear ) .drag LDZ get-win #40 <draw-drag>
+	#ff .drag STZ
+	<draw-desktop>
+	BRK
 
 @on-drag-start ( -> )
 	.Mouse/x DEI2 .Mouse/y DEI2 pick-win DUP #ff EQU ?{ sel-win set-drag BRK }
@@ -112,13 +118,13 @@
 (
 @|window )
 
-@get-active-win ( -- addr* )
+@get-active-win ( -- <addr>* )
 	.length LDZ #01 SUB
+	( >> )
 
-@get-win ( id -- addr* )
-	DUP #10 LTH ?&exists
-	POP #ffff JMP2r
-	&exists #40 SFT #00 SWP ;windows ADD2 JMP2r
+@get-win ( id -- <addr>* )
+	DUP #10 LTH ?{ POP #ffff JMP2r }
+	#40 SFT #00 SWP ;windows ADD2 JMP2r
 
 @pick-win ( x* y* -- id|ff )
 	,&y STR2
@@ -154,8 +160,7 @@
 
 @add-err ( action* target* -- )
 	;app-error/target STA2
-	;app-error #1809 #0000 DUP2 add-win ;center-win
-	( .. ) JMP2
+	;app-error #1809 #0000 DUP2 add-win !center-win
 
 @add-form ( action* target* callback* -- )
 	;app-form/callback STA2
@@ -198,12 +203,12 @@
 	&unchanged POP JMP2r
 
 @close-win ( -- )
-	.length LDZ ?{
-		( nothing to close ) JMP2r }
-	;get-active-win JSR2
+	.length LDZ ?{ JMP2r }
+	get-active-win DUP2 <phex>
+	#0a18 DEO
 	( win/mem-ptr ) #000a ADD2 LDA2k SWP2
-	( win/mem-len ) INC2 INC2 LDA2 ;mem-rel JSR2 #00 .length LDZ #01 SUB #40 SFT2 ;windows ADD2 #0010 ;mclr JSR2 .length LDZk #01 SUB SWP STZ
-	;sel-desktop JSR2 ;draw-desktop JMP2
+	( win/mem-len ) INC2 INC2 LDA2 mem-rel #00 .length LDZ #01 SUB #40 SFT2 ;windows ADD2 #0010 mclr .length LDZk #01 SUB SWP STZ
+	sel-desktop !<draw-desktop>
 
 @sel-desktop ( -- )
 	.sel/win LDZ #ff EQU ?{
@@ -216,13 +221,12 @@
 @tab-win ( -- )
 	.Screen/height DEI2 #000a SUB2
 	( win/y ) ;get-active-win JSR2 INC2 INC2 STA2
-	;sel-desktop JSR2 ;draw-desktop JMP2
+	;sel-desktop JSR2 ;<draw-desktop> JMP2
 
 @expand-win ( -- )
 	#0018
 	( win/y ) ;get-active-win JSR2 INC2 INC2 STA2
-	;draw-desktop
-	( .. ) JMP2
+	!<draw-desktop>
 
 @center-win ( -- )
 	;get-active-win JSR2 STH2k
@@ -230,8 +234,7 @@
 	( -x ) LDAk #00 SWP #31 SFT2 .Screen/width DEI2 #01 SFT2 SWP2 SUB2 STH2kr STA2
 	( /h ) INC2 INC2r INC2r
 	( -y ) LDA #00 SWP #31 SFT2 .Screen/height DEI2 #01 SFT2 SWP2 SUB2 STH2r STA2
-	;draw-desktop
-	( .. ) JMP2
+	!<draw-desktop>
 
 (
 @|open-as )
@@ -254,8 +257,7 @@
 @open-as ( routine* -- )
 	;get-sel-file JSR2 LDAk LIT "- EQU ?&invalid
 	LDAk LIT "? EQU ?&invalid
-	( run routine ) SWP2 JSR2 ;center-win
-	( .. ) JMP2
+	( run routine ) SWP2 JSR2 !center-win
 	&invalid NIP2 #0005 ADD2 ;dict/open SWP2 ;add-err JMP2
 
 (
@@ -267,12 +269,10 @@
 	&valid #01 SUB ;sel-win JMP2
 
 @go-home ( -- )
-	;dict/parent-ext ;push-dir
-	( .. ) JMP2
+	;dict/parent-ext !push-dir
 
 @go-file ( -- )
-	;get-sel-file JSR2 ;open-file
-	( .. ) JMP2
+	;get-sel-file JSR2 !open-file
 
 (
 @|icon-picking )
@@ -301,11 +301,12 @@
 	POP #00
 	&min-ok ( max )
 		,desk-len JSR LTHk [ JMP SWP POP ] ;draw-item-text/sel STA
-		;draw-desktop JSR2 ;sel-desktop
-		( .. ) JMP2
+		;<draw-desktop> JSR2 !sel-desktop
 
 @desk-len ( -- len )
-	LITr 00 ;buf/dir &w ;scap JSR2 INCr INC2 LDAk ?&w
+	LITr 00 ;buf/dir
+	&w ( -- )
+		;scap JSR2 INCr INC2 LDAk ?&w
 	POP2 STHr #01 SUB JMP2r
 
 @get-sel-file ( -- file*|ffff )
@@ -318,12 +319,16 @@
 	POP2 POP2r #ffff JMP2r
 	&found POP2r JMP2r
 
+@<draw-drag> ( win* color -- )
+	;<draw-frame>/color STA
+	set-anchor INC2 INC2 LDA2 ;frame2-chr !<draw-frame>
+
 (
 @|color-picking )
 
 @select-color ( id -- )
 	.cursor/color STZ
-	!draw-desktop
+	!<draw-desktop>
 	&0 #00 !select-color
 	&1 #01 !select-color
 	&2 #02 !select-color

@@ -125,32 +125,35 @@
 	POP2 JMP2r
 
 @<set-dir> ( path* -- )
-	<validate-dir>
-	;dir scpy #00 !<sel-icon>
+	has-active-paths ?{
+		;dir scpy #00 !<sel-icon> }
+	POP2 JMP2r
 
 @push-dir ( path* -- )
-	<validate-dir>
-	DUP2 ;dict/parent-ext scmp ?pop-dir
-	LIT "/ ;dir STH2k sput STH2r scat #00 !<sel-icon>
+	has-active-paths ?{
+		DUP2 ;dict/parent-ext scmp ?pop-dir
+		LIT "/ ;dir STH2k sput STH2r scat #00 !<sel-icon> }
+	POP2 JMP2r
 
 @pop-dir ( path* -- )
-	<validate-dir>
-	;dir ;dict/home-ext scmp ?&skip
-	;dir DUP2 scap
-	&l ( -- )
-		LDAk LIT "/ EQU ?{
-			#0001 SUB2 LTH2k ?&l }
-	NIP2 #00 ROT ROT STA
-	&skip POP2 #00 !<sel-icon>
+	has-active-paths ?{
+		;dir ;dict/home-ext scmp ?&skip
+		;dir DUP2 scap
+		&l ( -- )
+			LDAk LIT "/ EQU ?{
+				#0001 SUB2 LTH2k ?&l }
+		NIP2 #00 ROT ROT STA
+		&skip POP2 #00 !<sel-icon> }
+	POP2 JMP2r
 
-@<validate-dir> ( -- )
+@has-active-paths ( -- f )
 	[ LIT2 00 -length ] LDZ EQUk ?&skip
 	&l ( -- )
 		( win ) DUP get-win
-		( win/name ) #0008 ADD2 LDA2 ;no-name EQU2 ?{
-			( !!exits the parent function ) POP2r NIP sel-win center-win POP2 JMP2r }
+		( win/name ) #0008 ADD2 LDA2 ;no-name EQU2 ?{ POP2 #01 JMP2r }
 		INC GTHk ?&l
-	&skip POP2 JMP2r
+	&skip ( -- )
+		POP2 #00 JMP2r
 
 (
 @|path handlers )
@@ -304,7 +307,7 @@
 @redraw-all ( -- )
 	<draw-menu-bg>
 
-@draw-desktop ( -- )
+@<draw-desktop> ( -- )
 	<draw-wallpaper>
 	load-dir
 	( draw icons ) get-rows STH
@@ -313,7 +316,8 @@
 	( MOD ) [ DIVk MUL SUB ] #0018 MUL2 #0018 ADD2 .Screen/y DEO2
 	DUP2 draw-item-icon DUP2 STHkr draw-item-text scap INCr INC2 LDAk ?&w
 	POP2 POP2r
-	( draw windows ) .length LDZ #00 EQUk ?&no-win
+	( | draw windows )
+	.length LDZ #00 EQUk ?&no-win
 	&l ( -- )
 		DUP get-win <draw-win>
 		INC GTHk ?&l
@@ -342,9 +346,10 @@
 	INC2 INC2
 	( size ) LDA2k draw-win-decor INC2 INC2
 	( app ) LDA2k DUP2 ,&app STR2
-	( app/name ) LDA2 INC2 #05 draw-text-color INC2 INC2
+	( app/name ) LDA2 INC2 #05 <draw-text-color>
+	INC2 INC2
 	( space ) #20 draw-chr
-	( win/name ) LDA2 #0a draw-text-color
+	( win/name ) LDA2 #0a <draw-text-color>
 	( body )
 	( x ) [ LIT2 &x $2 ] #0008 ADD2 .Screen/x DEO2
 	( y ) [ LIT2 &y $2 ] #0012 ADD2 .Screen/y DEO2
@@ -414,7 +419,7 @@
 	scroll-text DUP ;input-icns draw-capped #30 SFT #00 SWP #000e ADD2 STH2
 	.Screen/x DEI2k STH2r SUB2 ROT DEO2
 	.Screen/y DEI2k #0004 ADD2 ROT DEO2
-	#0a draw-text-color
+	#0a <draw-text-color>
 	( re-anchor ) [ LIT2 &x $2 ] .Screen/x DEO2
 	[ LIT2 &y $2 ] #0018 ADD2 .Screen/y DEO2
 	JMP2r
@@ -424,7 +429,7 @@
 	DUP2 slen #20 SFT2 STH2
 	ADD2r .Screen/x DEI2k STH2r SUB2 ROT DEO2
 	.Screen/y DEI2k #0004 ADD2 ROT DEO2
-	#0f !draw-text-color
+	#0f !<draw-text-color>
 
 @draw-capped ( w sprite* -- )
 	[ LIT2 15 -Screen/auto ] DEO
@@ -449,7 +454,7 @@
 	&h ( -- )
 		[ LIT2 &x $1 00 ]
 		&w ( -- )
-		[ LIT2 &color 03 -Screen/sprite ] DEO
+		[ LIT2 03 -Screen/sprite ] DEO
 		INC GTHk ?&w
 	POP2 draw-lb [ LIT2 &anchor $2 ] .Screen/x DEO2
 	INC GTHk ?&h
@@ -512,9 +517,10 @@
 	<draw-icon>
 	.Screen/y DEI2k #0014 SUB2 ROT DEO2
 	.Screen/x DEI2k STH2k #0020 ADD2 ROT DEO2
-	[ LIT &c1 0a ] draw-text-color STH2r #0020 ADD2 .Screen/x DEO2
+	[ LIT 0a ] <draw-text-color>
+	STH2r #0020 ADD2 .Screen/x DEO2
 	.Screen/y DEI2k #0009 ADD2 ROT DEO2
-	[ LIT &c2 05 ] ;draw-chr/color STA
+	[ LIT 05 ] ;draw-chr/color STA
 	<draw-dec>
 	#20 draw-chr ;dict/bytes !draw-text
 
@@ -667,10 +673,6 @@
 	[ LIT2 &y $2 ] .Screen/y DEO2
 	JMP2r
 
-@draw-drag ( win* color -- )
-	;<draw-frame>/color STA
-	set-anchor INC2 INC2 LDA2 ;frame2-chr !<draw-frame>
-
 @set-anchor ( win* -- win/size* )
 	LDA2k .Screen/x DEO2
 	INC2 INC2 LDA2k .Screen/y DEO2
@@ -736,7 +738,7 @@
 		LDAk draw-chr INC2 LDAk ?&w
 	&skip INC2 JMP2r
 
-@draw-text-color ( str* color -- )
+@<draw-text-color> ( str* color -- )
 	;draw-chr/color STA
 	( >> )
 
@@ -985,7 +987,7 @@
 	#0002 .File/length DEO2
 	.System/r DEI2 ,&w JSR .System/g DEI2 ,&w JSR .System/b DEI2 ,&w JSR #0010 .File/length DEO2
 	;patt-chr .File/write DEO2
-	;draw-desktop JMP2
+	;<draw-desktop> JMP2
 	&w ( -- )
 		,&b STR2
 		;&b .File/write DEO2

@@ -314,7 +314,7 @@ JMP2r
 	;dict/snarf-ext .File/name DEO2
 	#0010 .File/length DEO2
 	;patt-chr .File/read DEO2
-	;draw-desktop ( .. )
+	;<draw-desktop> ( .. )
 
 JMP2
 
@@ -330,13 +330,13 @@ JMP2r
 
 &sel-tile ( addr* -- )
 
-	;paint-patt/addr STA2 ;draw-desktop ( .. )
+	;paint-patt/addr STA2 ;<draw-desktop> ( .. )
 
 JMP2
 
 &clear-patt ( -- )
 
-	;paint-patt/addr LDA2 #0010 mclr ;draw-desktop ( .. )
+	;paint-patt/addr LDA2 #0010 mclr ;<draw-desktop> ( .. )
 
 JMP2
 
@@ -378,7 +378,7 @@ JMP2r
 	OVR2 OVR2
 	( ch1 ) .cursor/color LDZ #00 ,toggle-pixel JSR
 	( ch2 ) #0008 ADD2 .cursor/color LDZ #01 ,toggle-pixel JSR
-	;draw-desktop ( .. )
+	;<draw-desktop> ( .. )
 
 JMP2
 
@@ -876,7 +876,7 @@ JMP2
 
 	;&zoom LDA2 #0001 EQU2 ,&skip JCN
 		;&zoom LDA2 #0001 SUB2 ;&zoom STA2
-		get-active-win <draw-win> 
+		get-active-win <draw-win>
 		&skip
 
 JMP2r
