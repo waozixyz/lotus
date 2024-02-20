@@ -164,16 +164,16 @@
 	DUP #00 NEQ STHr #00 NEQ #0101 NEQ2 ?{
 		LIT "+ ;&buf sput }
 	( | key )
-	DUP #08 NEQ ?{ ;&bsp ,&cat JMP }
-	DUP #09 NEQ ?{ ;&tab ,&cat JMP }
-	DUP #0d NEQ ?{ ;&ent ,&cat JMP }
-	DUP #20 NEQ ?{ ;&spc ,&cat JMP }
-	DUP #1b NEQ ?{ ;&esc ,&cat JMP }
-	DUP #7f NEQ ?{ ;&del ,&cat JMP }
+	DUP #08 NEQ ?{ ;&bsp !&cat  }
+	DUP #09 NEQ ?{ ;&tab !&cat }
+	DUP #0d NEQ ?{ ;&ent !&cat }
+	DUP #20 NEQ ?{ ;&spc !&cat }
+	DUP #1b NEQ ?{ ;&esc !&cat }
+	DUP #7f NEQ ?{ ;&del !&cat }
 	DUP ;&buf sput &end POP ;&buf JMP2r
 	&buf $8
 	&buttons "ABsSUDLR $1
-	&cat ;&buf scat ,&end JMP
+	&cat ;&buf scat !&end
 	&bsp "bsp $1
 	&tab "tab $1
 	&ent "ent $1

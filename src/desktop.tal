@@ -278,16 +278,16 @@
 
 @pick-icon ( x* y* -- id )
 	( y ) #0018 SUB2 #0018 DIV2 NIP ROT ROT
-	( x ) #0010 SUB2 #00a0 DIV2 NIP ,get-rows JSR MUL ADD JMP2r
+	( x ) #0010 SUB2 #00a0 DIV2 NIP get-rows MUL ADD JMP2r
 
 @get-rows ( -- rows )
 	.Screen/height DEI2 #0018 SUB2 #0018 DIV2 NIP JMP2r
 
 @sel-left ( -- )
-	;draw-item-text/sel LDA ,get-rows JSR SUB !<sel-icon>
+	;draw-item-text/sel LDA get-rows SUB !<sel-icon>
 
 @sel-right ( -- )
-	;draw-item-text/sel LDA ,get-rows JSR ADD !<sel-icon>
+	;draw-item-text/sel LDA get-rows ADD !<sel-icon>
 
 @sel-up ( -- )
 	;draw-item-text/sel LDA #01 SUB !<sel-icon>
@@ -299,7 +299,7 @@
 	( min ) DUP #80 LTH ?&min-ok
 	POP #00
 	&min-ok ( max )
-		,desk-len JSR LTHk [ JMP SWP POP ] ;draw-item-text/sel STA
+		desk-len LTHk [ JMP SWP POP ] ;draw-item-text/sel STA
 		<draw-desktop>
 		!sel-desktop
 
