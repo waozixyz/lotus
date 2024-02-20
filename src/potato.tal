@@ -915,9 +915,27 @@
 		STH2kr DUP2 .File/read DEO2
 		INC2r LDA ?&s
 	POP2r
-	( fields ) ;metadata/fields DUP2 .File/read DEO2
+	( | fields )
+	;metadata/fields DUP2 .File/read DEO2
 	LDAk #03 MUL #00 SWP .File/length DEO2
 	INC2 .File/read DEO2
+	JMP2r
+
+@<load-theme> ( name* -- )
+	( | load colors )
+	.File/name DEO2
+	#0002 .File/length DEO2
+	;&r .File/read DEO2
+	;&g .File/read DEO2
+	;&b .File/read DEO2
+	.File/success DEI2 ORA ?{ JMP2r }
+	[ LIT2 &r $2 ] .System/r DEO2
+	[ LIT2 &g $2 ] .System/g DEO2
+	[ LIT2 &b $2 ] .System/b DEO2
+	( | assets )
+	#0010 seek
+	;assets-chr-end ;assets-chr SUB2 .File/length DEO2
+	;assets-chr .File/read DEO2
 	JMP2r
 
 @<save-theme> ( -- )
@@ -927,6 +945,7 @@
 	( g ) .System/g DEI2 ,&g STR2
 	( b ) .System/b DEI2 ,&b STR2
 	;&theme .File/write DEO2
+	( | assets )
 	;assets-chr-end ;assets-chr SUB2 .File/length DEO2
 	;assets-chr .File/write DEO2
 	!<draw-desktop>

@@ -244,7 +244,7 @@
 	&prev-tile ( -- )
 		;paint-patt/addr LDA2 #0010 SUB2 !&sel-tile
 	&next-tile ( -- )
-		;paint-patt/addr LDA2 #0010 ADD2
+		;paint-patt/addr LDA2 #0010 ADD2 !&sel-tile
 	&clear-patt ( -- )
 		;paint-patt/addr LDA2 #0010 mclr !<draw-desktop>
 	&goto-pattern ( -- )
