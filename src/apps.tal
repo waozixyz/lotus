@@ -75,15 +75,16 @@
 @app-calendar [
 	=&manifest =&on-init =&on-draw =void-mouse
 	=void-button ]
-	&manifest 03 "Calendar $1
-	1200 =expand-win "Raise $1
-	2200 =tab-win "Tab $1
-	4200 =close-win "Close $1
-	03 "View $1
-	001b =&select-now "Today $1
-	4000 =&select-prev "Prev 20 "Month $1
-	8000 =&select-next "Next 20 "Month $1
-	$1
+	&manifest ( * )
+		03 "Calendar $1
+		( > ) 1200 =expand-win "Raise $1
+		( > ) 2200 =tab-win "Tab $1
+		( > ) 4200 =close-win "Close $1
+		03 "View $1
+		( > ) 001b =&select-now "Today $1
+		( > ) 4000 =&select-prev "Prev 20 "Month $1
+		( > ) 8000 =&select-next "Next 20 "Month $1
+		$1
 	&on-init ( win* -- )
 		POP2 .DateTime/year DEI2 .year STZ2
 		.DateTime/month DEI .month STZ
@@ -144,19 +145,22 @@
 (
 @|color )
 
-@app-color
-	=&manifest =void-init =&on-draw =&on-mouse =void-button &manifest 03 "Color $1
-	12 00 =expand-win "Raise $1
-	22 00 =tab-win "Tab $1
-	42 00 =close-win "Close $1
-	01 "File $1
-	01 "s =<save-theme> "Save $1
-	04 "Select $1
-	00 "1 =select-color/0 "Background $1
-	00 "2 =select-color/1 "Color1 $1
-	00 "3 =select-color/2 "Color2 $1
-	00 "4 =select-color/3 "Color3 $1
-	$1
+@app-color [
+	=&manifest =void-init =&on-draw =&on-mouse
+	=void-button ]
+	&manifest ( * )
+		03 "Color $1
+		( > ) 12 00 =expand-win "Raise $1
+		( > ) 22 00 =tab-win "Tab $1
+		( > ) 42 00 =close-win "Close $1
+		01 "File $1
+		( > ) 01 "s =<save-theme> "Save $1
+		04 "Select $1
+		( > ) 00 "1 =select-color/0 "Background $1
+		( > ) 00 "2 =select-color/1 "Color1 $1
+		( > ) 00 "3 =select-color/2 "Color2 $1
+		( > ) 00 "4 =select-color/3 "Color3 $1
+		$1
 	&on-mouse ( x* y* win* -> )
 		.Mouse/state DEI ?&on-click
 		POP2 POP2 POP2 BRK
@@ -187,30 +191,33 @@
 (
 @|tile )
 
-@app-tile
-	=&manifest =void-init =&on-draw =&on-mouse =void-button &manifest 03 "Tile $1
-	12 00 =expand-win "Raise $1
-	22 00 =tab-win "Tab $1
-	42 00 =close-win "Close $1
-	01 "File $1
-	01 "s =<save-theme> "Save $1
-	05 "Edit $1
-	00 08 =app-tile/clear-patt "Clear $1
-	40 00 =app-tile/prev-tile "Prev $1
-	80 00 =app-tile/next-tile "Next $1
-	01 "c =app-tile/copy-patt "Copy $1
-	01 "v =app-tile/paste-patt "Paste $1
-	04 "Color $1
-	00 "1 =select-color/0 "Background $1
-	00 "2 =select-color/1 "Color1 $1
-	00 "3 =select-color/2 "Color2 $1
-	00 "4 =select-color/3 "Color3 $1
-	04 "Goto $1
-	00 00 =app-tile/goto-pattern "Pattern $1
-	00 00 =app-tile/goto-font "Font $1
-	00 00 =app-tile/goto-window "Window $1
-	00 00 =app-tile/goto-icons "Icons $1
-	$1
+@app-tile [
+	=&manifest =void-init =&on-draw =&on-mouse
+	=void-button ]
+	&manifest ( * )
+		03 "Tile $1
+		( > ) 12 00 =expand-win "Raise $1
+		( > ) 22 00 =tab-win "Tab $1
+		( > ) 42 00 =close-win "Close $1
+		01 "File $1
+		( > ) 01 "s =<save-theme> "Save $1
+		05 "Edit $1
+		( > ) 00 08 =app-tile/clear-patt "Clear $1
+		( > ) 40 00 =app-tile/prev-tile "Prev $1
+		( > ) 80 00 =app-tile/next-tile "Next $1
+		( > ) 01 "c =app-tile/copy-patt "Copy $1
+		( > ) 01 "v =app-tile/paste-patt "Paste $1
+		04 "Color $1
+		( > ) 00 "1 =select-color/0 "Background $1
+		( > ) 00 "2 =select-color/1 "Color1 $1
+		( > ) 00 "3 =select-color/2 "Color2 $1
+		( > ) 00 "4 =select-color/3 "Color3 $1
+		04 "Goto $1
+		( > ) 00 00 =app-tile/goto-pattern "Pattern $1
+		( > ) 00 00 =app-tile/goto-font "Font $1
+		( > ) 00 00 =app-tile/goto-window "Window $1
+		( > ) 00 00 =app-tile/goto-icons "Icons $1
+		$1
 	&on-mouse ( x* y* win* -> )
 		.Mouse/state DEI ?&on-click
 		POP2 POP2 POP2 BRK &on-click POP2 #03 SFT2 NIP ROT ROT #03 SFT2 NIP SWP OVR #07 GTH ?&skip
@@ -296,10 +303,13 @@
 (
 @|metadata )
 
-@app-meta
-	=&manifest =void-init =&on-draw =void-mouse =void-button &manifest 01 "Meta $1
-	42 00 =close-win "Close $1
-	$1
+@app-meta [
+	=&manifest =void-init =&on-draw =void-mouse
+	=void-button ]
+	&manifest ( * )
+		01 "Meta $1
+		( > ) 42 00 =close-win "Close $1
+		$1
 	&on-draw ( win* -- )
 		LDA2k #0038 ADD2 .Screen/x DEO2
 		INC2k INC2 LDA2 #001c ADD2 .Screen/y DEO2
@@ -317,17 +327,15 @@
 (
 @|text )
 
-@app-text
-	=&manifest =&on-init =&on-draw =&on-mouse =void-button &manifest 03 "Text $1
-	12 00 =expand-win "Expand $1
-	22 00 =tab-win "Tab $1
-	42 00 =close-win "Close $1
-	04 "Edit $1
-	01 "c =edit-copy "Copy $1
-	01 "v =edit-paste "Paste $1
-	01 "x =edit-cut "Cut $1
-	00 08 =edit-erase "Erase $1
-	$1
+@app-text [
+	=&manifest =&on-init =&on-draw =&on-mouse
+	=void-button ]
+	&manifest ( * )
+		03 "Text $1
+		( > ) 12 00 =expand-win "Expand $1
+		( > ) 22 00 =tab-win "Tab $1
+		( > ) 42 00 =close-win "Close $1
+		$1
 	&on-init ( win* -- )
 		STH2k
 		( win/name ) #0008 ADD2 LDA2 make-src .File/name DEO2
@@ -382,16 +390,19 @@
 (
 @|pict )
 
-@app-pict
-	=&manifest =void-init =&on-draw =void-mouse =void-button &manifest 03 "Picture $1
-	12 00 =expand-win "Expand $1
-	22 00 =tab-win "Tab $1
-	42 00 =close-win "Close $1
-	03 "View $1
-	00 "i =app-pict/invert "Invert $1
-	10 00 =app-pict/prev "Previous $1
-	20 00 =app-pict/next "Next $1
-	$1
+@app-pict [
+	=&manifest =void-init =&on-draw =void-mouse
+	=void-button ]
+	&manifest ( * )
+		03 "Picture $1
+		( > ) 12 00 =expand-win "Expand $1
+		( > ) 22 00 =tab-win "Tab $1
+		( > ) 42 00 =close-win "Close $1
+		03 "View $1
+		( > ) 00 "i =app-pict/invert "Invert $1
+		( > ) 10 00 =app-pict/prev "Previous $1
+		( > ) 20 00 =app-pict/next "Next $1
+		$1
 	&on-draw ( win* -- )
 		( no padding ) .Screen/x DEI2k #0008 SUB2 ROT DEO2
 		.Screen/y DEI2k #0002 SUB2 ROT DEO2
@@ -421,15 +432,18 @@
 (
 @|font )
 
-@app-font
-	=&manifest =&on-init =&on-draw =void-mouse =void-button &manifest 03 "Font $1
-	12 00 =expand-win "Expand $1
-	22 00 =tab-win "Tab $1
-	42 00 =close-win "Close $1
-	02 "View $1
-	10 00 =app-font/prev "Previous $1
-	20 00 =app-font/next "Next $1
-	$1
+@app-font [
+	=&manifest =&on-init =&on-draw =void-mouse
+	=void-button ]
+	&manifest ( * )
+		03 "Font $1
+		( > ) 12 00 =expand-win "Expand $1
+		( > ) 22 00 =tab-win "Tab $1
+		( > ) 42 00 =close-win "Close $1
+		02 "View $1
+		( > ) 10 00 =app-font/prev "Previous $1
+		( > ) 20 00 =app-font/next "Next $1
+		$1
 	&on-init ( win* -- )
 		STH2k
 		( win/name ) #0008 ADD2 LDA2 make-src .File/name DEO2
@@ -473,8 +487,9 @@
 (
 @|play )
 
-@app-play
-	=&manifest =void-init =&on-draw =&on-mouse =void-button
+@app-play [
+	=&manifest =void-init =&on-draw =&on-mouse
+	=void-button ]
 	&on-mouse ( x* y* win* -> )
 		.Mouse/state DEI ?&on-click
 		POP2 POP2 POP2 BRK &on-click STH2
@@ -538,31 +553,31 @@
 		;app-play/on-draw/zoom LDA2 INC2 ;app-play/on-draw/zoom STA2
 		get-active-win !<draw-win>
 
-@app-play/manifest
+@app-play/manifest ( * )
 	03 "Play $1
-	12 00 =expand-win "Expand $1
-	22 00 =tab-win "Tab $1
-	42 00 =close-win "Close $1
+	( > ) 12 00 =expand-win "Expand $1
+	( > ) 22 00 =tab-win "Tab $1
+	( > ) 42 00 =close-win "Close $1
 	0c "Keyboard $1
-	00 "a =app-play/notec "C $1
-	00 "w =app-play/notecs "C# $1
-	00 "s =app-play/noted "D $1
-	00 "e =app-play/noteds "D# $1
-	00 "d =app-play/notee "E $1
-	00 "f =app-play/notef "F $1
-	00 "t =app-play/notefs "F# $1
-	00 "g =app-play/noteg "G $1
-	00 "y =app-play/notegs "G# $1
-	00 "h =app-play/notea "A $1
-	00 "u =app-play/noteas "A# $1
-	00 "j =app-play/noteb "B $1
+	( > ) 00 "a =app-play/notec "C $1
+	( > ) 00 "w =app-play/notecs "C# $1
+	( > ) 00 "s =app-play/noted "D $1
+	( > ) 00 "e =app-play/noteds "D# $1
+	( > ) 00 "d =app-play/notee "E $1
+	( > ) 00 "f =app-play/notef "F $1
+	( > ) 00 "t =app-play/notefs "F# $1
+	( > ) 00 "g =app-play/noteg "G $1
+	( > ) 00 "y =app-play/notegs "G# $1
+	( > ) 00 "h =app-play/notea "A $1
+	( > ) 00 "u =app-play/noteas "A# $1
+	( > ) 00 "j =app-play/noteb "B $1
 	01 "Mode $1
-	00 20 =app-play/toggle-loop "Hit/Loop $1
+	( > ) 00 20 =app-play/toggle-loop "Hit/Loop $1
 	04 "View $1
-	10 00 =app-play/prev "Previous $1
-	20 00 =app-play/next "Next $1
-	00 "[ =app-play/zoomin "Zoom 20 "In $1
-	00 "] =app-play/zoomout "Zoom 20 "Out $1
+	( > ) 10 00 =app-play/prev "Previous $1
+	( > ) 20 00 =app-play/next "Next $1
+	( > ) 00 "[ =app-play/zoomin "Zoom 20 "In $1
+	( > ) 00 "] =app-play/zoomout "Zoom 20 "Out $1
 	$1
 
 @app-play/on-draw ( win* -- )
@@ -580,10 +595,13 @@
 (
 @|form )
 
-@app-form
-	=&manifest =void-init =&on-draw =&on-mouse =&on-button &manifest 01 "Form $1
-	42 00 =close-win "Cancel $1
-	$1
+@app-form [
+	=&manifest =void-init =&on-draw =&on-mouse
+	=&on-button ]
+	&manifest ( * )
+		01 "Form $1
+		( > ) 42 00 =close-win "Ok $1
+		$1
 	&on-draw ( win* -- )
 		POP2 ;buf/form #14 draw-input .Screen/x DEI2k #0030 ADD2 ROT DEO2
 		[ LIT2 &action $2 ] #08 !draw-button
@@ -614,10 +632,13 @@
 (
 @|option )
 
-@app-option
-	=&manifest =void-init =&on-draw =&on-mouse =&on-button &manifest 01 "Option $1
-	42 00 =close-win "Cancel $1
-	$1
+@app-option [
+	=&manifest =void-init =&on-draw =&on-mouse
+	=&on-button ]
+	&manifest ( * )
+		01 "Option $1
+		( > ) 42 00 =close-win "Cancel $1
+		$1
 	&on-draw ( win* -- )
 		POP2 [ LIT2 &target $2 ] draw-line POP2 draw-lb .Screen/x DEI2k #0030 ADD2 ROT DEO2
 		[ LIT2 &action $2 ] #08 !draw-button
@@ -638,10 +659,13 @@
 (
 @|error )
 
-@app-error
-	=&manifest =void-init =&on-draw =&on-mouse =&on-button &manifest 01 "Error $1
-	42 00 =close-win "Cancel $1
-	$1
+@app-error [
+	=&manifest =void-init =&on-draw =&on-mouse
+	=&on-button ]
+	&manifest ( * )
+		01 "Error $1
+		( > ) 42 00 =close-win "Cancel $1
+		$1
 	&on-draw ( win* -- )
 		POP2 ;&invalid-txt draw-line POP2 draw-lb [ LIT2 &target $2 ] draw-line POP2 draw-lb .Screen/x DEI2k #0030 ADD2 ROT DEO2
 		;dict/ok #08 !draw-button
@@ -663,11 +687,11 @@
 (
 @|void )
 
-@void-manifest
+@void-manifest ( * )
 	03 "Void $1
-	12 00 =expand-win "Expand $1
-	22 00 =tab-win "Tab $1
-	42 00 =close-win "Close $1
+	( > ) 12 00 =expand-win "Expand $1
+	( > ) 22 00 =tab-win "Tab $1
+	( > ) 42 00 =close-win "Close $1
 	$1
 
 @app-void
@@ -685,18 +709,6 @@
 
 @void-button ( button key win* -- )
 	POP2 POP2 BRK
-
-@edit-copy ( -- )
-	JMP2r
-
-@edit-paste ( -- )
-	JMP2r
-
-@edit-cut ( -- )
-	JMP2r
-
-@edit-erase ( -- )
-	JMP2r
 
 (
 @|globals )
