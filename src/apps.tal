@@ -12,8 +12,8 @@
 
 &manifest
 
-	03 "Disk $1
-		12 00 =expand-win "Expand $1
+	03 "About $1
+		12 00 =expand-win "Raise $1
 		22 00 =tab-win "Tab $1
 		42 00 =close-win "Close $1
 	$1
@@ -158,7 +158,7 @@ JMP2r
 &manifest
 
 	03 "Color $1
-		12 00 =expand-win "Expand $1
+		12 00 =expand-win "Raise $1
 		22 00 =tab-win "Tab $1
 		42 00 =close-win "Close $1
 	01 "File $1
@@ -244,7 +244,7 @@ JMP2r
 &manifest
 
 	03 "Tile $1
-		12 00 =expand-win "Expand $1
+		12 00 =expand-win "Raise $1
 		22 00 =tab-win "Tab $1
 		42 00 =close-win "Close $1
 	01 "File $1
