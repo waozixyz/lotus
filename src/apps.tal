@@ -773,31 +773,6 @@ JMP2r
 		00 "] =app-play/zoomout "Zoom 20 "Out $1
 	$1
 
-&on-draw ( win* -- )
-
-	( win/name ) #0008 ADD2 LDA2 make-src .File/name DEO2
-	#8000 .File/length DEO2
-	;mem .File/read DEO2
-	.File/success DEI2 .Audio0/length DEO2
-	;mem .File/success DEI2 [ LIT2 &zoom 0001 ] draw-waveform
-	draw-octave
-	.Screen/x DEI2 #0010 ADD2
-	.Screen/y DEI2
-	( env )
-	OVR2 OVR2 #01 draw-knob
-	OVR2 #0018 ADD2 OVR2 #07 draw-knob
-	OVR2 #0030 ADD2 OVR2 #06 draw-knob
-	OVR2 #0048 ADD2 OVR2 #0e draw-knob
-	( loop )
-	OVR2 #0060 ADD2 .Screen/x DEO2 DUP2 .Screen/y DEO2
-	;play-note/hit LDA draw-flip
-	( vol )
-	OVR2 #0078 ADD2 OVR2 #0f draw-knob
-	OVR2 #0090 ADD2 OVR2 #0f draw-knob
-	POP2 POP2
-
-JMP2r
-
 &on-mouse ( x* y* win* -> )
 
 	.Mouse/state DEI ?&on-click
@@ -881,8 +856,8 @@ BRK
 
 &zoomin ( -- )
 
-	;&zoom LDA2 #0001 EQU2 ?&skip
-		;&zoom LDA2 #0001 SUB2 ;&zoom STA2
+	;app-play/on-draw/zoom LDA2 #0001 EQU2 ?&skip
+		;app-play/on-draw/zoom LDA2 #0001 SUB2 ;app-play/on-draw/zoom STA2
 		get-active-win <draw-win>
 		&skip
 
@@ -890,10 +865,35 @@ JMP2r
 
 &zoomout ( -- )
 
-	;&zoom LDA2 INC2 ;&zoom STA2
+	;app-play/on-draw/zoom LDA2 INC2 ;app-play/on-draw/zoom STA2
 	get-active-win
 
 !<draw-win>
+
+@app-play/on-draw ( win* -- )
+
+	( win/name ) #0008 ADD2 LDA2 make-src .File/name DEO2
+	#8000 .File/length DEO2
+	;mem .File/read DEO2
+	.File/success DEI2 .Audio0/length DEO2
+	;mem .File/success DEI2 [ LIT2 &zoom 0001 ] draw-waveform
+	draw-octave
+	.Screen/x DEI2 #0010 ADD2
+	.Screen/y DEI2
+	( env )
+	OVR2 OVR2 #01 draw-knob
+	OVR2 #0018 ADD2 OVR2 #07 draw-knob
+	OVR2 #0030 ADD2 OVR2 #06 draw-knob
+	OVR2 #0048 ADD2 OVR2 #0e draw-knob
+	( loop )
+	OVR2 #0060 ADD2 .Screen/x DEO2 DUP2 .Screen/y DEO2
+	;play-note/hit LDA draw-flip
+	( vol )
+	OVR2 #0078 ADD2 OVR2 #0f draw-knob
+	OVR2 #0090 ADD2 OVR2 #0f draw-knob
+	POP2 POP2
+
+JMP2r
 
 (
 @|form )
