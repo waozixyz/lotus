@@ -99,13 +99,13 @@
 		get-active-win !<draw-win>
 	&select-prev ( -- )
 		.month LDZ DUP ?{
-		.year LDZ2k #0001 SUB2 ROT STZ2
-		POP .year LDZ2 #0b !app-calendar/select-month }
+			.year LDZ2k #0001 SUB2 ROT STZ2
+			POP .year LDZ2 #0b !app-calendar/select-month }
 		#01 SUB .year LDZ2 ROT !app-calendar/select-month
 	&select-next ( -- )
 		.month LDZ DUP #0b NEQ ?{
-		.year LDZ2k INC2 ROT STZ2
-		POP .year LDZ2 #00 !app-calendar/select-month }
+			.year LDZ2k INC2 ROT STZ2
+			POP .year LDZ2 #00 !app-calendar/select-month }
 		INC .year LDZ2 ROT !app-calendar/select-month
 
 @app-calendar/draw ( -- )
@@ -167,11 +167,11 @@
 	&on-click ( win* )
 		POP2 #03 SFT2 NIP ROT ROT #02 SFT2 NIP SWP OVR #0f GTH ?&skip
 		DUP #01 NEQ ?{
-		OVR .System/r STHk app-color/set-color STHr app-color/set-nibble }
+			OVR .System/r STHk app-color/set-color STHr app-color/set-nibble }
 		DUP #04 NEQ ?{
-		OVR .System/g STHk app-color/set-color STHr app-color/set-nibble }
+			OVR .System/g STHk app-color/set-color STHr app-color/set-nibble }
 		DUP #07 NEQ ?{
-		OVR .System/b STHk app-color/set-color STHr app-color/set-nibble }
+			OVR .System/b STHk app-color/set-color STHr app-color/set-nibble }
 		DUP #09 NEQ ?&no-swatch
 		OVR #02 SFT select-color [ LIT2 00 -Mouse/state ] DEO
 		&no-swatch &skip POP2 BRK
@@ -332,6 +332,9 @@
 		( > ) 12 00 =expand-win "Expand $1
 		( > ) 22 00 =tab-win "Tab $1
 		( > ) 42 00 =close-win "Close $1
+		02 "View $1
+		( > ) 10 00 =&move-up "Up $1
+		( > ) 20 00 =&move-down "Down $1
 		$1
 	&on-init ( win* -- )
 		STH2k
@@ -354,7 +357,9 @@
 		#0e ;<draw-chr>/color STA
 		DUP2
 		( win/scroll ) #000e ADD2 LDA2 OVR2
-		( win/mem-ptr ) #000a ADD2 LDA2 find-line &w .Screen/y DEI2 [ LIT2 &bound-y $2 ] GTH2 ?&end
+		( win/mem-ptr ) #000a ADD2 LDA2 find-line
+	&w ( -- )
+		.Screen/y DEI2 [ LIT2 &bound-y $2 ] GTH2 ?&end
 		LDAk #0a NEQ ?&no-lb
 		[ LIT2 &anchor $2 ] .Screen/x DEO2
 		.Screen/y DEI2k #0008 ADD2 ROT DEO2
@@ -383,6 +388,19 @@
 		POP2 POP2 POP2 POP2 POP2 BRK &valid SWP2 STA2
 		NIP2 NIP2 <draw-win>
 		BRK
+
+@app-text/move-up ( -- )
+	( TODO ) get-active-win
+	( win/scroll ) DUP2 #000e ADD2 LDA2k
+	( clamp ) DUP2 #0000 NEQ2 ?{ POP2 POP2 JMP2r }
+	( decr ) #0001 SUB2 SWP2 STA2
+	!<draw-win>
+
+@app-text/move-down ( -- )
+	( TODO ) get-active-win
+	( win/scroll ) DUP2 #000e ADD2 LDA2k
+	( incr ) INC2 SWP2 STA2
+	!<draw-win>
 
 (
 @|pict )
