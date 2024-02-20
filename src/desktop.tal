@@ -291,7 +291,7 @@ JMP2
 
 	( draw menu )
 	;get-active-win JSR2
-		DUP2 ;draw-win JSR2
+		DUP2 <draw-win> 
 		#0006 ADD2 LDA2
 
 	( get manifest )
@@ -533,7 +533,7 @@ JMP2r
 	#00 .DateTime/dotw DEI #20 SFT ;dict/dotw ADD2 ;draw-text JSR2
 	LIT ", ;draw-chr JSR2
 	#20 ;draw-chr JSR2
-	#00 .DateTime/day DEI ;draw-dec JSR2
+	#00 .DateTime/day DEI <draw-dec>
 	#20 ;draw-chr JSR2
 	#00 .DateTime/month DEI #20 SFT ;dict/months ADD2 ;draw-text JSR2
 	#20 ;draw-chr JSR2

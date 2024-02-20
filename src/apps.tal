@@ -25,7 +25,7 @@
 	DUP2
 	LDA2k #0008 ADD2 .Screen/x DEO2 POP2
 	.Screen/y DEI2k #000c ADD2 ROT DEO2
-	;mem .bounds LDZ2 ADD2 draw-dec
+	;mem .bounds LDZ2 ADD2 <draw-dec>
 	LIT "/ draw-chr
 	;&full draw-text
 	#20 draw-chr
@@ -34,7 +34,7 @@
 	DUP2
 	LDA2k .Screen/x DEO2 POP2
 	.Screen/y DEI2k #000c ADD2 ROT DEO2
-	#220a draw-dotted
+	#220a <draw-dotted>
 
 	LDA2k #0008 ADD2 ,&x STR2 INC2 INC2
 	LDA2k #0030 ADD2 ,&y STR2 POP2
@@ -98,7 +98,7 @@ JMP2r
 	.month STZ .year STZ2
 	get-active-win
 
-!draw-win
+!<draw-win>
 
 &select-prev ( -- )
 
@@ -173,7 +173,7 @@ BRK
 	.cursor/color LDZ #01 SFT ADD DEO
 	get-active-win
 
-!draw-win
+!<draw-win>
 
 &set-color ( value color -- )
 
@@ -284,7 +284,7 @@ JMP2r
 	DUP #09 NEQ ,&no-swatch JCN
 		OVR #01 SFT select-color
 		#ffff ;paint-patt/last STA2
-		get-active-win draw-win
+		get-active-win <draw-win>
 		,&release JMP
 		&no-swatch
 	DUP2 #000b NEQ2 ,&no-l JCN
@@ -548,7 +548,7 @@ BRK
 			POP2 POP2 POP2 POP2 POP2 BRK
 			&valid
 		SWP2 STA2
-	NIP2 NIP2 draw-win
+	NIP2 NIP2 <draw-win>
 
 BRK
 
@@ -847,7 +847,7 @@ JMP2
 	;play-note/hit LDA #00 EQU ;play-note/hit STA
 	get-active-win
 
-!draw-win
+!<draw-win>
 
 
 &notec ( -- ) #00 ,&press-key JMP
@@ -870,13 +870,13 @@ JMP2
 	#00 .Mouse/state DEO
 	get-active-win
 
-!draw-win
+!<draw-win>
 
 &zoomin ( -- )
 
 	;&zoom LDA2 #0001 EQU2 ,&skip JCN
 		;&zoom LDA2 #0001 SUB2 ;&zoom STA2
-		get-active-win ;draw-win JSR2
+		get-active-win <draw-win> 
 		&skip
 
 JMP2r
@@ -886,7 +886,7 @@ JMP2r
 	;&zoom LDA2 INC2 ;&zoom STA2
 	get-active-win
 
-!draw-win
+!<draw-win>
 
 (
 @|form )
@@ -935,7 +935,7 @@ BRK
 	DUP #0d EQU ,&validate-key JCN
 	( handle key )
 	;buf/form #0040 ;skey JSR2
-	draw-win
+	<draw-win>
 
 BRK
 	&validate-key ( key win* -- ) POP #0000 .Controller/button DEO2 POP2
