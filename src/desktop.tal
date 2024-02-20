@@ -129,7 +129,7 @@
 @pick-win ( x* y* -- id|ff )
 	,&y STR2
 	,&x STR2
-	#00 .length LDZ DUP #00 EQU ?&skip
+	[ LIT2 00 -length ] LDZ DUP #00 EQU ?&skip
 	&loop ( -- )
 		DUP #01 SUB get-win [ LIT2 &x $2 ] [ LIT2 &y $2 ] ROT2 within-win ?&found
 		#01 SUB LTHk ?&loop
@@ -174,7 +174,8 @@
 	;app-option #1807 #0000 DUP2 add-win !center-win
 
 @add-win ( name* app* h w y* x* -- )
-	.length LDZ <phex>/b #0a18 DEO
+	.length LDZ <phex>/b
+	#0a18 DEO
 	.length LDZ #40 SFT #00 SWP ;windows ADD2 STH2k STA2
 	INCr INCr STH2kr STA2
 	INCr INCr STH2kr STA2
@@ -207,7 +208,7 @@
 	.length LDZ ?{ JMP2r }
 	get-active-win
 	( win/mem-ptr ) #000a ADD2 LDA2k SWP2
-	( win/mem-len ) INC2 INC2 LDA2 mem-rel #00 .length LDZ #01 SUB #40 SFT2 ;windows ADD2 #0010 mclr .length LDZk #01 SUB SWP STZ
+	( win/mem-len ) INC2 INC2 LDA2 mem-rel [ LIT2 00 -length ] LDZ #01 SUB #40 SFT2 ;windows ADD2 #0010 mclr .length LDZk #01 SUB SWP STZ
 	sel-desktop !<draw-desktop>
 
 @sel-desktop ( -- )
@@ -215,7 +216,7 @@
 		;manifest ;<draw-menu>/manifest STA2
 		<draw-menu-bg>
 		<draw-menu>
-		#ff .sel/win STZ }
+		[ LIT2 ff -sel/win ] STZ }
 	JMP2r
 
 @tab-win ( -- )
@@ -252,7 +253,8 @@
 	;open-font !open-as
 
 @open-as-sound ( -- )
-	;open-sound !open-as
+	;open-sound
+	( >> )
 
 @open-as ( routine* -- )
 	get-sel-file LDAk LIT "- EQU ?&invalid
@@ -294,7 +296,8 @@
 	;<draw-item-text>/sel LDA #01 SUB !<sel-icon>
 
 @sel-down ( -- )
-	;<draw-item-text>/sel LDA INC !<sel-icon>
+	;<draw-item-text>/sel LDA INC
+	( >> )
 
 @<sel-icon> ( id -- )
 	( min ) DUP #80 LTH ?&min-ok
@@ -348,23 +351,24 @@
 	&continue
 
 @draw-clock ( -- )
-	#01 .Screen/auto DEO
+	[ LIT2 01 -Screen/auto ] DEO
 	#0004 .Screen/y DEO2
 	#0c ;<draw-chr>/color STA
-	.Screen/width DEI2 #0098 SUB2 #00 .DateTime/day DEI #0a LTH #30 SFT2 ADD2 .Screen/x DEO2
-	#00 .DateTime/dotw DEI #20 SFT ;dict/dotw ADD2 <draw-text>
+	.Screen/width DEI2 #0098 SUB2 [ LIT2 00 -DateTime/day ] DEI #0a LTH #30 SFT2 ADD2 .Screen/x DEO2
+	[ LIT2 00 -DateTime/dotw ] DEI #20 SFT ;dict/dotw ADD2 <draw-text>
 	LIT ", <draw-chr>
 	#20 <draw-chr>
-	#00 .DateTime/day DEI <draw-dec>
+	[ LIT2 00 -DateTime/day ] DEI <draw-dec>
 	#20 <draw-chr>
-	#00 .DateTime/month DEI #20 SFT ;dict/months ADD2 <draw-text>
+	[ LIT2 00 -DateTime/month ] DEI #20 SFT ;dict/months ADD2 <draw-text>
 	#20 <draw-chr>
-	.DateTime/hour DEI ,&d JSR LIT ": <draw-chr>
+	.DateTime/hour DEI draw-clock/d LIT ": <draw-chr>
 	.DateTime/minute DEI DUP ;update-clock/last STA
-	!&d
-	&d DUP #0a DIV ,&c JSR #0a
-	( MOD ) [ DIVk MUL SUB ]
-	&c #30 ADD !<draw-chr>
+	&d ( num -- )
+		DUP #0a DIV draw-clock/c #0a DIVk MUL SUB
+		( >> )
+	&c ( num -- )
+		#30 ADD !<draw-chr>
 
 @size-desktop-end
 
