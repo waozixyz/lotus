@@ -196,7 +196,6 @@
 	&err #0005 ADD2 !add-err
 	&callback ( -- )
 		( a* ) [ LIT2 &target $2 ] make-src !fdel
-		( open a file )
 
 @open-file ( file* -- )
 	DUP2 #ffff EQU2 ?&no-file

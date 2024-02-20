@@ -24,37 +24,22 @@ Since this is designed to be used principally on a handheld devices without a wi
 - `B+Right`, open a window
 - `B+Left`, close a window
 
-## Notes
-
-- `---- name.txt` is a filepath
-- `name.txt` is a filename
-- `desktop/id` is an icon
-- `desktop/file` is a file
-
 ## TODO
 
 - Change cursor icon on alt mod for drag.
-- Audio player.
+- Piano pcm player.
 - Terminal.
-- Piano.
 - Documentation.
-- Basic text viewer/editor?
-    - Scrollbar
-- Clock widget
-- Hex editor
-- Desktop
-    - Display current location
-- Tile
-    - Support ICN/CHR mode switching
-- Screensaver?
-- Swatch should show icon over selection
-- Catch maximum number of windows
+- Text Reader scrollbar
+- Hex Viewer
+- Screensaver
+- Throw error when windows count is > #10
 - Windows names shouldn't leave window bar bounds
 - Throw error when dir is longer than $400
-- Throw error when windows count is > #10
-- Window resize
+- Fade animation when launching rom
 
 ## Support
 
 - [theme](https://wiki.xxiivv.com/site/theme.html)
 - [snarf](https://wiki.xxiivv.com/site/snarf.html)
+
