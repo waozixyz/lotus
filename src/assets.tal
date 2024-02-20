@@ -6,6 +6,7 @@
 	&desktop "Desktop $1
 	&system "System $1
 	&applications "Applications $1
+	&build "Build 20 $1
 
 	&create "Create $1
 	&rename "Rename $1

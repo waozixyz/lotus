@@ -51,6 +51,12 @@
 	LDA2k .Screen/x DEO2
 	.Screen/y DEI2k #0010 ADD2 ROT DEO2
 	#220a <draw-dotted>
+	( | date )
+	.Screen/y DEI2k #0008 ADD2 ROT DEO2
+	.Screen/x DEI2k #0008 ADD2 ROT DEO2
+	#0a ;<draw-chr>/color STA
+	;dict/build <draw-text>
+	;meta/date <draw-text>
 	POP2 JMP2r
 	&items [
 	=size-assets-end =size-assets-start

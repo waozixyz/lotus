@@ -48,7 +48,7 @@
 	( name ) "Potato 0a
 	( details ) "An 20 "Operating 20 "System 0a
 	( author ) "By 20 "Hundred 20 "Rabbits 0a
-	( date ) "Feb 20 "19, 20 "2024 00 02
+	( date ) &date "Feb 20 "19, 20 "2024 00 02
 	( icon ) 83 =appicon
 	( mask ) 41 1705
 
