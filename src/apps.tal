@@ -193,7 +193,7 @@ JMP2r
 		&no-b
 	DUP #09 NEQ ?&no-swatch
 		OVR #02 SFT select-color
-		#00 .Mouse/state DEO
+		[ LIT2 00 -Mouse/state ] DEO
 		&no-swatch
 	&skip
 	POP2
@@ -226,9 +226,9 @@ JMP2r
 	[ .System/g ,&get-color JSR ] DUP ;dict/green draw-slider
 	[ .System/b ,&get-color JSR ] DUP ;dict/blue draw-slider
 	( swatches ) draw-swatches
-	( hex ) ROT draw-hex SWP draw-hex draw-hex
+	( hex ) ROT draw-hex SWP draw-hex !draw-hex
 
-JMP2r
+
 
 &get-color ( port -- hex )
 
@@ -283,21 +283,21 @@ JMP2r
 		OVR #01 SFT select-color
 		#ffff ;paint-patt/last STA2
 		get-active-win <draw-win>
-		!&release 
+		!&release
 		&no-swatch
 	DUP2 #000b NEQ2 ?&no-l
 		app-tile/prev-tile
-		!&release 
+		!&release
 		&no-l
 	DUP2 #070b NEQ2 ?&no-r
 		app-tile/next-tile
-		!&release 
+		!&release
 		&no-r
 	&skip
 	POP2
 
 BRK
-	&release #00 .Mouse/state DEO POP2 BRK
+	&release [ LIT2 00 -Mouse/state ] DEO POP2 BRK
 
 &copy-patt ( -- )
 
@@ -312,7 +312,7 @@ JMP2r
 	;dict/snarf-ext .File/name DEO2
 	#0010 .File/length DEO2
 	;patt-chr .File/read DEO2
-	!<draw-desktop> 
+	!<draw-desktop>
 
 
 
@@ -328,11 +328,11 @@ JMP2r
 
 &sel-tile ( addr* -- )
 
-	;paint-patt/addr STA2 !<draw-desktop> 
+	;paint-patt/addr STA2 !<draw-desktop>
 
 &clear-patt ( -- )
 
-	;paint-patt/addr LDA2 #0010 mclr !<draw-desktop> 
+	;paint-patt/addr LDA2 #0010 mclr !<draw-desktop>
 
 &goto-pattern ( -- )
 
@@ -381,14 +381,14 @@ JMP2r
 	draw-swatches
 
 	( addr )
-	#01 .Screen/auto DEO
+	[ LIT2 01 -Screen/auto ] DEO
 	;arrow-icns/h .Screen/addr DEO2
-	#0a .Screen/sprite DEO
-	#0f .Screen/sprite DEO
+	[ LIT2 0a -Screen/sprite ] DEO
+	[ LIT2 0f -Screen/sprite ] DEO
 	;paint-patt/addr LDA2 draw-short
-	#0f .Screen/sprite DEO
+	[ LIT2 0f -Screen/sprite ] DEO
 	;arrow-icns/h .Screen/addr DEO2
-	#1a .Screen/sprite DEO
+	[ LIT2 1a -Screen/sprite ] DEO
 
 JMP2r
 
@@ -404,9 +404,9 @@ JMP2r
 	ROT #00 SWP
 	SWP2
 	OVR2 OVR2
-	( ch1 ) .cursor/color LDZ #00 ,toggle-pixel JSR
-	( ch2 ) #0008 ADD2 .cursor/color LDZ #01 ,toggle-pixel JSR
-	!<draw-desktop> 
+	( ch1 ) .cursor/color LDZ #00 toggle-pixel
+	( ch2 ) #0008 ADD2 .cursor/color LDZ #01 toggle-pixel
+	!<draw-desktop>
 
 @toggle-pixel ( x* addr* color index -- )
 
@@ -530,7 +530,7 @@ JMP2r
 		LDAk #0a NEQ ?&no-lb
 			[ LIT2 &anchor $2 ] .Screen/x DEO2
 			.Screen/y DEI2k #0008 ADD2 ROT DEO2
-			!&resume 
+			!&resume
 			&no-lb
 		DUP2 wlen #30 SFT2 .Screen/x DEI2 ADD2 [ LIT2 &bound-x $2 ] LTH2 ?&no-wrap
 			#0c ;<draw-chr>/color STA
@@ -550,7 +550,7 @@ JMP2r
 	DUP2 #0002 ADD2 LDA2 #0012 ADD2 .Screen/y DEO2
 	( scroll, height )
 	DUP2 #000e ADD2 LDA2 NIP
-	ROT ROT #0005 ADD2 LDA #03 SUB !draw-scrollbar 
+	ROT ROT #0005 ADD2 LDA #03 SUB !draw-scrollbar
 
 &on-mouse ( x* y* win* -> )
 
@@ -605,7 +605,7 @@ BRK
 	.Screen/y DEI2k #0002 SUB2 ROT DEO2
 
 	( image )
-	#0008 ADD2 LDA2 make-src !draw-pict 
+	#0008 ADD2 LDA2 make-src !draw-pict
 
 &invert ( -- )
 
@@ -613,7 +613,7 @@ BRK
 
 	get-active-win
 		DUP2 set-anchor-body POP2
-	!app-pict/on-draw 
+	!app-pict/on-draw
 
 &prev ( -- )
 
@@ -630,7 +630,7 @@ BRK
 	close-win
 	#01 SUB
 		DUP ;draw-item-text/sel STA
-		get-file !open-pict 
+		get-file !open-pict
 
 &next ( -- )
 
@@ -647,7 +647,7 @@ BRK
 	close-win
 	INC
 		DUP ;draw-item-text/sel STA
-		get-file !open-pict 
+		get-file !open-pict
 
 (
 @|font )
@@ -691,12 +691,12 @@ JMP2r
 	.Screen/y DEI2 ,&y STR2
 	( win/mem-ptr ) #000a ADD2 LDA2
 		( skip widths ) #0100 ADD2 .Screen/addr DEO2
-	#15 .Screen/auto DEO
+	[ LIT2 15 -Screen/auto ] DEO
 	#0000
 	&loop
 		#00 OVR #0f AND #40 SFT2 [ LIT2 &x $2 ] ADD2 .Screen/x DEO2
 		#00 OVR #44 SFT2 [ LIT2 &y $2 ] ADD2 .Screen/y DEO2
-		#0a .Screen/sprite DEOk DEO
+		[ LIT2 0a -Screen/sprite ] DEOk DEO
 		INC NEQk ?&loop
 	POP2
 
@@ -717,7 +717,7 @@ JMP2r
 	close-win
 	#01 SUB
 		DUP ;draw-item-text/sel STA
-		get-file !open-font 
+		get-file !open-font
 
 &next ( -- )
 
@@ -734,7 +734,7 @@ JMP2r
 	close-win
 	INC
 		DUP ;draw-item-text/sel STA
-		get-file !open-font 
+		get-file !open-font
 
 (
 @|play )
@@ -831,7 +831,7 @@ BRK
 	close-win
 	#01 SUB
 		DUP ;draw-item-text/sel STA
-		get-file !open-sound 
+		get-file !open-sound
 
 &next ( -- )
 
@@ -848,7 +848,7 @@ BRK
 	close-win
 	INC
 		DUP ;draw-item-text/sel STA
-		get-file !open-sound 
+		get-file !open-sound
 
 &toggle-loop ( -- )
 
@@ -875,7 +875,7 @@ BRK
 
 	;mem .Audio0/addr DEO2
 	play-note
-	#00 .Mouse/state DEO
+	[ LIT2 00 -Mouse/state ] DEO
 	get-active-win
 
 !<draw-win>
@@ -917,7 +917,7 @@ JMP2r
 	POP2
 	;buf/form #14 draw-input
 	.Screen/x DEI2k #0030 ADD2 ROT DEO2
-	[ LIT2 &action $2 ] #08 !draw-button 
+	[ LIT2 &action $2 ] #08 !draw-button
 
 &on-mouse ( x* y* win* -> )
 
@@ -931,7 +931,7 @@ JMP2r
 	#000f LTH2 ROT ROT #0050 LTH2 AND ?&validate-mouse
 
 BRK
-	&validate-mouse ( -- ) #00 .Mouse/state DEO ,&validate JMP JMP2r
+	&validate-mouse ( -- ) [ LIT2 00 -Mouse/state ] DEO !&validate 
 
 &on-button ( button key win* -> )
 
@@ -984,7 +984,7 @@ BRK
 	[ LIT2 &target $2 ] draw-line POP2
 	draw-lb
 	.Screen/x DEI2k #0030 ADD2 ROT DEO2
-	[ LIT2 &action $2 ] #08 !draw-button 
+	[ LIT2 &action $2 ] #08 !draw-button
 
 &on-mouse ( x* y* win* -> )
 
@@ -1007,7 +1007,7 @@ BRK
 
 &validate ( -> )
 
-	#00 .Mouse/state DEO
+	[ LIT2 00 -Mouse/state ] DEO
 	#0000 .Controller/button DEO2
 	[ LIT2 &callback $2 ] JSR2
 	close-win
@@ -1038,7 +1038,7 @@ BRK
 	[ LIT2 &target $2 ] draw-line POP2
 	draw-lb
 	.Screen/x DEI2k #0030 ADD2 ROT DEO2
-	;dict/ok #08 !draw-button 
+	;dict/ok #08 !draw-button
 	&invalid-txt "Invalid 20 "Target: $1
 
 &on-mouse ( x* y* win* -> )
@@ -1062,7 +1062,7 @@ BRK
 
 &validate ( win* -> )
 
-	#00 .Mouse/state DEO
+	[ LIT2 00 -Mouse/state ] DEO
 	#0000 .Controller/button DEO2
 	close-win
 
