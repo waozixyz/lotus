@@ -66,14 +66,6 @@
 	.bounds STHk LDZ2 ADD2 STHr STZ2
 	JMP2r
 
-@mem-req ( len* -- ptr*|ffff )
-	;mem .bounds LDZ2 ADD2 ADD2k
-	( catch overflow ) LTH2k ?{
-		POP2 POP2 POP2 #ffff JMP2r }
-	( | update mem )
-	ROT2 .bounds LDZ2 ADD2 .bounds STZ2
-	POP2 JMP2r
-
 @mem-rel ( ptr* len* -- )
 	( | each window after ptr, subtract len )
 	DUP2 ,&offset STR2
@@ -706,16 +698,6 @@
 	POP2 JMP2r
 	&buf $10
 
-@draw-pict-small ( h color auto addr* -- )
-	.Screen/addr DEO2
-	.Screen/auto DEO
-	,&c STR
-	#00
-	&l ( -- )
-		[ LIT2 &c $1 -Screen/sprite ] DEO
-		INC GTHk ?&l
-	POP2 JMP2r
-
 @<draw-dec> ( short* -- )
 	[ LIT2 01 -Screen/auto ] DEO
 	[ LIT2 00 _&z ] STR
@@ -828,12 +810,7 @@
 	INC2 GTH2k ?&l
 	POP2 POP2 &e POP2r JMP2r
 
-@msfr ( a* b* len* -- )
-	STH2
-	EQU2k ?&e
-	&l DUP2 LDAk ROT ROT STH2kr ADD2 STA
-	#0001 SUB2 LTH2k ?&l
-	POP2 POP2 &e POP2r JMP2r
+
 
 @mcpy ( src* dst* len* -- )
 	SWP2 STH2
@@ -860,13 +837,7 @@
 	[ LIT2 01 -File/delete ] DEO
 	JMP2r
 
-@flen ( src* -- len* )
-	.File/name DEO2
-	#0040 .File/length DEO2
-	;&buf .File/stat DEO2
-	#00 ;&buf #0004 ADD2 STA
-	;&buf !shex
-	&buf $40
+
 
 @mswp ( len* a* b* -- )
 	,&b STR2

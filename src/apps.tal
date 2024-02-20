@@ -229,7 +229,6 @@ JMP2r
 	( hex ) ROT draw-hex SWP draw-hex !draw-hex
 
 
-
 &get-color ( port -- hex )
 
 	.cursor/color LDZ STHk #01 SFT ADD DEI

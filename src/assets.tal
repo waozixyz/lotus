@@ -6,13 +6,13 @@
 	&desktop "Desktop $1
 	&system "System $1
 	&applications "Applications $1
-	&memory "Memory $1
+
 	&create "Create $1
 	&rename "Rename $1
 	&delete "Delete $1
 	&clone "Clone $1
 	&open "Open $1
-	&assemble "Assemble $1
+
 	&ok "OK $1
 	&red "Red $1
 	&green "Green $1
@@ -27,7 +27,7 @@
 	&parent-ext ".. $1
 	&snarf-ext ".snarf $1
 	&theme-ext ".theme $1
-	&paper-ext ".paper $1
+
 	&newfile-txt "newfile.txt $1
 	&dotw
 		"Sun $1 "Mon $1 "Tue $1 "Wed $1
@@ -35,42 +35,11 @@
 	&months
 		"Jan $1 "Feb $1 "Mar $1 "Apr $1 "May $1 "Jun $1
 		"Jul $1 "Aug $1 "Sep $1 "Oct $1 "Nov $1 "Dec $1
-	&err-space "Space 20 "Unavailable $1
 	&no-metadata "Metadata 20 "Missing $1
-	( assembler )
-	&asm-input "Input(.tal): 20 $1
-	&asm-output "Output(.rom): 20 $1
-	&asm-assembled "Assembled 20 $1
-	&asm-reset "INIT $1
-	&asm-spacer 20 "-> 20 $1
-	&asm-in ", 20 "in 20 $1
-	&asm-bytes 20 "bytes( $1
-	&asm-end ") &asm-dot ". 0a $1
-	&asm-labels 20 "labels $1
-	&asm-unused "-- 20 "Unused 20 "label: 20 $1
-	&asm-sym-ext ".sym $1
-
-
-@err "!! 20 "Error: 20 $1
-	&source "Source $1
-	&duplicate "Duplicate $1
-	&number "Number $1
-	&reference "Reference $1
-	&distance "Distance $1
-	&invalid "Invalid $1
-	&mode "Mode $1
-	&rewind "Rewind $1
-
-@opcodes
-	"LIT "INC "POP "NIP "SWP "ROT "DUP "OVR
-	"EQU "NEQ "GTH "LTH "JMP "JCN "JSR "STH
-	"LDZ "STZ "LDR "STR "LDA "STA "DEI "DEO
-	"ADD "SUB "MUL "DIV "AND "ORA "EOR "SFT
-	&brk "BRK
 
 ( icn )
 
-@font ( atari8 )
+@font ( atari8 ) [
 aa55 aa55 aa55 aa55 ffff ffff ffff ffff
 7eff ffff ffff ff7e 003c 7e7e 7e7e 3c00
 0000 183c 3c18 0000 0000 0018 1800 0000
@@ -209,12 +178,12 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
 	0202 0404 0830 c000
 	0000 183c 3c18 0000
 
-@appicon
+@appicon [
 0000 0000 0007 0605 0000 0000 070f 0f0f 0000 0000 00ff 00ff 0000 0000 ffff ffff
 0000 0000 00e0 60a0 0000 0000 e0f0 f0f0 0505 0505 0505 0607 0f0f 0f0f 0f0f 0f0f
 ffff 7eff e7ff 00ff ffff ffff ffff ffff a0a0 a0a0 a0a0 60e0 f0f0 f0f0 f0f0 f0f0
 0007 0507 0100 0000 0f0f 0f0f 0701 0000 00ff faff 0000 0000 ffff ffff ff00 0000
-00e0 20e0 8000 0000 f0f0 f0f0 e080 0000
+00e0 20e0 8000 0000 f0f0 f0f0 e080 0000 ]
 
 ( chr )
 
