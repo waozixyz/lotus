@@ -31,7 +31,6 @@ Since this is designed to be used principally on a handheld devices without a wi
 - Terminal.
 - Documentation.
 - Text Reader scrollbar should be clickable
-- Display screen size in About
 - Hex Viewer
 - Screensaver
 - Wallpaper

@@ -57,7 +57,13 @@
 	#0a ;<draw-chr>/color STA
 	;dict/build <draw-text>
 	;meta/date <draw-text>
-	POP2 JMP2r
+	POP2
+	( | screen size )
+	.Screen/x DEI2k #0050 ADD2 ROT DEO2
+	#0c ;<draw-chr>/color STA
+	.Screen/width DEI2 #03 SFT2 NIP <draw-byte>
+	[ LIT "x ] <draw-chr>
+	.Screen/height DEI2 #03 SFT2 NIP !<draw-byte>
 	&items [
 	=size-assets-end =size-assets-start
 	=dict/fontsicons =icons/font
@@ -393,13 +399,13 @@
 	( TODO ) get-active-win
 	( win/scroll ) DUP2 #000e ADD2 LDA2k
 	( clamp ) DUP2 #0000 NEQ2 ?{ POP2 POP2 JMP2r }
-	( decr ) #0001 SUB2 SWP2 STA2
+	( decr ) #0004 SUB2 SWP2 STA2
 	!<draw-win>
 
 @app-text/move-down ( -- )
 	( TODO ) get-active-win
 	( win/scroll ) DUP2 #000e ADD2 LDA2k
-	( incr ) INC2 SWP2 STA2
+	( incr ) #0004 ADD2 SWP2 STA2
 	!<draw-win>
 
 (

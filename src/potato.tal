@@ -111,30 +111,30 @@
 	( remove linebreaks )
 	&w ( -- )
 		LDAk #0a NEQ ?{
-		STH2k #00 STH2r STA }
+			STH2k #00 STH2r STA }
 		INC2 LDAk ?&w
 	POP2 JMP2r
 
 @<set-dir> ( path* -- )
 	has-active-paths ?{
-	;dir scpy #00 !<sel-icon> }
+		;dir scpy #00 !<sel-icon> }
 	POP2 JMP2r
 
 @push-dir ( path* -- )
 	has-active-paths ?{
-	DUP2 ;dict/parent-ext scmp ?pop-dir
-	LIT "/ ;dir STH2k sput STH2r scat #00 !<sel-icon> }
+		DUP2 ;dict/parent-ext scmp ?pop-dir
+		LIT "/ ;dir STH2k sput STH2r scat #00 !<sel-icon> }
 	POP2 JMP2r
 
 @pop-dir ( path* -- )
 	has-active-paths ?{
-	;dir ;dict/home-ext scmp ?&skip
-	;dir DUP2 scap/
-	&l ( -- )
-		LDAk LIT "/ EQU ?{
-			#0001 SUB2 LTH2k ?&l }
-	NIP2 #00 ROT ROT STA
-	&skip POP2 #00 !<sel-icon> }
+		;dir ;dict/home-ext scmp ?&skip
+		;dir DUP2 scap/
+		&l ( -- )
+			LDAk LIT "/ EQU ?{
+				#0001 SUB2 LTH2k ?&l }
+		NIP2 #00 ROT ROT STA
+		&skip POP2 #00 !<sel-icon> }
 	POP2 JMP2r
 
 @has-active-paths ( -- f )
@@ -142,7 +142,7 @@
 	&l ( -- )
 		( win ) DUP get-win
 		( win/name ) #0008 ADD2 LDA2 ;no-name EQU2 ?{
-		NIP sel-win center-win #01 JMP2r }
+			NIP sel-win center-win #01 JMP2r }
 		INC GTHk ?&l
 	&skip ( -- )
 		POP2 #00 JMP2r
@@ -739,10 +739,10 @@
 	JMP2r
 
 @draw-short ( short* -- )
-	SWP draw-byte
+	SWP <draw-byte>
 	( >> )
 
-@draw-byte ( byte -- )
+@<draw-byte> ( byte -- )
 	DUP #04 SFT draw-hex
 	( >> )
 
@@ -759,9 +759,9 @@
 	[ LIT2 01 -Screen/auto ] DEO
 	.Screen/x DEI2 ,&anchor STR2
 	&w LDAk #0a NEQ ?{
-	[ LIT2 &anchor $2 ] .Screen/x DEO2
-	.Screen/y DEI2k #0008 ADD2 ROT DEO2
-	!&continue }
+		[ LIT2 &anchor $2 ] .Screen/x DEO2
+		.Screen/y DEI2k #0008 ADD2 ROT DEO2
+		!&continue }
 	LDAk #00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
 	[ LIT2 0e -Screen/sprite ] DEO
 	&continue INC2 LDAk ?&w
@@ -785,7 +785,7 @@
 	STH2
 	&l ( -- )
 		LDAk ?{
-		&d LDA LDAr STHr EQU JMP2r }
+			&d LDA LDAr STHr EQU JMP2r }
 		LDAk LDAkr STHr NEQ ?&d
 	INC2 INC2r !&l
 
@@ -933,8 +933,7 @@
 	[ LIT2 &g $2 ] .System/g DEO2
 	[ LIT2 &b $2 ] .System/b DEO2
 	( | assets )
-	#0010 seek
-	;assets-chr-end ;assets-chr SUB2 .File/length DEO2
+	#0010 seek ;assets-chr-end ;assets-chr SUB2 .File/length DEO2
 	;assets-chr .File/read DEO2
 	JMP2r
 
