@@ -98,15 +98,15 @@
 		.year STZ2
 		get-active-win !<draw-win>
 	&select-prev ( -- )
-		.month LDZ DUP ?&no-jan
+		.month LDZ DUP ?{
 		.year LDZ2k #0001 SUB2 ROT STZ2
-		POP #0b .year LDZ2 ROT !app-calendar/select-month
-		&no-jan #01 SUB .year LDZ2 ROT !app-calendar/select-month
+		POP .year LDZ2 #0b !app-calendar/select-month }
+		#01 SUB .year LDZ2 ROT !app-calendar/select-month
 	&select-next ( -- )
-		.month LDZ DUP #0b NEQ ?&no-dec
+		.month LDZ DUP #0b NEQ ?{
 		.year LDZ2k INC2 ROT STZ2
-		POP #00 .year LDZ2 ROT !app-calendar/select-month
-		&no-dec INC .year LDZ2 ROT !app-calendar/select-month
+		POP .year LDZ2 #00 !app-calendar/select-month }
+		INC .year LDZ2 ROT !app-calendar/select-month
 
 @app-calendar/draw ( -- )
 	( | start day )
@@ -167,11 +167,11 @@
 	&on-click ( win* )
 		POP2 #03 SFT2 NIP ROT ROT #02 SFT2 NIP SWP OVR #0f GTH ?&skip
 		DUP #01 NEQ ?{
-			OVR .System/r STHk app-color/set-color STHr app-color/set-nibble }
+		OVR .System/r STHk app-color/set-color STHr app-color/set-nibble }
 		DUP #04 NEQ ?{
-			OVR .System/g STHk app-color/set-color STHr app-color/set-nibble }
+		OVR .System/g STHk app-color/set-color STHr app-color/set-nibble }
 		DUP #07 NEQ ?{
-			OVR .System/b STHk app-color/set-color STHr app-color/set-nibble }
+		OVR .System/b STHk app-color/set-color STHr app-color/set-nibble }
 		DUP #09 NEQ ?&no-swatch
 		OVR #02 SFT select-color [ LIT2 00 -Mouse/state ] DEO
 		&no-swatch &skip POP2 BRK
@@ -180,7 +180,7 @@
 		get-active-win !<draw-win>
 	&set-color ( value color -- )
 		SWP ,&v STR
-		.cursor/color LDZ STHk #01 SFT ADD DEI STHr #01 AND STHk #0f SWP [ #60 SFT SFT ] AND STHr #00 EQU [ LIT &v $1 ] SWP [ #60 SFT SFT ] ADD JMP2r
+		.cursor/color LDZ STHk #01 SFT ADD DEI STHr #01 AND STHk #0f SWP #60 SFT SFT AND STHr #00 EQU [ LIT &v $1 ] SWP #60 SFT SFT ADD JMP2r
 	&on-draw ( win* -- )
 		POP2 [ .System/r ,&get-color JSR ] DUP ;dict/red draw-slider [ .System/g ,&get-color JSR ] DUP ;dict/green draw-slider [ .System/b ,&get-color JSR ] DUP ;dict/blue draw-slider
 		( swatches ) draw-swatches
@@ -291,7 +291,7 @@
 @toggle-pixel ( x* addr* color index -- )
 	STH2
 	LDAk STH
-	SWP2 NIP STHr SWP STH2r SFT #01 AND ?&do-set
+	SWP2 NIP STHr SWP SFTr STHr #01 AND ?&do-set
 	( mask ) #0107 ROT #07 AND SUB #40 SFT SFT #ff EOR AND
 	( save ) ROT ROT STA
 	JMP2r
