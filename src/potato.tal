@@ -846,17 +846,18 @@
 	#0001 .Disk/length DEO2
 	.File/name DEO2
 	#0001 .File/length DEO2
-	;&b &stream DUP2 .File/read DEO2
-	.File/success DEI2 ORA ?&continue
-	POP2 JMP2r
-	&continue DUP2 .Disk/write DEO2
-	,&stream JMP
-	JMP2r
+	;&b
+	&stream ( -- )
+		DUP2 .File/read DEO2
+		.File/success DEI2 ORA ?&continue
+		POP2 JMP2r
+		&continue DUP2 .Disk/write DEO2
+		!&stream
 	&b $1
 
 @fdel ( src* -- )
 	.File/name DEO2
-	#01 .File/delete DEO
+	[ LIT2 01 -File/delete ] DEO
 	JMP2r
 
 @flen ( src* -- len* )
@@ -864,7 +865,7 @@
 	#0040 .File/length DEO2
 	;&buf .File/stat DEO2
 	#00 ;&buf #0004 ADD2 STA
-	;&buf ;shex JMP2
+	;&buf !shex
 	&buf $40
 
 @mswp ( len* a* b* -- )
@@ -927,9 +928,8 @@
 	DUP STH2r ROT DUP #08 EQU ?&erase
 	DUP #20 LTH ?&invalid
 	DUP #7e GTH ?&invalid
-	POP OVR2 slen [ LIT2 &len $2 ] LTH2 ?&ok
+	POP OVR2 slen [ LIT2 &len $2 ] LTH2 ?sput
 	POP2 POP JMP2r
-	&ok ;sput JMP2
 	&erase POP spop POP JMP2r
 	&invalid POP2 POP2 JMP2r
 
@@ -952,7 +952,7 @@
 	;metadata/start LDA2 #0100 SUB2 seek
 	( version ) #0001 .File/length DEO2
 	;metadata/version .File/read DEO2
-	( body ) ;metadata/body STH2
+	( body ) [ LIT2r =metadata/body ]
 	&s ( -- )
 		STH2kr DUP2 .File/read DEO2
 		INC2r LDA ?&s
@@ -962,12 +962,15 @@
 	INC2 .File/read DEO2
 	JMP2r
 
-@save-theme ( -- )
+@<save-theme> ( -- )
 	;dict/theme-ext make-src .File/name DEO2
 	#0002 .File/length DEO2
-	.System/r DEI2 ,&w JSR .System/g DEI2 ,&w JSR .System/b DEI2 ,&w JSR #0010 .File/length DEO2
+	( r ) .System/r DEI2 <save-theme>/w
+	( g ) .System/g DEI2 <save-theme>/w
+	( b ) .System/b DEI2 <save-theme>/w
+	#0010 .File/length DEO2
 	;patt-chr .File/write DEO2
-	;<draw-desktop> JMP2
+	!<draw-desktop>
 	&w ( -- )
 		,&b STR2
 		;&b .File/write DEO2

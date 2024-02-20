@@ -162,7 +162,7 @@ JMP2r
 		22 00 =tab-win "Tab $1
 		42 00 =close-win "Close $1
 	01 "File $1
-		01 "s =save-theme "Save $1
+		01 "s =<save-theme> "Save $1
 	04 "Select $1
 		00 "1 =select-color/0 "Background $1
 		00 "2 =select-color/1 "Color1 $1
@@ -249,7 +249,7 @@ JMP2r
 		22 00 =tab-win "Tab $1
 		42 00 =close-win "Close $1
 	01 "File $1
-		01 "s =save-theme "Save $1
+		01 "s =<save-theme> "Save $1
 	05 "Edit $1
 		00 08 =app-tile/clear-patt "Clear $1
 		40 00 =app-tile/prev-tile "Prev $1
