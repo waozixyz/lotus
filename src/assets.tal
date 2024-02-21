@@ -122,25 +122,27 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
 	f804 f2fa fafa faf2
 	8080 8080 8040 3f00
 	0202 0202 0204 f800
-@bigpixel-icn
+@bigpixel-icn [
 	7cfe fefe fefe 7c00
-	0000 0000 0000 0000
-@line-icn
-	00aa 0000 0000 0000
-@vert-icn
-	8080 8080 8080 8080
-@cursor-icn
-	0040 6070 787c 7008
+	0000 0000 0000 0000 ]
+@line-icn [
+	00aa 0000 0000 0000 ]
+@vert-icn [
+	8080 8080 8080 8080 ]
+@clip-icn [
+	0000 0000 00c6 c600 ]
+@cursor-icn [
+	0040 6070 787c 7008 ]
 @arrow-icns
 	&h 0010 307c 7c30 1000
 	&v 0018 3c7e 1818 0000
-@check-icn
-	aa55 aa55 aa55 aa55
-@fill-icn
-	ffff ffff ffff ffff
-@slider-icns
+@check-icn [
+	aa55 aa55 aa55 aa55 ]
+@fill-icn [
+	ffff ffff ffff ffff ]
+@slider-icns [
 	f0f0 f0f0 f0f0 f000
-	50a0 50a0 50a0 5000
+	50a0 50a0 50a0 5000 ]
 @swatch-icns
 	&line
 	7f80 8080 8080 7f00

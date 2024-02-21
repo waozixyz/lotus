@@ -533,7 +533,7 @@
 	LDAk LIT "? EQU ?&no-size
 	.Screen/x DEI2k #0020 ADD2 STH2k ROT DEO2
 	.Screen/y DEI2k #0014 SUB2 ROT DEO2
-	#0005 ADD2 <draw-text>
+	#0005 ADD2 #0f <draw-text-clip>
 	STH2r .Screen/x DEO2
 	.Screen/y DEI2k #0009 ADD2 ROT DEO2
 	#01 ;<draw-chr>/color STA
@@ -727,8 +727,17 @@
 	POP2 JMP2r
 
 @<draw-text-clip> ( str* length -- )
-	( TODO )
-	JMP2r
+	STH
+	[ LIT2 01 -Screen/auto ] DEO
+	[ LITr 00 ]
+	&w ( -- )
+		EQUkr STHr ?&clip
+		LDAk <draw-chr>
+		INCr INC2 LDAk ?&w
+	POP2 POP2r JMP2r
+	&clip ( addr* `bounds* -- )
+		;clip-icn <draw-chr>/any
+		POP2 POP2r JMP2r
 
 @draw-line ( str* -- str* )
 	.Screen/x DEI2 ,&x STR2
@@ -756,9 +765,11 @@
 	( >> )
 
 @<draw-chr> ( char -- )
-	#00 SWP #30 SFT2 ;font ADD2 .Screen/addr DEO2
-	[ LIT2 &color 03 -Screen/sprite ] DEO
-	JMP2r
+	#00 SWP #30 SFT2 ;font ADD2
+	&any ( addr* -- )
+		.Screen/addr DEO2
+		[ LIT2 &color 03 -Screen/sprite ] DEO
+		JMP2r
 
 @draw-txt ( txt* -- end* )
 	[ LIT2 01 -Screen/auto ] DEO
