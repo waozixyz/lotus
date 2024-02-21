@@ -317,7 +317,7 @@
 		LDA2k #0038 ADD2 .Screen/x DEO2
 		INC2k INC2 LDA2 #001c ADD2 .Screen/y DEO2
 		DUP2 #0008 ADD2 LDA2 make-src has-metadata ?&valid-metadata
-		( TODO: make prettier ) ;dict/no-metadata draw-str POP2 POP2 JMP2r
+		( TODO: make prettier ) ;dict/no-metadata draw-txt POP2 JMP2r
 	&valid-metadata ( win* -- )
 		load-metadata ;metadata/body draw-txt POP2 LDA2k #0010 ADD2 .Screen/x DEO2
 		INC2k INC2 LDA2 #0020 ADD2 .Screen/y DEO2

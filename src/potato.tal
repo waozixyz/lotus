@@ -710,7 +710,7 @@
 	DUP2 get-strw STH2
 	.Screen/x DEI2k STH2r SUB2 ROT DEO2
 
-@draw-str ( str* -- str* )
+@<draw-str> ( str* -- str* )
 	LDAk #00 EQU ?&skip
 	[ LIT2 01 -Screen/auto ] DEO
 	&w ( -- )
@@ -723,7 +723,12 @@
 	( >> )
 
 @<draw-text> ( str* -- )
-	draw-str POP2 JMP2r
+	<draw-str>
+	POP2 JMP2r
+
+@<draw-text-clip> ( str* length -- )
+	( TODO )
+	JMP2r
 
 @draw-line ( str* -- str* )
 	.Screen/x DEI2 ,&x STR2

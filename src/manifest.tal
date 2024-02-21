@@ -191,7 +191,7 @@
 	[ LIT2 &manifest =manifest ]
 	&cat ( -- )
 		#0b0a [ LIT2 &sel ff &id $1 ] EQU [ JMP SWP POP ] ;<draw-chr>/color STA
-		INC2k draw-str POP2 #20 <draw-chr>
+		INC2k <draw-text> #20 <draw-chr>
 		skip-sub ,&id LDR INC ,&id STR
 		LDAk ?&cat
 	POP2 JMP2r
@@ -219,7 +219,7 @@
 	( | mod )
 	STH2k #0078 ADD2 .Screen/x DEO2
 	LDA2k get-modkey-str draw-str-right POP2 STH2r .Screen/x DEO2
-	#0004 ADD2 !draw-str
+	#0004 ADD2 !<draw-str>
 
 @<update-cursor> ( color addr* -- )
 	[ LIT2 00 -Screen/auto ] DEO
