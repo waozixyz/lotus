@@ -269,6 +269,8 @@
 	;on-frame-fade .Screen/vector DEO2
 	#0000 DUP2 .Mouse/vector DEO2
 	( ) .Controller/vector DEO2
+	[ LIT2 00 -Screen/auto ] DEO
+	;fill-icn .Screen/addr DEO2
 	#40 <draw-cursor>
 	JMP2r
 
