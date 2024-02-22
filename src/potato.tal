@@ -78,7 +78,7 @@
 	( | update bound )
 	.bounds LDZ2 OVR2 SUB2 .bounds STZ2
 	( | shift memory left from ptr, by length )
-	#fff0 SWP2 !msfl
+	#fff0 SWP2 !<msfl>
 
 @mem-type ( addr* -- type )
 	DUP2 ;mem LTH2 ?&a
@@ -229,12 +229,6 @@
 	#0005 ADD2 make-src <load-theme>
 	open-tile !open-color
 
-@open-rom ( file* -- )
-	#0005 ADD2 make-src .File/name DEO2
-	#fe00 .File/length DEO2
-	;loader-rom #ffd6 #0029 mcpy <clear-screen>
-	POP2r #ffd6 JMP2
-
 @open-pict ( file* -- )
 	#0005 ADD2 DUP2 read-pict-size ;app-pict SWP2 INC INC #0000 DUP2 add-win !center-win
 
@@ -255,6 +249,49 @@
 	POP ;no-name ;app-color #0a0f
 	( y ) .Screen/height DEI2 #0088 SUB2
 	( x ) .Screen/width DEI2 #00c0 SUB2 !add-win
+
+@open-rom ( file* -- )
+	;load-rom-callback/src STA2
+	;load-rom-callback !<animate-fade>
+
+@load-rom-callback ( file* -- )
+	[ LIT2 &src $2 ] #0005 ADD2 make-src .File/name DEO2
+	#fe00 .File/length DEO2
+	;loader-rom #ffd6 #0029 <mcpy>
+	<clear-screen>
+	POP2r #ffd6 JMP2
+
+(
+@|animation )
+
+@<animate-fade> ( callback* -- )
+	;on-frame-fade/callback STA2
+	;on-frame-fade .Screen/vector DEO2
+	#0000 DUP2 .Mouse/vector DEO2
+	( ) .Controller/vector DEO2
+	JMP2r
+
+@on-frame-fade ( -> )
+	[ LIT2 &f $2 ] INC2k ,&f STR2
+	#00 SFT2 STH2
+	[ LIT2 66 -Screen/auto ] DEO
+	#0000 DUP2 .Screen/x DEO2
+	( ) .Screen/y DEO2
+	.Screen/height DEI2 #03 SFT2 NIP ,&y STR
+	[ LIT2 &y 10 00 ]
+	&h ( -- )
+		;fade-icns .Screen/addr DEO2
+		( hor offset ) #00 OVR #30 SFT2
+		( wipe ) STH2kr #30 SFT2 SWP2 SUB2 .Screen/x DEO2
+		[ LIT2 0a -Screen/sprite ] DEO
+		INC GTHk ?&h
+	POP2
+	( | detect end )
+	POP2r .Screen/x DEI2 DUP2 #8000 LTH2 ?{ POP2 #0000 }
+	.Screen/width DEI2 LTH2 ?{
+		#0000 .Screen/vector DEO2
+		[ LIT2 &callback $2 ] JSR2 }
+	BRK
 
 (
 @|helpers )
@@ -549,7 +586,8 @@
 	STH2r .Screen/x DEO2
 	.Screen/y DEI2k #0009 ADD2 ROT DEO2
 	#01 ;<draw-chr>/color STA
-	DUP2 ;&buf #0004 mcpy ;&buf shex <draw-dec>
+	DUP2 ;&buf #0004 <mcpy>
+	;&buf shex <draw-dec>
 	#20 <draw-chr>
 	;dict/bytes !<draw-text>
 	&buf $5
@@ -834,14 +872,14 @@
 	INC2 LDAk ?&w
 	POP2 JMP2r
 
-@msfl ( a* b* len* -- )
+@<msfl> ( a* b* len* -- )
 	STH2
 	SWP2 EQU2k ?&e
 	&l DUP2k STH2kr ADD2 LDA ROT ROT STA
 	INC2 GTH2k ?&l
 	POP2 POP2 &e POP2r JMP2r
 
-@mcpy ( src* dst* len* -- )
+@<mcpy> ( src* dst* len* -- )
 	SWP2 STH2
 	OVR2 ADD2 SWP2 &l LDAk STH2kr STA
 	INC2r INC2 GTH2k ?&l

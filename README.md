@@ -32,7 +32,6 @@ Since this is designed to be used principally on a handheld devices without a wi
 - Documentation.
 - Text Reader scrollbar should be clickable
 - Hex Viewer
-- Fade animation when launching rom
 
 ## Support
 

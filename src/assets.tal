@@ -172,12 +172,17 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
 	7f7f 7f7f 7f7f 7f7f
 	7f7f 7f7f 7f7f 7f7f
 	7f7f 7f7f 7f7f ffff
-@knob-icns
+@knob-icns [
 	0003 0c10 2020 4040
 	00c0 3008 0404 0202
 	4040 2020 100c 0300
 	0202 0404 0830 c000
-	0000 183c 3c18 0000
+	0000 183c 3c18 0000 ]
+@fade-icns [ 
+	ffff ffff ffff ffff 7eff ffff ffff ff7e
+	3c7e ffff ffff 7e3c 183c 7eff ff7e 3c18
+	0018 3c7e 7e3c 1800 0000 183c 3c18 0000
+	0000 0018 1800 0000 ]
 
 ( chr )
 
