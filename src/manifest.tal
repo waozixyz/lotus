@@ -52,7 +52,7 @@
 	untrap ;<draw-menu>/sel LDA DUP #ff EQU ?{
 		DUP #00 <draw-sub>
 		#ff ;<draw-menu>/sel STA
-		redraw-all <draw-menu> }
+		<redraw-all> <draw-menu> }
 	POP JMP2r
 
 @<menu-select> ( cat -- )
@@ -64,7 +64,7 @@
 	( unselected ) DUP #ff EQU ?{ DUP #00 <draw-sub> }
 	POP
 	( | draw )
-	redraw-all #ff ;<draw-sub>/sel STA
+	<redraw-all> #ff ;<draw-sub>/sel STA
 	DUP ;<draw-menu>/sel STA
 	#ff <draw-sub>
 	!<draw-menu>

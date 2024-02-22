@@ -295,7 +295,7 @@
 (
 @|drawing )
 
-@redraw-all ( -- )
+@<redraw-all> ( -- )
 	<draw-menu-bg>
 
 @<draw-desktop> ( -- )
