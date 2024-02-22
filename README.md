@@ -1,6 +1,6 @@
 # A potato
 
-A desktop environment, written in [Uxntal](https://wiki.xxiivv.com/site/uxntal.html).
+[Potato](https://wiki.xxiivv.com/site/potato.html) is a desktop environment, written in [Uxntal](https://wiki.xxiivv.com/site/uxntal.html).
 
 ## Build
 
@@ -24,12 +24,19 @@ Since this is designed to be used principally on a handheld devices without a wi
 - `B+Right`, open a window
 - `B+Left`, close a window
 
+## Editing the theme
+
+Saving the theme, from the tile or theme editor will create a hidden file called [.theme](https://wiki.xxiivv.com/site/theme.html), which can be opened and edited in [Nasu](https://wiki.xxiivv.com/site/nasu.html).
+
+## Adding a wallpaper
+
+The wallpaper is an invisible file called `.wallpaper` in the working directory, the file is a [1bpp icn](https://wiki.xxiivv.com/site/icn_format.html) of the size of the desktop. The wallpaper image can be created with [Noodle](https://wiki.xxiivv.com/site/noodle.html).
+
 ## TODO
 
 - Change cursor icon on alt mod for drag.
 - Fix mouse picking issue in Play app.
 - Terminal.
-- Documentation.
 - Text Reader scrollbar should be clickable
 - Hex Viewer
 

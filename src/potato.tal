@@ -251,10 +251,11 @@
 	( x ) .Screen/width DEI2 #00c0 SUB2 !add-win
 
 @open-rom ( file* -- )
-	LDAk LIT "? EQU ?&err
+	LDAk [ LIT "? ] EQU ?&err
 	;load-rom-callback/src STA2
 	;load-rom-callback !<animate-fade>
-	&err #0005 ADD2 ;dict/oversize-rom SWP2 !add-err
+	&err ( file* -- )
+		#0005 ADD2 ;dict/oversize-rom SWP2 !add-err
 
 @load-rom-callback ( file* -- )
 	[ LIT2 &src $2 ] #0005 ADD2 make-src !load-rom
