@@ -628,12 +628,12 @@
 	JMP2r
 
 @on-frame-saver ( -> )
-	( 30 fps ) [ LIT &fps 00 ] INCk DUP #30 NEQ ?{
-		( | unlock )
+	[ LIT &fps 00 ] INCk
+	( unlock ) UP #30 NEQ ?{
 		;on-event-saver DUP2 .Mouse/vector DEO2
 		.Controller/vector DEO2 }
 	,&fps STR
-	#01 AND ?{ BRK }
+	( 30 fps ) #03 AND #00 EQU ?{ BRK }
 	#26 .Screen/auto DEO
 	( | shadow )
 	,&x LDR2 #0018 SUB2 .Screen/x DEO2
