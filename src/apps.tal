@@ -633,13 +633,8 @@
 		;on-event-saver DUP2 .Mouse/vector DEO2
 		.Controller/vector DEO2 }
 	,&fps STR
-	( 30 fps ) #03 AND #00 EQU ?{ BRK }
-	#26 .Screen/auto DEO
-	( | shadow )
-	,&x LDR2 #0018 SUB2 .Screen/x DEO2
-	,&y LDR2 #0018 SUB2 .Screen/y DEO2
-	;saver-shadow-icns .Screen/addr DEO2
-	#0a .Screen/sprite DEOk DEOk DEO
+	( 30 fps ) DUP #03 AND #00 EQU ?{ POP BRK }
+	[ LIT2 36 -Screen/auto ] DEO
 	( | potato 1 )
 	[ LIT2 &x 00a0 ] #0002 SUB2 OVR #80 LTH ?{
 		POP2 .Screen/width DEI2 #0018 ADD2 }
@@ -649,8 +644,15 @@
 	DUP2 ,&y STR2
 	#0018 SUB2 .Screen/y DEO2
 	;saver-chrs .Screen/addr DEO2
+	#85 .Screen/sprite DEOk DEOk DEOk DEO
+	( | wing )
+	[ LIT2 16 -Screen/auto ] DEO
+	.Screen/x DEI2k #0010 ADD2 ROT DEO2
+	.Screen/y DEI2k #001c SUB2 ROT DEO2
+	#00 OVR #02 SFT #03 AND DUP #03 NEQ ?{ POP #02 }
+	#0060 MUL2 ;saver-wings-chrs ADD2 .Screen/addr DEO2
 	#85 .Screen/sprite DEOk DEOk DEO
-	BRK
+	POP BRK
 
 @on-event-saver ( -> )
 	untrap <redraw-all>
