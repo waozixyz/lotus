@@ -629,7 +629,7 @@
 
 @on-frame-saver ( -> )
 	[ LIT &fps 00 ] INCk
-	( unlock ) UP #30 NEQ ?{
+	( unlock ) DUP #30 NEQ ?{
 		;on-event-saver DUP2 .Mouse/vector DEO2
 		.Controller/vector DEO2 }
 	,&fps STR
