@@ -175,8 +175,8 @@
 	;app-option #1807 #0000 DUP2 add-win !center-win
 
 @add-win ( name* app* h w y* x* -- )
-	.length LDZ <phex>/b
-	#0a18 DEO
+	.length LDZ #0f LTH ?{
+		( limit ) POP2 POP2 POP2 POP2 POP2 JMP2r }
 	.length LDZ #40 SFT #00 SWP ;windows ADD2 STH2k STA2
 	INCr INCr STH2kr STA2
 	INCr INCr STH2kr STA2
