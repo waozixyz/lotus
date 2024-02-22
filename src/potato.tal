@@ -385,23 +385,6 @@
 	#0010 .Screen/y DEO2
 	[ LIT2 01 -Screen/auto ] DEO
 	;patt-chr .Screen/addr DEO2
-	( | test wallpaper )
-	;dict/wallpaper-ext fexists ?<draw-wallpaper-icn>
-	.Screen/width DEI2 #03 SFT2 NIP ,&x STR
-	.Screen/height DEI2 #03 SFT2 NIP ,&y STR
-	[ LIT2 &y 10 00 ]
-	&h ( -- )
-		[ LIT2 &x 10 00 ]
-		&w ( -- )
-		[ LIT2 81 -Screen/sprite ] DEO
-		INC GTHk ?&w
-	POP2
-	( reset x ) #0000 .Screen/x DEO2
-	( reset y ) .Screen/y DEI2k #0008 ADD2 ROT DEO2
-	INC GTHk ?&h
-	POP2 JMP2r
-
-@<draw-wallpaper-icn> ( -- )
 	;dict/wallpaper-ext .File/name DEO2
 	#0008 .File/length DEO2
 	.Screen/width DEI2 #03 SFT2 NIP ,&x STR
@@ -868,13 +851,6 @@
 	.File/name DEO2
 	[ LIT2 01 -File/delete ] DEO
 	JMP2r
-
-@fexists ( src* -- f )
-	.File/name DEO2
-	#0001 .File/length DEO2
-	;&buf .File/read DEO2
-	.File/success DEI2 NIP JMP2r
-	&buf $1
 
 @mswp ( len* a* b* -- )
 	,&b STR2
