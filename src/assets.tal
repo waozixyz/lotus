@@ -307,6 +307,24 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
 	ffff ffff ffff ffff 3f3f 3f3f 3f3f 3f3f
 	3f3f 3f3f 3f3f 3f3f 3f3f 3f3f 3f3f 3f3f
 	7fbf 7fbf 7fbf 7fbf ffff ffff ffff ffff ]
+@saver-chrs [
+	0000 000f 1f1f 1f1f 0000 0f1f 3f3f 3f3f
+	0000 00ff ffff ffff 0000 ffff ffff ffff
+	0000 00f0 f8f8 f8f8 0000 f0f8 fcfc fcfc
+	1f1f 1f1f 1f1f 1f1f 3f3f 3f3f 3f3f 3f3f
+	ffff ffff ffff ffff ffff ffff ffff ffff
+	f8f8 f8f8 f8f8 f8f8 fcfc fcfc fcfc fcfc
+	1f1f 1f1f 0f00 0000 3f3f 3f3f 1f0f 0000
+	ffff ffff ff00 0000 ffff ffff ffff 0000
+	f8f8 f8f8 f000 0000 fcfc fcfc f8f0 0000 ]
+
+@saver-shadow-icns [
+	0000 0f1f 3f3f 3f3f 0000 ffff ffff ffff
+	0000 f0f8 fcfc fcfc 3f3f 3f3f 3f3f 3f3f
+	ffff ffff ffff ffff fcfc fcfc fcfc fcfc
+	3f3f 3f3f 1f0f 0000 ffff ffff ffff 0000
+	fcfc fcfc f8f0 0000 ]
+
 @assets-chr-end
 
 (

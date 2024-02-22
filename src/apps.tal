@@ -617,7 +617,34 @@
 @|saver )
 
 @start-saver ( -- )
+	redraw-all ;on-frame-saver .Screen/vector DEO2
 	JMP2r
+
+@on-frame-saver ( -> )
+	( ;on-mouse-saver .Mouse/vector DEO2 )
+	( 30 fps ) [ LIT &fps 00 ] INCk ,&fps STR
+	#01 AND ?{ BRK }
+	#26 .Screen/auto DEO
+	( | shadow )
+	,&x LDR2 #0018 SUB2 .Screen/x DEO2
+	,&y LDR2 .Screen/y DEO2
+	;saver-shadow-icns .Screen/addr DEO2
+	#0a .Screen/sprite DEOk DEOk DEO
+	( | potato 1 )
+	[ LIT2 &x 00a0 ] #0002 SUB2 OVR #80 LTH ?{
+		POP2 .Screen/width DEI2 #0018 ADD2 }
+	DUP2 ,&x STR2
+	#0018 SUB2 .Screen/x DEO2
+	[ LIT2 &y 0050 ] INC2 DUP2 ,&y STR2
+	.Screen/y DEO2
+	;saver-chrs .Screen/addr DEO2
+	#85 .Screen/sprite DEOk DEOk DEO
+	BRK
+
+@on-mouse-saver ( -> )
+	#0000 .Screen/vector DEO2
+	;on-mouse .Mouse/vector DEO2
+	redraw-all BRK
 
 (
 @|form )
