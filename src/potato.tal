@@ -276,7 +276,7 @@
 
 @on-frame-fade ( -> )
 	[ LIT2 &f $2 ] INC2k ,&f STR2
-	#00 SFT2 STH2
+	STH2
 	[ LIT2 66 -Screen/auto ] DEO
 	#0000 DUP2 .Screen/x DEO2
 	( ) .Screen/y DEO2
