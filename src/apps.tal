@@ -614,6 +614,12 @@
 	( vol ) OVR2 #0078 ADD2 OVR2 #0f draw-knob OVR2 #0090 ADD2 OVR2 #0f draw-knob POP2 POP2 JMP2r
 
 (
+@|saver )
+
+@start-saver ( -- )
+	JMP2r
+
+(
 @|form )
 
 @app-form [
