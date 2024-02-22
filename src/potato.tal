@@ -47,7 +47,7 @@
 	( name ) "Potato 0a
 	( details ) "An 20 "Operating 20 "System 0a
 	( author ) "By 20 "Hundred 20 "Rabbits 0a
-	( date ) &date "20 20 "Feb 20 "2024 $1
+	( date ) &date "22 20 "Feb 20 "2024 $1
 	01
 	( icon ) 83 =appicon
 
@@ -269,6 +269,7 @@
 	;on-frame-fade .Screen/vector DEO2
 	#0000 DUP2 .Mouse/vector DEO2
 	( ) .Controller/vector DEO2
+	#40 <draw-cursor>
 	JMP2r
 
 @on-frame-fade ( -> )
