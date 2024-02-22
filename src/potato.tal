@@ -272,7 +272,7 @@
 	( TODO: ) #2777 .Audio0/adsr DEO2
 	#ff .Audio0/volume DEO
 	( store last key pressed ) DUP #0d
-	( MOD ) [ DIVk MUL SUB ] ;draw-octave/last STA
+	( MOD ) [ DIVk MUL SUB ] ;<draw-octave>/last STA
 	( TODO: set octave )
 	( octave ) #40 ADD
 	( hit/loop ) [ LIT &hit 00 ] #70 SFT ORA .Audio0/pitch DEO
@@ -345,7 +345,8 @@
 	( y ) LDA2k DUP2 ,&y STR2
 	.Screen/y DEO2
 	INC2 INC2
-	( size ) LDA2k draw-win-decor INC2 INC2
+	( size ) LDA2k <draw-win-decor>
+	INC2 INC2
 	( app ) LDA2k DUP2 ,&app STR2
 	( app/name ) LDA2 INC2 #05 <draw-text-color>
 	INC2 INC2
@@ -357,7 +358,7 @@
 	( y ) [ LIT2 &y $2 ] #0012 ADD2 .Screen/y DEO2
 	( app/on-draw ) [ LIT2 &app $2 ] #0004 ADD2 LDA2 JMP2
 
-@draw-win-decor ( w h -- )
+@<draw-win-decor> ( w h -- )
 	STH2
 	.Screen/x DEI2 .Screen/y DEI2 STH2kr <draw-fill>
 	OVR2 OVR2 .Screen/y DEO2
@@ -406,10 +407,11 @@
 	STHk ROT ROT DUP2 slen #00 STHr SUB2 DUP2 #8000 LTH2 ?&no-scroll
 	POP2 #0000 &no-scroll ADD2 ROT JMP2r
 
-@draw-input ( str* w -- )
+@<draw-input> ( str* w -- )
 	.Screen/x DEI2 ,&x STR2
 	.Screen/y DEI2 ,&y STR2
-	scroll-text DUP ;input-icns draw-capped #30 SFT #00 SWP #000e ADD2 STH2
+	scroll-text DUP ;input-icns <draw-capped>
+	#30 SFT #00 SWP #000e ADD2 STH2
 	.Screen/x DEI2k STH2r SUB2 ROT DEO2
 	.Screen/y DEI2k #0004 ADD2 ROT DEO2
 	#0a <draw-text-color>
@@ -417,14 +419,15 @@
 	[ LIT2 &y $2 ] #0018 ADD2 .Screen/y DEO2
 	JMP2r
 
-@draw-button ( str* w -- )
-	DUP ;button-icns draw-capped #00 SWP INC INC #20 SFT STH2
+@<draw-button> ( str* w -- )
+	DUP ;button-icns <draw-capped>
+	#00 SWP INC INC #20 SFT STH2
 	DUP2 slen #20 SFT2 STH2
 	ADD2r .Screen/x DEI2k STH2r SUB2 ROT DEO2
 	.Screen/y DEI2k #0004 ADD2 ROT DEO2
 	#0f !<draw-text-color>
 
-@draw-capped ( w sprite* -- )
+@<draw-capped> ( w sprite* -- )
 	[ LIT2 15 -Screen/auto ] DEO
 	DUP2 .Screen/addr DEO2
 	#0010 ADD2 [ LIT2 0a -Screen/sprite ] DEO
@@ -506,7 +509,7 @@
 	[ LIT2 85 -Screen/sprite ] DEOk DEOk DEO
 	JMP2r
 
-@draw-icon-size ( size* name* icon* -- )
+@<draw-icon-size> ( size* name* icon* -- )
 	<draw-icon>
 	.Screen/y DEI2k #0014 SUB2 ROT DEO2
 	.Screen/x DEI2k STH2k #0020 ADD2 ROT DEO2
@@ -554,14 +557,18 @@
 	.Screen/x DEI2k #0020 ADD2 ROT DEO2
 	#0005 ADD2 !<draw-text>
 
-@draw-swatches ( -- )
+@<draw-swatches> ( -- )
 	.cursor/color LDZ STH
 	[ LIT2 05 -Screen/auto ] DEO
-	#0c ;swatch-icns/fill #00 STHkr EQU draw-swatch #0d ;swatch-icns/fill #01 STHkr EQU draw-swatch #0e ;swatch-icns/fill #02 STHkr EQU draw-swatch #0e ;swatch-icns/line #03 STHkr EQU draw-swatch POPr .Screen/x DEI2k #0040 SUB2 ROT DEO2
+	#0c ;swatch-icns/fill #00 STHkr EQU <draw-swatch>
+	#0d ;swatch-icns/fill #01 STHkr EQU <draw-swatch>
+	#0e ;swatch-icns/fill #02 STHkr EQU <draw-swatch>
+	#0e ;swatch-icns/line #03 STHkr EQU <draw-swatch>
+	POPr .Screen/x DEI2k #0040 SUB2 ROT DEO2
 	.Screen/y DEI2k #0010 ADD2 ROT DEO2
 	JMP2r
 
-@draw-swatch ( color sprite* selected -- )
+@<draw-swatch> ( color sprite* selected -- )
 	#00 SWP #40 SFT ADD2 .Screen/addr DEO2
 	.Screen/sprite DEOk DEO
 	JMP2r
@@ -584,7 +591,7 @@
 	,&y LDR2 #0048 ADD2 .Screen/y DEO2
 	JMP2r
 
-@draw-knob ( x* y* value -- )
+@<draw-knob> ( x* y* value -- )
 	.Screen/x DEI2 ,&x STR2
 	.Screen/y DEI2 ,&y STR2
 	STH
@@ -605,7 +612,7 @@
 	[ LIT2 &y $2 ] .Screen/y DEO2
 	JMP2r
 
-@draw-octave ( -- )
+@<draw-octave> ( -- )
 	.Screen/x DEI2 .Screen/y DEI2 [ LIT2 02 -Screen/auto ] DEO
 	OVR2 #0040 ADD2 .Screen/x DEO2
 	;arrow-icns/v .Screen/addr DEO2
@@ -617,14 +624,21 @@
 	.Screen/y DEO2
 	.Screen/x DEO2
 	[ LIT2 25 -Screen/auto ] DEO
-	[ LIT &last ff ] DUP #00 EQU ;octave-icns/a draw-octave-key DUP #02 EQU ;octave-icns/b draw-octave-key DUP #04 EQU ;octave-icns/c draw-octave-key DUP #05 EQU ;octave-icns/a draw-octave-key DUP #07 EQU ;octave-icns/b draw-octave-key DUP #09 EQU ;octave-icns/b draw-octave-key #0b EQU ;octave-icns/c draw-octave-key #00 ;octave-icns/d
+	[ LIT &last ff ] DUP #00 EQU ;octave-icns/a <draw-octave-key>
+	DUP #02 EQU ;octave-icns/b <draw-octave-key>
+	DUP #04 EQU ;octave-icns/c <draw-octave-key>
+	DUP #05 EQU ;octave-icns/a <draw-octave-key>
+	DUP #07 EQU ;octave-icns/b <draw-octave-key>
+	DUP #09 EQU ;octave-icns/b <draw-octave-key>
+	#0b EQU ;octave-icns/c <draw-octave-key>
+	#00 ;octave-icns/d
 
-@draw-octave-key ( color addr* -- )
+@<draw-octave-key> ( color addr* -- )
 	.Screen/addr DEO2
 	#03 MUL #0b SWP SUB .Screen/sprite DEO
 	JMP2r
 
-@draw-slider ( value name* -- )
+@<draw-slider> ( value name* -- )
 	( TODO: Add name and write value ) .Screen/x DEI2 SWP2 <draw-text>
 	.Screen/x DEO2
 	draw-lb [ LIT2 00 -Screen/auto ] DEO

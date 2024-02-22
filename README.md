@@ -27,12 +27,11 @@ Since this is designed to be used principally on a handheld devices without a wi
 ## TODO
 
 - Change cursor icon on alt mod for drag.
-- Piano pcm player.
+- Fix mouse picking in Play app.
 - Terminal.
 - Documentation.
 - Text Reader scrollbar should be clickable
 - Hex Viewer
-- Screensaver
 - Throw error when windows count is > #10
 - Throw error when dir is longer than $400
 - Fade animation when launching rom

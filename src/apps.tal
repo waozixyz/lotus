@@ -45,7 +45,8 @@
 		( ) LDA2 INC2r INC2r STH2kr
 		( ) LDA2 SUB2 INC2r INC2r STH2kr
 		( ) LDA2 INC2r INC2r STH2r
-		( ) LDA2 draw-icon-size INC GTHk ?&loop
+		( ) LDA2 <draw-icon-size>
+		INC GTHk ?&loop
 	POP2
 	( | dotted line )
 	LDA2k .Screen/x DEO2
@@ -188,8 +189,10 @@
 		SWP ,&v STR
 		.cursor/color LDZ STHk #01 SFT ADD DEI STHr #01 AND STHk #0f SWP #60 SFT SFT AND STHr #00 EQU [ LIT &v $1 ] SWP #60 SFT SFT ADD JMP2r
 	&on-draw ( win* -- )
-		POP2 [ .System/r ,&get-color JSR ] DUP ;dict/red draw-slider [ .System/g ,&get-color JSR ] DUP ;dict/green draw-slider [ .System/b ,&get-color JSR ] DUP ;dict/blue draw-slider
-		( swatches ) draw-swatches
+		POP2 [ .System/r ,&get-color JSR ] DUP ;dict/red <draw-slider>
+		[ .System/g ,&get-color JSR ] DUP ;dict/green <draw-slider>
+		[ .System/b ,&get-color JSR ] DUP ;dict/blue <draw-slider>
+		( swatches ) <draw-swatches>
 		( hex ) ROT draw-hex SWP draw-hex !draw-hex
 	&get-color ( port -- hex )
 		.cursor/color LDZ STHk #01 SFT ADD DEI #01 STHr #01 AND SUB #20 SFT SFT #0f AND JMP2r
@@ -273,7 +276,7 @@
 	INC GTHk ?&v
 	POP2 ,&x LDR2 .Screen/x DEO2
 	.Screen/y DEI2k #0010 ADD2 ROT DEO2
-	( swatches ) draw-swatches
+	( swatches ) <draw-swatches>
 	( addr ) [ LIT2 01 -Screen/auto ] DEO
 	;arrow-icns/h .Screen/addr DEO2
 	[ LIT2 0a -Screen/sprite ] DEO
@@ -606,12 +609,18 @@
 	#8000 .File/length DEO2
 	;mem .File/read DEO2
 	.File/success DEI2 .Audio0/length DEO2
-	;mem .File/success DEI2 [ LIT2 &zoom 0001 ] draw-waveform draw-octave .Screen/x DEI2 #0010 ADD2 .Screen/y DEI2
-	( env ) OVR2 OVR2 #01 draw-knob OVR2 #0018 ADD2 OVR2 #07 draw-knob OVR2 #0030 ADD2 OVR2 #06 draw-knob OVR2 #0048 ADD2 OVR2 #0e draw-knob
+	;mem .File/success DEI2 [ LIT2 &zoom 0001 ] draw-waveform <draw-octave>
+	.Screen/x DEI2 #0010 ADD2 .Screen/y DEI2
+	( env ) OVR2 OVR2 #01 <draw-knob>
+	OVR2 #0018 ADD2 OVR2 #07 <draw-knob>
+	OVR2 #0030 ADD2 OVR2 #06 <draw-knob>
+	OVR2 #0048 ADD2 OVR2 #0e <draw-knob>
 	( loop ) OVR2 #0060 ADD2 .Screen/x DEO2
 	DUP2 .Screen/y DEO2
 	;play-note/hit LDA draw-flip
-	( vol ) OVR2 #0078 ADD2 OVR2 #0f draw-knob OVR2 #0090 ADD2 OVR2 #0f draw-knob POP2 POP2 JMP2r
+	( vol ) OVR2 #0078 ADD2 OVR2 #0f <draw-knob>
+	OVR2 #0090 ADD2 OVR2 #0f <draw-knob>
+	POP2 POP2 JMP2r
 
 (
 @|saver )
@@ -675,8 +684,9 @@
 		( > ) 42 00 =close-win "Ok $1
 		$1
 	&on-draw ( win* -- )
-		POP2 ;buf/form #14 draw-input .Screen/x DEI2k #0030 ADD2 ROT DEO2
-		[ LIT2 &action $2 ] #08 !draw-button
+		POP2 ;buf/form #14 <draw-input>
+		.Screen/x DEI2k #0030 ADD2 ROT DEO2
+		[ LIT2 &action $2 ] #08 !<draw-button>
 	&on-mouse ( x* y* win* -> )
 		.Mouse/state DEI ?&on-click
 		POP2 POP2 POP2 BRK &on-click POP2
@@ -713,7 +723,7 @@
 		$1
 	&on-draw ( win* -- )
 		POP2 [ LIT2 &target $2 ] draw-line POP2 draw-lb .Screen/x DEI2k #0030 ADD2 ROT DEO2
-		[ LIT2 &action $2 ] #08 !draw-button
+		[ LIT2 &action $2 ] #08 !<draw-button>
 	&on-mouse ( x* y* win* -> )
 		.Mouse/state DEI ?&on-click
 		POP2 POP2 POP2 BRK &on-click POP2
@@ -740,7 +750,7 @@
 		$1
 	&on-draw ( win* -- )
 		POP2 ;&invalid-txt draw-line POP2 draw-lb [ LIT2 &target $2 ] draw-line POP2 draw-lb .Screen/x DEI2k #0030 ADD2 ROT DEO2
-		;dict/ok #08 !draw-button
+		;dict/ok #08 !<draw-button>
 		&invalid-txt "Invalid 20 "Target: $1
 	&on-mouse ( x* y* win* -> )
 		.Mouse/state DEI ?&on-click
