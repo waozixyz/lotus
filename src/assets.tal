@@ -35,6 +35,70 @@
 		"Jan $1 "Feb $1 "Mar $1 "Apr $1 "May $1 "Jun $1
 		"Jul $1 "Aug $1 "Sep $1 "Oct $1 "Nov $1 "Dec $1
 	&no-metadata "Metadata 20 "Missing $1
+	&oversize-rom "File 20 "Too 20 "Large $1
+
+(
+@|launcher )
+
+@load-rom ( filename* -- )
+	.File/name DEO2
+	( clear wst/rst )
+	#0000 .System/wst DEO2
+	( clear screen )
+	#0000 DUP2 .Screen/x DEO2 .Screen/y DEO2
+	[ LIT2 80 -Screen/pixel ] DEO
+	[ LIT2 c0 -Screen/pixel ] DEO
+	( reset device vectors )
+	[ LIT2r 0000 ]
+	#00
+	&device-vector-loop
+		DUP2r STHk DEO2r
+		#10 ADD
+		DUP ?&device-vector-loop
+	POP POP2r
+	( copy the zero-page-loader into f0-ff )
+	;&zero-page-loader LITr f0
+	&copy-loop
+	LDAk STHkr STZ
+	INC2 INCr
+	STHkr ,&copy-loop JCN
+	POP2 ( leave 00 on return stack )
+
+	( prepare the stack for the zero-page-loader )
+	( the more we prepare here in advance, the less we'll have to overwrite )
+	STHkr #00fe ( arguments for STZ2 at ff )
+	STHkr ( argument for JMP at fe  )
+	DUPk #fcfe ( arguments for STZ2 at fd and JMP  )
+	OVR2 #fafe ( arguments for STZ2 at fd and JMP  )
+	OVR2 #f8fe ( arguments for STZ2 at fd and JMP  )
+	OVR2 #f6fe ( arguments for STZ2 at fd and JMP  )
+	OVR2 #f401 ( arguments for STZ2 at fd, plus an extra 01 )
+	STHkr ( first argument for ADD2 )
+	.File/success ( argument for DEI2 )
+	#0100 .File/read ( arguments for DEO2 )
+	#ff00 .File/length DEO2
+	#00f0 JMP2
+
+	&zero-page-loader
+	( f0 ) DEO2
+	( f1 ) DEI2
+	( f2 ) ADD2
+	( f3 ) &loop DUPr
+	( f4 ) STH2k
+	( f5 ) STAr
+	( f6 ) INC2
+	( f7 ) NEQ2k
+	( f8 ) ,&loop
+	( f9 )
+	( fa ) JCN
+	( fb ) POPr
+	( fc ) POP2
+	( fd ) STZ2 ( deletes f4-fd through looping )
+	( fe ) JMP
+	( ff ) STZ2 ( deletes fe-ff )
+
+	&tmp $1
+
 
 ( icn )
 
@@ -363,10 +427,6 @@ c060 3018 0c06 0300 3c0c 0c0c 0c0c 3c00
 (
 @|blobs )
 
-@loader-rom
-	8000 8000 0711 0106 20ff f702 a001 00af
-	80ac 37a0 ffd5 80a2 36ef 38af 8000 6f15
-	21aa 20ff f622 226f 2c00
 @notes
 	30 32 34 35
 	37 39 3b 3c
