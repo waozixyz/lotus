@@ -37,8 +37,9 @@ The wallpaper is an invisible file called `.wallpaper` in the working directory,
 - Change cursor icon on alt mod for drag.
 - Fix mouse picking issue in Play app.
 - Terminal.
-- Text Reader scrollbar should be clickable
-- Hex Viewer
+- Remove scrollbar in text editor and add line numbers.
+- Hex Viewer.
+- `.wallpaper` should open as Picture.
 
 ## Support
 

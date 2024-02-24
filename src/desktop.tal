@@ -1,10 +1,6 @@
-
-
 @size-desktop-start
 
-
-@manifest
-	05 "Potato $1
+@manifest 05 "Potato $1
 	( > ) 01 "1 =open-about "About $1
 	( > ) 01 "t =open-tile "Wallpaper $1
 	( > ) 01 "k =open-color "Theme $1

@@ -1,3 +1,5 @@
+
+
 @size-apps-start ( @|about )
 
 
@@ -569,12 +571,12 @@
 		play-note [ LIT2 00 -Mouse/state ] DEO
 		get-active-win !<draw-win>
 	&zoomin ( -- )
-		;app-play/on-draw/zoom LDA2 #0001 EQU2 ?&skip
-		;app-play/on-draw/zoom LDA2 #0001 SUB2 ;app-play/on-draw/zoom STA2
+		;app-play/zoom LDA2 #0001 EQU2 ?&skip
+		;app-play/zoom LDA2 #0001 SUB2 ;app-play/zoom STA2
 		get-active-win <draw-win>
 		&skip JMP2r
 	&zoomout ( -- )
-		;app-play/on-draw/zoom LDA2 INC2 ;app-play/on-draw/zoom STA2
+		;app-play/zoom LDA2 INC2 ;app-play/zoom STA2
 		get-active-win !<draw-win>
 
 @app-play/manifest ( * )

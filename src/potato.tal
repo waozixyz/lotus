@@ -9,8 +9,7 @@
 |a0 @File &vector $2 &success $2 &stat $2 &delete $1 &append $1 &name $2 &length $2 &read $2 &write $2
 |b0 @Disk &vector $2 &success $2 &stat $2 &delete $1 &append $1 &name $2 &length $2 &read $2 &write $2
 |c0 @DateTime &year $2 &month $1 &day $1 &hour $1 &minute $1 &second $1 &dotw $1 &doty $2 &isdst $1
-
-|0000
+|000
 
 	@cursor &color $1
 	@sel &win $1
@@ -19,17 +18,15 @@
 	@bounds $2
 	@dir $40
 	( calendar )
-
 	@year $2
 	@month $1
 
-|0100
+|100
 
 @on-reset ( -> )
 
 
-@size-system-start
-	;meta #06 DEO2
+@size-system-start ;meta #06 DEO2
 	( | theme )
 	#500f .System/r DEO2
 	#b70f .System/g DEO2
@@ -110,14 +107,12 @@
 	;buf/dir DUP2 .File/read DEO2
 	( remove linebreaks )
 	&w ( -- )
-		LDAk #0a NEQ ?{
-			STH2k #00 STH2r STA }
+		LDAk #0a NEQ ?{ STH2k #00 STH2r STA }
 		INC2 LDAk ?&w
 	POP2 JMP2r
 
 @<set-dir> ( path* -- )
-	has-active-paths ?{
-		;dir scpy #00 !<sel-icon> }
+	has-active-paths ?{ ;dir scpy #00 !<sel-icon> }
 	POP2 JMP2r
 
 @push-dir ( path* -- )
@@ -131,8 +126,7 @@
 		;dir ;dict/home-ext scmp ?&skip
 		;dir DUP2 scap/
 		&l ( -- )
-			LDAk LIT "/ EQU ?{
-				#0001 SUB2 LTH2k ?&l }
+			LDAk LIT "/ EQU ?{ #0001 SUB2 LTH2k ?&l }
 		NIP2 #00 ROT ROT STA
 		&skip POP2 #00 !<sel-icon> }
 	POP2 JMP2r
@@ -592,8 +586,7 @@
 	;&buf shex <draw-dec>
 	#20 <draw-chr>
 	;dict/bytes !<draw-text>
-	&buf $5
-	&no-size .Screen/y DEI2k #0010 SUB2 ROT DEO2
+	&buf $5 &no-size .Screen/y DEI2k #0010 SUB2 ROT DEO2
 	.Screen/x DEI2k #0020 ADD2 ROT DEO2
 	#0005 ADD2 !<draw-text>
 
