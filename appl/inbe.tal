@@ -128,6 +128,16 @@ JMP2r
     @draw
     .Screen/width DEI2 #01 SFT2 .Screen/height DEI2 #01 SFT2 .circle-r LDZ2
     ;draw-circle JSR2
+    
+    .view LDZ SCR-HOLD EQU ,&breathtext JCN
+    ,&drawstat JCN
+    
+    &breathtext
+    .circle-cx LDZ2 #0018 SUB2 .Screen/x DEO2
+    .circle-cy LDZ2 #0042 ADD2 .Screen/y DEO2
+    ;txt-breath ;draw-zstr JSR2
+
+    &drawstat
     ;draw-center-stats JSR2
 
     .Mouse/x DEI2 .Screen/x DEO2 .Mouse/y DEI2 .Screen/y DEO2
@@ -555,7 +565,7 @@ JMP2r
 @txt-breaths  "BREATHS $1
 @txt-rounds   "ROUNDS $1
 @txt-play     "PLAY $1
-
+@txt-breath "BREATH $1 
 ( Tab names )
 @tab-back     "BACK $1
 
