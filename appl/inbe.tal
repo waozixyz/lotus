@@ -24,9 +24,13 @@
 %CIRCLE-R-MIN  { #0020 }
 %CIRCLE-R-MAX  { #0035 }
 
+( --- Tabbar Layout --- )
+%TABBAR-HEIGHT { #0010 }
+%TABBAR-Y      { #0000 }
+
 ( --- Sidebar Anchor Layout --- )
 %SIDEBAR-X      { #0180 }
-%SIDEBAR-Y      { #0010 }
+%SIDEBAR-Y      { #0020 } 
 %BTN-SIZE       { #0008 }
 
 ( --- Bitmasks --- )
@@ -71,6 +75,7 @@ BRK
 
 JMP2r
 	&path ".theme $1
+
 
 @on-frame
     #00 .Screen/auto DEO
@@ -124,10 +129,20 @@ JMP2r
     ;sprite-cursor .Screen/addr DEO2 #01 .Screen/sprite DEO
 BRK
 
+@handle-back-button ( -- )
+	.Mouse/y DEI2 #0010 LTH2 .Mouse/x DEI2 #0040 LTH2 AND ,&clicked
+    ,&skip-button
+	&clicked
+    ;potato-rom-path ;load-rom JMP2
+    &skip-button
+    JMP2r
+
 @handle-mouse
     .Mouse/state DEI #00 EQU ;released JCN2
     .state LDZ MSK-PRESSED AND ;done JCN2
     .state LDZ MSK-PRESSED ORA .state STZ
+
+    ;handle-back-button JSR2
 
     ( Sidebar Toggle Check )
     .Mouse/y DEI2 SIDEBAR-Y LTH2 ,check-controls JCN
@@ -224,6 +239,7 @@ JMP2r
     @skip-breath JMP2r
 
 @draw-ui
+    ;draw-tabbar JSR2
     ;draw-ui-controls JSR2
 JMP2r
 
@@ -271,6 +287,33 @@ JMP2r
         #01 .Screen/sprite DEO
     @skip-children
 JMP2r
+
+( --- Tabbar Drawing --- )
+
+@draw-tabbar-bg ( -- )
+	;fill-icn .Screen/addr DEO2
+	#00 .Screen/auto DEO
+	#0000 .Screen/y DEO2
+	&tby #0000 .Screen/x DEO2
+		&tbx #03 .Screen/sprite DEO
+			.Screen/x DEI2 INC2 DUP2 .Screen/x DEO2
+			.Screen/width DEI2 LTH2 ,&tbx JCN
+		POP2 #0008 .Screen/y DEO2
+		&tbx2 #03 .Screen/sprite DEO
+			.Screen/x DEI2 INC2 DUP2 .Screen/x DEO2
+			.Screen/width DEI2 LTH2 ,&tbx2 JCN
+	POP2 JMP2r
+
+@draw-tabbar-text ( -- )
+	#0000 .Screen/y DEO2
+	#0010 .Screen/x DEO2
+	;tab-back ;draw-zstr JSR2
+JMP2r
+
+@draw-tabbar ( -- )
+	;draw-tabbar-bg JSR2
+	;draw-tabbar-text JSR2
+	JMP2r
 
 @draw-counter ( val y* -- )
     .Screen/y DEO2            ( Set Y coordinate )
@@ -380,6 +423,66 @@ JMP2r
     &no #00 JMP2r
     
 
+@load-rom ( filename* -- )
+	.File/name DEO2
+	( clear wst/rst )
+	#0000 .System/wst DEO2
+	( clear screen )
+	#0000 DUP2 .Screen/x DEO2 .Screen/y DEO2
+	[ LIT2 80 -Screen/pixel ] DEO
+	[ LIT2 c0 -Screen/pixel ] DEO
+	( reset device vectors )
+	[ LIT2r 0000 ]
+	#00
+	&device-vector-loop
+		DUP2r STHk DEO2r
+		#10 ADD
+		DUP ?&device-vector-loop
+	POP POP2r
+	( copy the zero-page-loader into f0-ff )
+	;&zero-page-loader LITr f0
+	&copy-loop
+	LDAk STHkr STZ
+	INC2 INCr
+	STHkr ,&copy-loop JCN
+	POP2 ( leave 00 on return stack )
+
+	( prepare the stack for the zero-page-loader )
+	( the more we prepare here in advance, the less we'll have to overwrite )
+	STHkr #00fe ( arguments for STZ2 at ff )
+	STHkr ( argument for JMP at fe  )
+	DUPk #fcfe ( arguments for STZ2 at fd and JMP  )
+	OVR2 #fafe ( arguments for STZ2 at fd and JMP  )
+	OVR2 #f8fe ( arguments for STZ2 at fd and JMP  )
+	OVR2 #f6fe ( arguments for STZ2 at fd and JMP  )
+	OVR2 #f401 ( arguments for STZ2 at fd, plus an extra 01 )
+	STHkr ( first argument for ADD2 )
+	.File/success ( argument for DEI2 )
+	#0100 .File/read ( arguments for DEO2 )
+	#ff00 .File/length DEO2
+	#00f0 JMP2
+
+	&zero-page-loader
+	( f0 ) DEO2
+	( f1 ) DEI2
+	( f2 ) ADD2
+	( f3 ) &loop DUPr
+	( f4 ) STH2k
+	( f5 ) STAr
+	( f6 ) INC2
+	( f7 ) NEQ2k
+	( f8 ) ,&loop
+	( f9 )
+	( fa ) JCN
+	( fb ) POPr
+	( fc ) POP2
+	( fd ) STZ2 ( deletes f4-fd through looping )
+	( fe ) JMP
+	( ff ) STZ2 ( deletes fe-ff )
+
+	&tmp $1
+    
+
 ( Graphics Data - Sprites )
 @sprite-play   [ 0008 0c0e 0f0e 0c08 ]
 @sprite-pause  [ 0066 6666 6666 6600 ]
@@ -432,6 +535,11 @@ JMP2r
 @txt-breaths  "BREATHS $1
 @txt-rounds   "ROUNDS $1
 @txt-play     "PLAY $1
+
+( Tab names )
+@tab-back     "BACK $1
+
+@potato-rom-path "bin/potato.rom $1
 
 @sprite-up     [ 183c 7e7e 3c3c 1818 ]
 @sprite-down   [ 1818 3c3c 7e7e 3c18 ]

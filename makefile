@@ -10,11 +10,18 @@ APPL_ROM=$(APPL_TAL:.tal=.rom)
 
 all: ${ROM} appl
 
+run-appl-%: appl/%.rom
+	@ ${EMU} $<
+
+run-appl: run-appl-inbe
+
+inbe: appl/inbe.rom
+
 lint:
 	@ ${LIN} src/${ID}.tal
 test:
 	@ ${EMU} ${ROM} lemon15x12.icn
-run: all
+run:
 	@ ${EMU} ${ROM}
 clean:
 	@ rm -f ${ROM} ${ROM}.sym ${APPL_ROM} ${APPL_ROM:.rom=.rom.sym}
@@ -23,7 +30,7 @@ install: ${ROM}
 uninstall:
 	@ rm -f ${DIR}/${ID}.rom
 
-.PHONY: all clean lint run install uninstall appl
+.PHONY: all clean lint run install uninstall appl run-appl inbe
 
 ${ROM}: src/*
 	@ mkdir -p bin
