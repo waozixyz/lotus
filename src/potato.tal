@@ -247,7 +247,7 @@
 @open-rom ( file* -- )
 	LDAk [ LIT "? ] EQU ?&err
 	;load-rom-callback/src STA2
-	;load-rom-callback !<animate-fade>
+	!load-rom-callback
 	&err ( file* -- )
 		#0005 ADD2 ;dict/oversize-rom SWP2 !add-err
 
@@ -257,37 +257,8 @@
 (
 @|animation )
 
-@<animate-fade> ( callback* -- )
-	;on-frame-fade/callback STA2
-	;on-frame-fade .Screen/vector DEO2
-	#0000 DUP2 .Mouse/vector DEO2
-	( ) .Controller/vector DEO2
-	[ LIT2 00 -Screen/auto ] DEO
-	;fill-icn .Screen/addr DEO2
-	#40 <draw-cursor>
-	JMP2r
 
-@on-frame-fade ( -> )
-	[ LIT2 &f $2 ] INC2k ,&f STR2
-	STH2
-	[ LIT2 66 -Screen/auto ] DEO
-	#0000 DUP2 .Screen/x DEO2
-	( ) .Screen/y DEO2
-	.Screen/height DEI2 #03 SFT2 NIP ,&y STR
-	[ LIT2 &y 10 00 ]
-	&h ( -- )
-		;fade-icns .Screen/addr DEO2
-		( hor offset ) #00 OVR #30 SFT2
-		( wipe ) STH2kr #30 SFT2 SWP2 SUB2 .Screen/x DEO2
-		[ LIT2 0a -Screen/sprite ] DEO
-		INC GTHk ?&h
-	POP2
-	( | detect end )
-	POP2r .Screen/x DEI2 DUP2 #8000 LTH2 ?{ POP2 #0000 }
-	.Screen/width DEI2 LTH2 ?{
-		#0000 .Screen/vector DEO2
-		[ LIT2 &callback $2 ] JSR2 }
-	BRK
+
 
 (
 @|helpers )

@@ -4,6 +4,7 @@
 *bmp
 /bin
 
+*.rom
 .paper
 .snarf
 .theme

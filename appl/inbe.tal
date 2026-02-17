@@ -49,6 +49,7 @@
 |0100
     .Screen/width DEI2 #01 SFT2
 
+
     load-theme
 
     CIRCLE-R-MIN .circle-r STZ2
@@ -60,6 +61,10 @@
     SCR-BREATH .view STZ
 
     ;on-frame .Screen/vector DEO2
+
+    ,&skip-this JCN
+    inbe-rom-path ;load-rom JSR2
+    &skip-this
 BRK
 
 @load-theme ( -- )
@@ -127,13 +132,13 @@ JMP2r
 
     .Mouse/x DEI2 .Screen/x DEO2 .Mouse/y DEI2 .Screen/y DEO2
     ;sprite-cursor .Screen/addr DEO2 #01 .Screen/sprite DEO
-BRK
+BRK2
 
 @handle-back-button ( -- )
-	.Mouse/y DEI2 #0010 LTH2 .Mouse/x DEI2 #0040 LTH2 AND ,&clicked
-    ,&skip-button
+	.Mouse/y DEI2 #0010 LTH2 .Mouse/x DEI2 #0040 LTH2 AND ,&clicked JCN
+    ,&skip-button JCN
 	&clicked
-    ;potato-rom-path ;load-rom JMP2
+    ;potato-rom-path ;load-rom JSR2
     &skip-button
     JMP2r
 
@@ -540,6 +545,7 @@ JMP2r
 @tab-back     "BACK $1
 
 @potato-rom-path "bin/potato.rom $1
+@inbe-rom-path "bin/inbe.rom $1
 
 @sprite-up     [ 183c 7e7e 3c3c 1818 ]
 @sprite-down   [ 1818 3c3c 7e7e 3c18 ]
