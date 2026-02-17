@@ -15,10 +15,10 @@
 @r-direction    $1
 @timer          $1
 @anim-delay     $1
-@current-val $1
-@max-breath     $1
+@current-val    $2  ( Changed to 2 bytes for 999 support )
+@max-breath     $2  ( Changed to 2 bytes for 999 support )
 @state          $1
-@view         $1
+@view           $1
 
 ( constants )
 %CIRCLE-R-MIN  { #0020 }
@@ -54,8 +54,8 @@
 
     CIRCLE-R-MIN .circle-r STZ2
     #03 .anim-delay STZ
-    #00 .current-val STZ
-    #1e .max-breath STZ
+    #0000 .current-val STZ2     ( Changed to STZ2 )
+    #001e .max-breath STZ2      ( Changed to STZ2, value 30 )
 
     MSK-OPEN .state STZ
     SCR-BREATH .view STZ
@@ -112,10 +112,10 @@ JMP2r
         .circle-r LDZ2 CIRCLE-R-MIN GTH2 ;draw JCN2
         #00 .r-direction STZ
 
-        .current-val LDZ INC .current-val STZ
-        .current-val LDZ .max-breath LDZ LTH ;draw JCN2
+        .current-val LDZ2 INC2 .current-val STZ2  ( Changed to LDZ2/STZ2 )
+        .current-val LDZ2 .max-breath LDZ2 LTH2 ;draw JCN2  ( Changed to LDZ2 and LTH2 )
         SCR-HOLD .view STZ
-        #00 .current-val STZ
+        #0000 .current-val STZ2  ( Changed to STZ2 )
         ;draw JMP2
 
     ( --- Hold Logic: Increment every 60 frames --- )
@@ -123,7 +123,7 @@ JMP2r
     .timer LDZ #3c LTH ,draw JCN ( #3c = 60 frames = 1 second )
     #00 .timer STZ
 
-    .current-val LDZ INC .current-val STZ
+    .current-val LDZ2 INC2 .current-val STZ2  ( Changed to LDZ2/INC2/STZ2 )
 
     @draw
     .Screen/width DEI2 #01 SFT2 .Screen/height DEI2 #01 SFT2 .circle-r LDZ2
@@ -192,7 +192,7 @@ JMP2r
             CIRCLE-R-MIN .circle-r STZ2
             ( Optional: fall through to reset so it starts at 0 )
         &do-reset
-            #00 .current-val STZ
+            #0000 .current-val STZ2  ( Changed to STZ2 )
             CIRCLE-R-MIN .circle-r STZ2
             ,&skip-play JMP
 
@@ -223,23 +223,23 @@ JMP2r
 
     @dec-speed
     .anim-delay LDZ #01 EQU ,skip-speed JCN
-    .anim-delay LDZ #01 SUB .anim-delay STZ   ( DEC -> #01 SUB )
+    .anim-delay LDZ #01 SUB .anim-delay STZ
 
     @skip-speed JMP2r
 
 @handle-breath-logic
-    #004c row-hit? #00 EQU ,skip-breath JCN
+    #0024 row-hit? #00 EQU ,skip-breath JCN
 
     #0000 btn-hit? #00 NEQ ,dec-breath JCN
     #0020 btn-hit? #00 EQU ,skip-breath JCN
 
-    .max-breath LDZ #2b EQU ,skip-breath JCN
-    .max-breath LDZ INC .max-breath STZ
+    .max-breath LDZ2 #03e7 EQU2 ,skip-breath JCN  ( Changed: #03e7 = 999 )
+    .max-breath LDZ2 INC2 .max-breath STZ2        ( Changed to LDZ2/INC2/STZ2 )
     ,skip-breath JMP
 
     @dec-breath
-    .max-breath LDZ #01 EQU ,skip-breath JCN
-    .max-breath LDZ #01 SUB .max-breath STZ   ( DEC -> #01 SUB )
+    .max-breath LDZ2 #0001 EQU2 ,skip-breath JCN  ( Changed to LDZ2/EQU2 )
+    .max-breath LDZ2 #0001 SUB2 .max-breath STZ2  ( Changed to LDZ2/SUB2/STZ2 )
 
     @skip-breath JMP2r
 
@@ -263,12 +263,12 @@ JMP2r
         ( Speed Section )
         SIDEBAR-X .Screen/x DEO2 SIDEBAR-Y #0018 ADD2 .Screen/y DEO2
         ;txt-speed ;draw-zstr JSR2
-        .anim-delay LDZ SIDEBAR-Y #0024 ADD2 ;draw-counter JSR2
+        .anim-delay LDZ #00 SWP SIDEBAR-Y #0024 ADD2 ;draw-counter JSR2  ( Convert to 2-byte )
 
         ( Breaths Section )
         SIDEBAR-X .Screen/x DEO2 SIDEBAR-Y #003c ADD2 .Screen/y DEO2
         ;txt-breaths ;draw-zstr JSR2
-        .max-breath LDZ SIDEBAR-Y #004c ADD2 ;draw-counter JSR2
+        .max-breath LDZ2 SIDEBAR-Y #004c ADD2 ;draw-counter JSR2  ( Changed to LDZ2 )
 
         ( Player Control Section )
         SIDEBAR-X .Screen/x DEO2 SIDEBAR-Y #0084 ADD2 .Screen/y DEO2
@@ -320,7 +320,7 @@ JMP2r
 	;draw-tabbar-text JSR2
 	JMP2r
 
-@draw-counter ( val y* -- )
+@draw-counter ( val* y* -- )  ( Changed to accept 2-byte val )
     .Screen/y DEO2            ( Set Y coordinate )
     SIDEBAR-X .Screen/x DEO2  ( Start at sidebar X )
 
@@ -329,19 +329,27 @@ JMP2r
 
     ( Number )
     SIDEBAR-X #000c ADD2 .Screen/x DEO2
-    ;draw-num JSR2            ( val is already on stack )
+    ;draw-num JSR2            ( val* is already on stack )
 
     ( Plus Sprite )
-    SIDEBAR-X #0020 ADD2 .Screen/x DEO2
+    SIDEBAR-X #002c ADD2 .Screen/x DEO2  ( Moved further right for 3 digits )
     ;sprite-plus .Screen/addr DEO2 #01 .Screen/sprite DEO
 JMP2r
 
 
-@draw-num ( val -- )
-    DUP #0a DIV             ( Get Tens )
-    DUP #30 ADD ;draw-char JSR2 ( Print Tens )
-    #0a MUL SUB             ( Original - Tens*10 = Ones )
-    #30 ADD ;draw-char JSR2 ( Print Ones )
+@draw-num ( val* -- )  ( Modified to handle 3 digits )
+    ( Get Hundreds )
+    DUP2 #0064 DIV2         ( val / 100 )
+    DUP2 #0030 ADD2 NIP ;draw-char JSR2  ( Draw hundreds digit )
+    
+    ( Get Tens )
+    #0064 MUL2 SUB2         ( val - hundreds*100 )
+    DUP2 #000a DIV2         ( remainder / 10 )
+    DUP2 #0030 ADD2 NIP ;draw-char JSR2  ( Draw tens digit )
+    
+    ( Get Ones )
+    #000a MUL2 SUB2         ( remainder - tens*10 )
+    #0030 ADD2 NIP ;draw-char JSR2  ( Draw ones digit )
 JMP2r
 
 @draw-char ( char -- )
@@ -353,16 +361,23 @@ JMP2r
     .Screen/x DEI2 #0008 ADD2 .Screen/x DEO2
 JMP2r
 
-@draw-center-stats
-    .Screen/width DEI2 #01 SFT2 #0008 SUB2 .Screen/x DEO2
+@draw-center-stats  ( Modified to handle 3 digits )
+    .Screen/width DEI2 #01 SFT2 #000c SUB2 .Screen/x DEO2  ( Center for 3 digits )
     .Screen/height DEI2 #01 SFT2 #0004 SUB2 .Screen/y DEO2
-    .current-val LDZ
+    .current-val LDZ2  ( Changed to LDZ2 )
 
-    DUP #0a DIV         ( Get Tens )
-    SWP #0a DIVk MUL SUB ( Get Ones )
-
-    SWP #30 ADD ;draw-center-char JSR2
-    #30 ADD ;draw-center-char JSR2
+    ( Get Hundreds )
+    DUP2 #0064 DIV2         ( val / 100 )
+    DUP2 #0030 ADD2 NIP ;draw-center-char JSR2
+    
+    ( Get Tens )
+    #0064 MUL2 SUB2         ( val - hundreds*100 )
+    DUP2 #000a DIV2         ( remainder / 10 )
+    DUP2 #0030 ADD2 NIP ;draw-center-char JSR2
+    
+    ( Get Ones )
+    #000a MUL2 SUB2         ( remainder - tens*10 )
+    #0030 ADD2 NIP ;draw-center-char JSR2
 JMP2r
 
 @draw-center-char ( char -- )
