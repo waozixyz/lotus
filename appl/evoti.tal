@@ -1,0 +1,901 @@
+( Evoti )
+
+( devices )
+|00 @System     [ &vector $2 &pad     $6 &r      $2 &g     $2 &b     $2 ]
+|10 @Console    [ &vector $2 &read    $1 &pad    $5 &write $1 ]
+|20 @Screen     [ &vector $2 &width   $2 &height $2 &auto $1 &pad   $1 &x $2 &y $2 &addr $2 &pixel $1 &sprite $1 ]
+|80 @Controller [ &vector $2 &button  $1 &key    $1 ]
+|90 @Mouse      [ &vector $2 &x       $2 &y      $2 &state $1 &chord $1 ]
+|a0 @File       [ &vector $2 &success $2 &offset $2 &pad   $2 &name  $2 &length $2 &load $2 &save $2 ]
+
+
+( macros )
+%HALF2 { #01 SFT2 } ( short -- short/2 )
+%MOD { DIVk MUL SUB }
+%MOD2 { DIV2k MUL2 SUB2 }
+%RTN { JMP2r }
+%EMIT { .Console/write DEO } ( character -- )
+%NL { #0a EMIT } ( -- )
+
+
+( zero page )
+|00
+@pointer [ &x $2 &y $2 &sprite $2 ]
+@view $1
+@pview $1
+@screen-width $2
+@screen-height $2
+@mouse-pressed $1
+@key-pressed $1
+@buffer $80
+
+( temp vars )
+@color $1
+@margin $2
+@offset-y $2
+@height $2
+@width $2
+@y $2
+@x $2
+@i $2
+
+( button )
+@button-selected $1
+@button-pressed $1
+
+
+( buttons )
+
+@buttons
+ &1 [ $2 $2 $2 $2 ]
+ &2 [ $2 $2 $2 $2 ]
+ &3 [ $2 $2 $2 $2 ]
+ &4 [ $2 $2 $2 $2 ]
+
+( init )
+|100 @on-reset ( -> )
+    ( set theme )
+	;set-theme JSR2
+
+    ( vectors )
+	;on-controller .Controller/vector DEO2
+    ;on-frame .Screen/vector DEO2
+    ;on-mouse .Mouse/vector DEO2
+
+	#0200 .screen-width STZ2
+	#0140 .screen-height STZ2
+	.screen-width LDZ2 .Screen/width DEO2
+	.screen-height LDZ2 .Screen/height DEO2
+
+	( set view )
+	#00 .view STZ
+	.view LDZ .pview STZ
+
+	( set file length for img loading )
+	#1000 .File/length DEO2
+
+	;load-view JSR2
+
+
+	.Screen/width DEI2 #01 SFT2 .Screen/x DEO2
+	.Screen/height DEI2 #01 SFT2 .Screen/y DEO2
+	#01 .Screen/pixel DEO
+	#43 .Screen/pixel DEO
+	#93 .Screen/pixel DEO
+	#e2 .Screen/pixel DEO
+	BRK
+
+
+BRK
+
+@load-view
+	( load current view )
+	.view LDZ #00 EQU ,&title JCN
+	,&skip1 JMP
+	&title
+	;load-title-view JSR2
+	&skip1
+
+	.view LDZ #01 EQU ,&quick JCN
+	RTN
+
+	&quick
+	;load-quick-view JSR2
+	RTN
+
+( theme )
+
+@theme-txt ".theme $1
+
+@set-theme ( -- )
+	;theme-txt .File/name DEO2
+	#0006 .File/length DEO2
+	#fffa .File/load DEO2
+	.File/success DEI2 #0006 NEQ2 ,&ignore JCN
+		#fffa LDA2 .System/r DEO2
+		#fffc LDA2 .System/g DEO2
+		#fffe LDA2 .System/b DEO2
+		&ignore
+
+	RTN
+
+( vectors )
+
+@on-frame ( -> )
+    ;clear-screen JSR2
+    ;draw-pointer JSR2
+
+	.pview LDZ .view LDZ NEQ ,&change-view JCN
+	,&skip1 JMP
+
+	&change-view
+	.screen-width LDZ2 .Screen/width DEO2
+	.screen-height LDZ2 .Screen/height DEO2
+
+	#00 .Screen/addr DEO
+	#00 .Screen/x DEO
+	#00 .Screen/y DEO
+	#00 .Screen/sprite DEO
+	.view LDZ .pview STZ
+	;load-view JSR2
+	&skip1
+
+	( current view on-frame )
+	.view LDZ #00 EQU ,&title JCN
+	,&skip2 JMP
+	&title
+	;on-frame-menu JSR2
+	&skip2
+
+	.view LDZ #01 EQU ,&quick JCN
+	BRK
+	&quick
+	;on-frame-quick JSR2
+
+	BRK
+
+
+@clear-screen ( -- )
+	.Screen/width DEI2 #01 SFT2 .Screen/x DEO2
+	.Screen/height DEI2 #01 SFT2 .Screen/y DEO2
+
+	( clear background )
+	#80 .Screen/pixel DEO
+	#90 .Screen/pixel DEO
+	#a0 .Screen/pixel DEO
+	#b0 .Screen/pixel DEO
+
+	( clear foreground )
+	#c0 .Screen/pixel DEO
+	#d0 .Screen/pixel DEO
+	#e0 .Screen/pixel DEO
+	#f0 .Screen/pixel DEO
+	RTN
+
+@on-mouse ( -> )
+	;pointer_icn .pointer/sprite STZ2
+
+	( current view on-mouse )
+	.view LDZ #00 EQU ,&title JCN
+	,&skip1 JMP
+	&title
+	;on-mouse-menu JSR2
+	&skip1
+
+	.view LDZ #01 EQU ,&quick JCN
+	,&skip2 JMP
+	&quick
+	;on-mouse-quick JSR2
+	&skip2
+
+    ;draw-pointer JSR2
+
+	BRK
+
+@on-controller ( -> )
+	( current view on-controller )
+	.view LDZ #00 EQU ,&title JCN
+	,&skip1 JMP
+	&title
+	;on-controller-menu JSR2
+	&skip1
+
+	.view LDZ #01 EQU ,&quick JCN
+	,&skip2 JMP
+	&quick
+	;on-controller-quick JSR2
+	&skip2
+
+	( exit or return to title screen )
+
+	#1b .Controller/key DEI EQU ,&home JCN
+	BRK
+	&home
+	#00 .view STZ
+
+
+	BRK
+
+( draw pointer )
+
+@draw-pointer ( -- )
+
+    ( set sprite address )
+    .pointer/sprite LDZ2 .Screen/addr DEO2
+
+    ( send pointer position to screen )
+    .pointer/x LDZ2 .Screen/x DEO2
+    .pointer/y LDZ2 .Screen/y DEO2
+
+    #00 .Screen/auto DEO
+
+    ( clear sprite from foreground )
+	#40 .Screen/sprite DEO
+
+	( update pointer positions )
+	.Mouse/x DEI2 DUP2 .pointer/x STZ2 .Screen/x DEO2
+	.Mouse/y DEI2 DUP2 .pointer/y STZ2 .Screen/y DEO2
+
+	( draw new cursor )
+	.Mouse/state DEI #01 EQU ,&pressed JCN
+	#43 .Screen/sprite DEO
+	RTN
+	&pressed
+		#41 .Screen/sprite DEO
+
+RTN
+
+@pointer_icn [ 80c0 e0f0 f8e0 1000 ]
+@hand_icn    [ 4040 4070 f8f8 f870 ]
+
+( utils )
+
+@opposite-color ( color -- color )
+	#01 #01 .color LDZ EQU ADD
+	RTN
+
+@print-button ( button index -- )
+    #01 SUB #08 MUL .i STZ
+    STHk .i LDZ ADD LDZ2 ;print-short JSR2
+    .i LDZ #02 ADD .i STZ
+    STHkr .i LDZ ADD LDZ2 ;print-short JSR2
+    .i LDZ #02 ADD .i STZ
+    STHkr .i LDZ ADD LDZ2 ;print-short JSR2
+    .i LDZ #02 ADD .i STZ
+    STHr .i LDZ ADD LDZ2 ;print-short JSR2
+    #0a EMIT
+    RTN
+
+@print-4-shorts ( short short short short -- )
+    STH2 ROT2 ;print-short JSR2
+    SWP2 ;print-short JSR2
+    ;print-short JSR2
+    STH2r ;print-short JSR2
+    #0a EMIT
+    RTN
+
+@print-short ( short -- )
+    SWP #ff AND ;print-byte JSR2
+    #ff AND ;print-byte JSR2
+    RTN
+
+@print-byte ( byte -- )
+    DUP #04 SFT #0f AND ;hex-to-ascii JSR2 EMIT
+    #0f AND ;hex-to-ascii JSR2 EMIT
+    RTN
+
+@hex-to-ascii ( nibble -- ascii )
+    DUP #0a LTH ,&digit JCN
+    #57 ADD RTN
+    &digit #30 ADD RTN
+
+
+@slen ( str* -- len* )
+	DUP2 ,scap JSR SWP2 SUB2
+	RTN
+
+@scap ( str* -- str-end* )
+	( clamp ) LDAk #00 NEQ JMP RTN
+	&while INC2 LDAk ,&while JCN
+	RTN
+
+@sput ( str* char -- )
+	ROT ROT ,scap JSR STA
+	RTN
+
+@spop ( str* -- )
+	( clamp ) LDAk #00 NEQ JMP RTN
+	#00 ROT ROT ,scap JSR #0001 SUB2 STA
+	RTN
+
+@mclr ( addr* len* -- )
+	OVR2 ADD2 SWP2
+	&loop
+		STH2k #00 STH2r STA
+		INC2 GTH2k ,&loop JCN
+	POP2 POP2
+	RTN
+
+
+( ui )
+
+@get-button-address ( index -- button-address )
+    DUP #01 EQU ,&btn1 JCN
+    DUP #02 EQU ,&btn2 JCN
+    DUP #03 EQU ,&btn3 JCN
+    DUP #04 EQU ,&btn4 JCN
+    ( Default case: return null or handle error )
+    #0000 RTN
+
+    &btn1 POP ;buttons/1 RTN
+    &btn2 POP ;buttons/2 RTN
+    &btn3 POP ;buttons/3 RTN
+    &btn4 POP ;buttons/4 RTN
+
+
+@set-size ( x1 y1 w* h* rect* -- )
+	STH2
+	( size to rect )
+	STH2 STH2 OVR2 STH2r ADD2 OVR2 STH2r ADD2
+	STH2r
+	DUP2 ROT2 SWP2 #0006 ADD2 STA2
+	DUP2 ROT2 SWP2 #0004 ADD2 STA2
+	DUP2 ROT2 SWP2 INC2 INC2 STA2
+	DUP2 ROT2 SWP2 STA2
+	POP2
+	RTN
+
+@within-rect ( x* y* rect -- flag )
+	STH
+	( y LTH rect.y ) DUP2 STHkr INC INC LDZ2 LTH2 ,&skip JCN
+	( y GTH rect.w ) DUP2 STHkr #06 ADD LDZ2 GTH2 ,&skip JCN
+	SWP2
+	( x LTH rect.x ) DUP2 STHkr LDZ2 LTH2 ,&skip JCN
+	( x GTH rect.h ) DUP2 STHkr #04 ADD LDZ2 GTH2 ,&skip JCN
+	POP2 POP2 POPr
+	#01
+	RTN
+	&skip
+		POP2 POP2 POPr
+		#00
+		RTN
+
+
+@check-hover-button ( selected rect -- )
+	STH
+	.Mouse/x DEI2 .Mouse/y DEI2 STHr ;within-rect JSR2 #00 EQU ,&skip JCN
+		;hand_icn .pointer/sprite STZ2
+		DUP .button-selected STZ
+
+		.Mouse/state DEI #01 EQU ,&pressed JCN
+		POP
+		RTN
+	&pressed
+        #01 .mouse-pressed STZ
+		DUP .button-pressed STZ
+	&skip
+	POP
+	RTN
+
+@check-selected-button ( key -- )
+	#01 .color STZ
+
+	DUP .button-pressed LDZ EQU ,&pressed JCN
+	DUP .button-selected LDZ EQU ,&selected JCN
+	,&rtn JMP
+	&selected
+		#01 .key-pressed LDZ EQU ,&pressed JCN
+		#03 .color STZ
+		,&rtn JMP
+	&pressed
+		#02 .color STZ
+	&rtn
+	POP
+	RTN
+
+@draw-btn ( image offset-x offset-y str* color offset-x offset-y rect -- )
+    STH
+    ( add offset to text and draw text )
+    STHkr INC INC LDZ2 ADD2 .Screen/y DEO2
+    STHkr LDZ2 ADD2 .Screen/x DEO2
+    ;draw-str JSR2
+
+    STHkr INC INC LDZ2 ADD2 .Screen/y DEO2
+    STHr LDZ2 ADD2 .Screen/x DEO2
+
+	.File/name DEO2 ;load-img JSR2
+	RTN
+
+@draw-text-btn ( str* color pos-x pos-y -- )
+	.Screen/y DEO2
+	.Screen/x DEO2
+	;draw-str JSR2
+	RTN
+
+@draw-icon-btn ( image pos-x pos-y -- )
+	.Screen/y DEO2
+	.Screen/x DEO2
+	.File/name DEO2 ;load-img JSR2
+	RTN
+
+
+@load-img ( color str* -- )
+	;&img .File/load DEO2
+      	;&img .Screen/addr DEO2
+        #f6 .Screen/auto DEO
+        #0400
+        &loop
+            .color LDZ #80 ADD .Screen/sprite DEO
+			INC GTHk ,&loop JCN
+        POP2
+	RTN
+	&img $1000
+
+
+@draw-str ( str* color -- )
+    #06 .Screen/auto DEO
+	STH
+	&while
+		LDAk STHkr ,draw-char JSR
+		INC2 LDAk ,&while JCN
+	POP2
+	POPr
+	RTN
+
+@draw-char ( char color -- )
+	SWP
+	[ #20 SUB #00 SWP #40 SFT2 ;font ADD2 ] .Screen/addr DEO2
+	.Screen/sprite DEOk DEO
+	.Screen/y DEI2 #0010 SUB2 .Screen/y DEO2
+	.Screen/x DEI2 #0008 ADD2 .Screen/x DEO2
+	RTN
+
+( views )
+
+( title screen )
+
+( constants )
+%LOGO-MARGIN { #0012 }
+%TITLE-X-OFFSET { #0010 }
+%FONT-HEIGHT { #0018 }
+
+@logo "assets/logo.chr $1
+
+@title-strings
+    &title "Evotika $1
+    &description1 "Emoji 20 "Score 20 "Voting $1
+    &description2 "Make 20 "voting 20 "fun 20 "again! $1
+
+@menu-icons
+	&clock "assets/menu/clock.chr $1
+	&book "assets/menu/book.chr $1
+	&group "assets/menu/group.chr $1
+	&gear "assets/menu/gear.chr $1
+
+@menu-strings
+	&quick "Quick 20 "Process $1
+	&book "Manual $1
+	&group "Groups $1
+	&gear "Settings $2
+
+
+@load-title-view ( -- )
+    ( load menu )
+
+	;load-menu JSR2
+
+	RTN
+
+( menu )
+@load-menu ( -- )
+    #01 .button-selected STZ
+    #00 .button-pressed STZ
+
+    ( init values for button generation )
+    #01 .color STZ
+    #0008 .margin STZ2
+    #0075 .width STZ2
+    #0045 .height STZ2
+    #00d0 .y STZ2
+
+    ( initialize x position )
+    .margin LDZ2 .x STZ2
+
+    ( loop through buttons )
+
+    #00 .i STZ
+
+    &loop
+        .x LDZ2 .y LDZ2 .width LDZ2 .height LDZ2
+        .i LDZ INC ;get-button-address JSR2
+
+        ;set-size JSR2
+
+        .x LDZ2 .width LDZ2 ADD2 .margin LDZ2 ADD2 .x STZ2
+
+        .i LDZ INC .i STZ
+        .i LDZ #04 LTH ,&loop JCN
+
+	RTN
+
+
+@on-frame-menu ( -- )
+	;draw-title JSR2
+
+    ( not moving 0 )
+    #00 .Mouse/state DEI EQU .mouse-pressed LDZ ADD #02 EQU ,&mouse-release JCN
+	,&skip1 JMP
+	&mouse-release
+        #00 .mouse-pressed STZ
+        #00 .button-pressed LDZ NEQ ,&change JCN
+
+    &skip1
+	#00 .Controller/button DEI EQU .key-pressed LDZ ADD #02 EQU ,&key-release JCN
+    ,&skip2 JMP
+
+    &key-release
+        #00 .key-pressed STZ
+        #00 .button-pressed LDZ NEQ ,&change JCN
+        ,&skip2 JMP
+
+    &change
+        .button-pressed LDZ .view STZ
+    &skip2
+    ;draw-buttons JSR2
+	RTN
+
+@draw-title ( -- )
+	( logo )
+	#01 .color STZ
+	;logo .File/name DEO2
+    .Screen/width DEI2 HALF2 LOGO-MARGIN SUB .Screen/x DEO2
+    LOGO-MARGIN .Screen/y DEO2
+	;load-img JSR2
+    LOGO-MARGIN .Screen/y DEI2 ADD2 .Screen/y DEO2
+
+	( title )
+    .Screen/x DEI2 TITLE-X-OFFSET SUB2 .Screen/x DEO2
+	;title-strings/title #02 ;draw-str JSR2
+
+	( description )
+	#00b5 .Screen/x DEO2 FONT-HEIGHT .Screen/y DEI2 ADD2 .Screen/y DEO2
+	;title-strings/description1 #02 ;draw-str JSR2
+
+    #00a7 .Screen/x DEO2 FONT-HEIGHT .Screen/y DEI2 ADD2 .Screen/y DEO2
+	;title-strings/description2 #02 ;draw-str JSR2
+	RTN
+
+@draw-buttons ( -- )
+    #0030 .offset-y STZ2
+  	#01 .i STZ
+
+    &loop
+        .i LDZ DUP ;check-selected-button JSR2 ;draw-button JSR2
+
+        .i LDZ INC .i STZ
+        .i LDZ #05 LTH ,&loop JCN
+
+	RTN
+
+@on-mouse-menu ( -- )
+	#01 DUP .buttons/1 ;check-hover-button JSR2 ;draw-button JSR2
+	#02 DUP .buttons/2 ;check-hover-button JSR2 ;draw-button JSR2
+	#03 DUP .buttons/3 ;check-hover-button JSR2 ;draw-button JSR2
+	#04 DUP .buttons/4 ;check-hover-button JSR2 ;draw-button JSR2
+	RTN
+
+@on-controller-menu ( -- )
+
+	( scroll through buttons using ctrl and alt )
+	#02 .Controller/button DEI EQU ,&inc JCN
+	,&skip1 JMP
+	&inc
+		.button-selected LDZ INC .button-selected STZ
+	&skip1
+
+	#01 .Controller/button DEI EQU ,&dec JCN
+	,&skip2 JMP
+	&dec
+		.button-selected LDZ #01 SUB .button-selected STZ
+	&skip2
+
+	( carousel select )
+	.button-selected LDZ #01 LTH ,&max JCN
+	.button-selected LDZ #04 GTH ,&zero JCN
+	,&skip3 JMP
+	&zero
+		#01 .button-selected STZ
+		,&skip3 JMP
+	&max
+		#04 .button-selected STZ
+	&skip3
+
+	( check button pressed option )
+	#04 .Controller/button DEI EQU ,&pressed JCN
+	RTN
+	&pressed
+        #01 .key-pressed STZ
+        .button-selected LDZ .button-pressed STZ
+	RTN
+
+
+@draw-button ( index -- )
+    DUP #01 EQU ,&quick JCN
+    DUP #02 EQU ,&group JCN
+    DUP #03 EQU ,&book JCN
+    #04 EQU ,&gear JCN
+    RTN
+
+    &quick
+        ;menu-icons/clock #0028 #0000 ;menu-strings/quick
+        .color LDZ #0006 .offset-y LDZ2 .buttons/1
+        ,&draw JMP
+    &group
+        ;menu-icons/group #002c #0009 ;menu-strings/group
+        .color LDZ #0025 .offset-y LDZ2 .buttons/2
+        ,&draw JMP
+    &book
+        ;menu-icons/book #0030 #0009 ;menu-strings/book
+        .color LDZ #0025 .offset-y LDZ2 .buttons/3
+        ,&draw JMP
+    &gear
+        ;menu-icons/gear #002a #0005 ;menu-strings/gear
+        .color LDZ #001a .offset-y LDZ2 .buttons/4
+    &draw
+    ;draw-btn JSR2
+    RTN
+
+( quick process )
+
+@quick-icons
+	&back "assets/back.chr $1
+	&next "assets/next.chr $1
+
+
+@quick-strings
+    &topic "Topic 20 "Question $1
+	&description "Description $1
+	&back "Back $1
+	&next "Next $1
+
+
+@load-quick-view ( -- )
+
+	( init values for button generation )
+	#01 .color STZ
+
+	#02 .button-selected STZ
+	#00 .button-pressed STZ
+	( init values for button generation )
+	#0008 #0110 #0038 #0119 ;buttons/1 ;set-size JSR2
+	#01a8 #0110 #01d8 #0119 ;buttons/2 ;set-size JSR2
+	RTN
+
+@on-frame-quick ( -- )
+	;draw-quick JSR2
+
+    ( not moving 0 )
+    #00 .Mouse/state DEI EQU .mouse-pressed LDZ ADD #02 EQU ,&mouse-release JCN
+	,&skip1 JMP
+	&mouse-release
+        #00 .mouse-pressed STZ
+        #00 .button-pressed LDZ NEQ ,&change JCN
+
+    &skip1
+	#00 .Controller/button DEI EQU .key-pressed LDZ ADD #02 EQU ,&key-release JCN
+    ,&skip2 JMP
+
+    &key-release
+        #00 .key-pressed STZ
+        #00 .button-pressed LDZ NEQ ,&change JCN
+        ,&skip2 JMP
+
+    &change
+	    .button-pressed LDZ #01 EQU ,&change1 JCN
+		.button-pressed LDZ #01 EQU ,&change2 JCN
+		,&skip2 JMP
+ 		&change1
+		#00 .view STZ
+		,&skip2 JMP
+		&change2
+		#02 .view STZ
+
+    &skip2
+
+	#01 DUP ;check-selected-button JSR2 ;draw-back JSR2
+	#02 DUP ;check-selected-button JSR2 ;draw-next JSR2
+
+	RTN
+
+@draw-quick ( -- )
+
+    #0020 .Screen/x DEO2 #0020 .Screen/y DEO2 ;quick-strings/topic #02 ;draw-str JSR2
+    #0020 .Screen/x DEO2 #0070 .Screen/y DEO2 ;quick-strings/description #02 ;draw-str JSR2
+
+	#01 ;check-selected-button JSR2 ;draw-back JSR2
+	#02 ;check-selected-button JSR2 ;draw-next JSR2
+	RTN
+
+@draw-back ( -- )
+	;quick-icons/back #0008 #0110 ;draw-icon-btn JSR2
+	;quick-strings/back .color LDZ #0038 #0119 ;draw-text-btn JSR2
+	RTN
+
+
+@draw-next ( -- )
+	;quick-icons/next #01d8 #0110 ;draw-icon-btn JSR2
+	;quick-strings/next .color LDZ #01a8 #0119 ;draw-text-btn JSR2
+	RTN
+
+@on-mouse-quick ( -- )
+	#01 .buttons/1 ;check-hover-button JSR2
+	;draw-back JSR2
+
+	#02 .buttons/2 ;check-hover-button JSR2
+	;draw-next JSR2
+	RTN
+
+
+
+@on-controller-quick ( -- )
+
+	( scroll through buttons using ctrl and alt )
+	#02 .Controller/button DEI EQU ,&inc JCN
+	,&skip1 JMP
+	&inc
+		.button-selected LDZ INC .button-selected STZ
+	&skip1
+
+	#01 .Controller/button DEI EQU ,&dec JCN
+	,&skip2 JMP
+	&dec
+		.button-selected LDZ #01 SUB .button-selected STZ
+	&skip2
+
+	( carousel select )
+	.button-selected LDZ #01 LTH ,&max JCN
+	.button-selected LDZ #02 GTH ,&zero JCN
+	,&skip3 JMP
+	&zero
+		#01 .button-selected STZ
+		,&skip3 JMP
+	&max
+		#02 .button-selected STZ
+	&skip3
+
+
+	( check button pressed option )
+	#04 .Controller/button DEI EQU ,&pressed JCN
+	RTN
+	&pressed
+		#01 .key-pressed STZ
+		.button-selected LDZ .button-pressed STZ
+	RTN
+
+( assets )
+
+@love-emoji-light
+    1f70 806c fefe 7cb8 9080 988c 87c0 701f f01c 026c fefe 7c3a 1202 3262 c206 1cf0
+@love-emoji-dark
+    000f 7f93 0101 83c7 6f7f 6773 783f 0f00 00e0 fc92 0000 82c6 ecfc cc9c 3cf0 e000
+@happy-emoji-light
+    1f70 8080 9cb6 8080 80b8 808c 87c0 701f f01c 0202 72da 0202 023a 0262 c206 1cf0
+@happy-emoji-dark
+    000f 7f7f 6349 7f7f 7f47 7f73 787f 1f00 00e0 fcfc 8c24 fcfc fcc4 fc9c 3cfc f000
+@smile-emoji-light
+    1f70 8080 9c9c 9c80 8080 988c 87c0 701f f01c 0202 7272 7202 0202 3262 c206 1cf0
+@smile-emoji-dark
+    000f 7f7f 7373 7f7f 7f7f 6773 787f 1f00 00e0 fcfc 9c9c fcfc fcfc cc9c 3cfc f000
+@neutral-emoji-light
+    1f70 c080 9c9c 9c80 8080 8080 80c0 701f f01c 0602 7272 7202 0202 0202 0206 1cf0
+@neutral-emoji-dark
+    000f 7f7f 7373 7f7f 7f7f 7f7f 7f7f 1f00 00e0 fcfc 9c9c fcfc fcfc fcfc fcf8 f000
+@sad-emoji-light
+    1f70 c080 9c9c 9c80 8080 878c 98c0 701f f01c 0602 7272 7202 0202 c262 3206 1cf0
+@sad-emoji-dark
+    001f 7f7f 7f73 737f 7f7f 7c7b 777f 1f00 00f0 f8fc fc9c 9cfc fcfc 7cbc dcfc f000
+@cry-emoji-light
+    1f70 8080 bcbc 9898 9880 878f 9fc0 701f f01c 0202 7a7a 3232 3202 c2e2 f206 1cf0
+@cry-emoji-dark
+    001f 7f7f 4343 6767 677f 7f78 707f 1f00 00f0 f8fc 8484 cccc ccfc fc3c 1cfc f000
+@angry-emoji-light
+    df70 b098 9c9c 9c80 8080 878c 98c0 701f f61c 1e32 7272 7202 0202 c262 3206 1cf0
+@angry-emoji-dark
+    609f 4f67 7f73 737f 7f7f 7c7b 777f 1f00 06f8 f2e4 fc9c 9cfc fcfc 7cbc dcfc f000
+
+
+@font ( terminus01x02 )
+	0000 0000 0000 0000 0000 0000 0000 0000
+	0000 183c 3c3c 1818 1800 1818 0000 0000
+	0066 6666 2400 0000 0000 0000 0000 0000
+	0000 006c 6cfe 6c6c 6cfe 6c6c 0000 0000
+	1818 7cc6 c2c0 7c06 0686 c67c 1818 0000
+	0000 0000 c2c6 0c18 3060 c686 0000 0000
+	0000 386c 6c38 76dc cccc cc76 0000 0000
+	0030 3030 6000 0000 0000 0000 0000 0000
+	0000 0c18 3030 3030 3030 180c 0000 0000
+	0000 3018 0c0c 0c0c 0c0c 1830 0000 0000
+	0000 0000 0066 3cff 3c66 0000 0000 0000
+	0000 0000 0018 187e 1818 0000 0000 0000
+	0000 0000 0000 0000 0018 1818 3000 0000
+	0000 0000 0000 00fe 0000 0000 0000 0000
+	0000 0000 0000 0000 0000 1818 0000 0000
+	0000 0000 0206 0c18 3060 c080 0000 0000
+	0000 386c c6c6 d6d6 c6c6 6c38 0000 0000
+	0000 1838 7818 1818 1818 187e 0000 0000
+	0000 7cc6 060c 1830 60c0 c6fe 0000 0000
+	0000 7cc6 0606 3c06 0606 c67c 0000 0000
+	0000 0c1c 3c6c ccfe 0c0c 0c1e 0000 0000
+	0000 fec0 c0c0 fc06 0606 c67c 0000 0000
+	0000 3860 c0c0 fcc6 c6c6 c67c 0000 0000
+	0000 fec6 0606 0c18 3030 3030 0000 0000
+	0000 7cc6 c6c6 7cc6 c6c6 c67c 0000 0000
+	0000 7cc6 c6c6 7e06 0606 0c78 0000 0000
+	0000 0000 1818 0000 0018 1800 0000 0000
+	0000 0000 1818 0000 0018 1830 0000 0000
+	0000 0006 0c18 3060 3018 0c06 0000 0000
+	0000 0000 007e 0000 7e00 0000 0000 0000
+	0000 0060 3018 0c06 0c18 3060 0000 0000
+	0000 7cc6 c60c 1818 1800 1818 0000 0000
+	0000 007c c6c6 dede dedc c07c 0000 0000
+	0000 1038 6cc6 c6fe c6c6 c6c6 0000 0000
+	0000 fc66 6666 7c66 6666 66fc 0000 0000
+	0000 3c66 c2c0 c0c0 c0c2 663c 0000 0000
+	0000 f86c 6666 6666 6666 6cf8 0000 0000
+	0000 fe66 6268 7868 6062 66fe 0000 0000
+	0000 fe66 6268 7868 6060 60f0 0000 0000
+	0000 3c66 c2c0 c0de c6c6 663a 0000 0000
+	0000 c6c6 c6c6 fec6 c6c6 c6c6 0000 0000
+	0000 3c18 1818 1818 1818 183c 0000 0000
+	0000 1e0c 0c0c 0c0c cccc cc78 0000 0000
+	0000 e666 666c 7878 6c66 66e6 0000 0000
+	0000 f060 6060 6060 6062 66fe 0000 0000
+	0000 c6ee fefe d6c6 c6c6 c6c6 0000 0000
+	0000 c6e6 f6fe dece c6c6 c6c6 0000 0000
+	0000 7cc6 c6c6 c6c6 c6c6 c67c 0000 0000
+	0000 fc66 6666 7c60 6060 60f0 0000 0000
+	0000 7cc6 c6c6 c6c6 c6d6 de7c 0c0e 0000
+	0000 fc66 6666 7c6c 6666 66e6 0000 0000
+	0000 7cc6 c660 380c 06c6 c67c 0000 0000
+	0000 7e7e 5a18 1818 1818 183c 0000 0000
+	0000 c6c6 c6c6 c6c6 c6c6 c67c 0000 0000
+	0000 c6c6 c6c6 c6c6 c66c 3810 0000 0000
+	0000 c6c6 c6c6 d6d6 d6fe ee6c 0000 0000
+	0000 c6c6 6c7c 3838 7c6c c6c6 0000 0000
+	0000 6666 6666 3c18 1818 183c 0000 0000
+	0000 fec6 860c 1830 60c2 c6fe 0000 0000
+	0000 3c30 3030 3030 3030 303c 0000 0000
+	0000 0080 c0e0 7038 1c0e 0602 0000 0000
+	0000 3c0c 0c0c 0c0c 0c0c 0c3c 0000 0000
+	1038 6cc6 0000 0000 0000 0000 0000 0000
+	0000 0000 0000 0000 0000 0000 00ff 0000
+	3030 1800 0000 0000 0000 0000 0000 0000
+	0000 0000 0078 0c7c cccc cc76 0000 0000
+	0000 e060 6078 6c66 6666 667c 0000 0000
+	0000 0000 007c c6c0 c0c0 c67c 0000 0000
+	0000 1c0c 0c3c 6ccc cccc cc76 0000 0000
+	0000 0000 007c c6fe c0c0 c67c 0000 0000
+	0000 386c 6460 f060 6060 60f0 0000 0000
+	0000 0000 0076 cccc cccc cc7c 0ccc 7800
+	0000 e060 606c 7666 6666 66e6 0000 0000
+	0000 1818 0038 1818 1818 183c 0000 0000
+	0000 0606 000e 0606 0606 0606 6666 3c00
+	0000 e060 6066 6c78 786c 66e6 0000 0000
+	0000 3818 1818 1818 1818 183c 0000 0000
+	0000 0000 00ec fed6 d6d6 d6c6 0000 0000
+	0000 0000 00dc 6666 6666 6666 0000 0000
+	0000 0000 007c c6c6 c6c6 c67c 0000 0000
+	0000 0000 00dc 6666 6666 667c 6060 f000
+	0000 0000 0076 cccc cccc cc7c 0c0c 1e00
+	0000 0000 00dc 7666 6060 60f0 0000 0000
+	0000 0000 007c c660 380c c67c 0000 0000
+	0000 1030 30fc 3030 3030 361c 0000 0000
+	0000 0000 00cc cccc cccc cc76 0000 0000
+	0000 0000 0066 6666 6666 3c18 0000 0000
+	0000 0000 00c6 c6d6 d6d6 fe6c 0000 0000
+	0000 0000 00c6 6c38 3838 6cc6 0000 0000
+	0000 0000 00c6 c6c6 c6c6 c67e 060c f800
+	0000 0000 00fe cc18 3060 c6fe 0000 0000
+	0000 0e18 1818 7018 1818 180e 0000 0000
+	0000 1818 1818 0018 1818 1818 0000 0000
+	0000 7018 1818 0e18 1818 1870 0000 0000
