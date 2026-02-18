@@ -186,11 +186,11 @@ BRK2
 JMP2r
 
 @handle-mouse-controls
-    .state LDZ MSK-OPEN AND #00 EQU ,&skip JCN
+    .state LDZ MSK-OPEN AND #00 EQU ,skip-controls JCN
     ;handle-speed-logic JSR2
     ;handle-breath-logic JSR2
     ;handle-play-logic JSR2
-    &skip JMP2r
+    @skip-controls JMP2r
 
 
 @handle-play-logic
@@ -279,6 +279,7 @@ JMP2r
     @render-toggle #01 .Screen/sprite DEO
 
     ( Draw content if open )
+    
     .state LDZ MSK-OPEN AND #00 EQU ;skip-children JCN2
         ( Speed Section )
         SIDEBAR-X .Screen/x DEO2 SIDEBAR-Y #0018 ADD2 .Screen/y DEO2
@@ -364,7 +365,7 @@ JMP2r
     #00 SWP            ( Byte to Short )
     #30 SFT2           ( Multiply by 8 )
     ;font ADD2 .Screen/addr DEO2
-    #01 .Screen/sprite DEO
+    #41 .Screen/sprite DEO
     .Screen/x DEI2 #0008 ADD2 .Screen/x DEO2
 JMP2r
 
@@ -392,7 +393,7 @@ JMP2r
 @clear-screen
     #00 .Screen/auto DEO #0000 .Screen/y DEO2
     @y #0000 .Screen/x DEO2
-        @x #00 .Screen/pixel DEO
+        @x #40 .Screen/pixel DEO #00 .Screen/pixel DEO
             .Screen/x DEI2 INC2 DUP2 .Screen/x DEO2
             .Screen/width DEI2 LTH2 ,x JCN
         POP2 .Screen/y DEI2 INC2 DUP2 .Screen/y DEO2
