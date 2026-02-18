@@ -127,33 +127,40 @@ JMP2r
 
     @draw
 
-    SCR-HOLD .view LDZ EQU ,&draw-hold-button JCN
-    ,&draw-circle JCN
-    &draw-hold-button
+    SCR-HOLD .view LDZ EQU ,draw-hold-button JCN
+    ;skip-hold-button JCN2
     
+    
+    @draw-hold-button 
+    .circle-cx LDZ2 #0020 SUB2 .Screen/x DEO2
+    .circle-cy LDZ2 #0035 ADD2 .Screen/y DEO2
+    
+  	;fill-icn .Screen/addr DEO2
+
+    @breathx #03 .Screen/sprite DEO
+        .Screen/x DEI2 INC2 DUP2 .Screen/x DEO2
+        .circle-cx LDZ2 #0020 ADD2 LTH2 ,breathx JCN
+
     .circle-cx LDZ2 #0014 SUB2 .Screen/x DEO2
-    
     .circle-cy LDZ2 #0035 ADD2 .Screen/y DEO2
     ;txt-breath ;draw-zstr JSR2
+   
 
-    &draw-circle
+    @skip-hold-button
     .Screen/width DEI2 #01 SFT2 .Screen/height DEI2 #01 SFT2 .circle-r LDZ2
     ;draw-circle JSR2
     ;draw-center-stats JSR2
-
-
 
     .Mouse/x DEI2 .Screen/x DEO2 .Mouse/y DEI2 .Screen/y DEO2
     ;sprite-cursor .Screen/addr DEO2 #01 .Screen/sprite DEO
 BRK2
 
 @handle-back-button ( -- )
-	.Mouse/y DEI2 #0010 LTH2 .Mouse/x DEI2 #0040 LTH2 AND ,&clicked JCN
-    ,&skip-button JCN
-	&clicked
-    ;potato-rom-path ;load-rom JSR2
-    &skip-button
+	.Mouse/y DEI2 #0010 LTH2 .Mouse/x DEI2 #0040 LTH2 AND ,click-back JCN
     JMP2r
+	@click-back
+    ;potato-rom-path ;load-rom JSR2
+
 
 @handle-mouse
     .Mouse/state DEI #00 EQU ;released JCN2
@@ -310,17 +317,12 @@ JMP2r
 
 @draw-tabbar-bg ( -- )
 	;fill-icn .Screen/addr DEO2
-	#00 .Screen/auto DEO
 	#0000 .Screen/y DEO2
-	&tby #0000 .Screen/x DEO2
-		&tbx #03 .Screen/sprite DEO
-			.Screen/x DEI2 INC2 DUP2 .Screen/x DEO2
-			.Screen/width DEI2 LTH2 ,&tbx JCN
-		POP2 #0008 .Screen/y DEO2
-		&tbx2 #03 .Screen/sprite DEO
-			.Screen/x DEI2 INC2 DUP2 .Screen/x DEO2
-			.Screen/width DEI2 LTH2 ,&tbx2 JCN
-	POP2 JMP2r
+	#0000 .Screen/x DEO2
+    @tbx #03 .Screen/sprite DEO
+        .Screen/x DEI2 INC2 DUP2 .Screen/x DEO2
+        .Screen/width DEI2 LTH2 ,tbx JCN
+	JMP2r
 
 @draw-tabbar-text ( -- )
 	#0000 .Screen/y DEO2
