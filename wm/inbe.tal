@@ -49,11 +49,15 @@
 |0100
     ;meta #06 DEO2
 
+
+	#0ff8 .System/r DEO2
+	#0f08 .System/g DEO2
+	#0f08 .System/b DEO2
+    load-theme
+
     #012e .Screen/width DEO2
     #00f0 .Screen/height DEO2
 
-
-    load-theme
 
     CIRCLE-R-MIN .circle-r STZ2
     #03 .anim-delay STZ
@@ -66,18 +70,61 @@
 
     ;on-frame .Screen/vector DEO2
     
-    ,&skip-this JCN
-    inbe-rom-path ;load-rom JSR2
-    &skip-this
+
+@on-frame
+    #00 .Screen/auto DEO
+    ;handle-mouse JSR2
+    ;clear-screen JSR2
+    ;draw-ui JSR2
+
+
+    .Screen/width DEI2 #01 SFT2 #0020 SUB2 .Screen/x DEO2
+    #0000 .Screen/y DEO2
+
+    SCR-BREATH .view LDZ NEQ ,&skip-breath-text JCN
+    ;txt-breath ;draw-zstr JSR2
+
+    &skip-breath-text
+
+    SCR-HOLD .view LDZ NEQ ,&skip-hold-text JCN
+    ;txt-hold ;draw-zstr JSR2
+    ;txt-it ;draw-zstr JSR2
+
+    &skip-hold-text
+
+    SCR-INHALE .view LDZ NEQ ,&skip-inhale-text JCN
+    ;txt-breath ;draw-zstr JSR2
+    ;txt-in ;draw-zstr JSR2
+
+    &skip-inhale-text
+
+
+    ( Only process timing if MSK-PLAYING is set )
+    .state LDZ MSK-PLAYING AND #00 EQU ,draw JCN
+
+    (animate )
+    .timer LDZ INC .timer STZ
+
+    ( Check if we are in HOLD view )
+    .view LDZ SCR-BREATH NEQ ,&no-breath JCN
+        ;breath-logic JSR2
+    &no-breath
+    .view LDZ SCR-HOLD NEQ ,&no-hold JCN
+        ;hold-logic JSR2
+    &no-hold
+    .view LDZ SCR-INHALE NEQ ,&no-inhale JCN
+        ;inhale-logic JSR2
+    &no-inhale
+
+    @draw
+    .Screen/width DEI2 #01 SFT2 .Screen/height DEI2 #01 SFT2 .circle-r LDZ2
+    ;draw-circle JSR2
+    ;draw-center-stats JSR2
+
+    .Mouse/x DEI2 .Screen/x DEO2 .Mouse/y DEI2 .Screen/y DEO2
+    ;sprite-cursor .Screen/addr DEO2 #01 .Screen/sprite DEO
 BRK
 
-@meta $1
-	( name ) "Inner "Breeze 0a
-	( details ) "A 20 "guided 20 "breathing 20 "meditation 0a
-	( author ) "By 20 "Waozi 0a
-	( date ) &date "18 20 "Feb 20 "2026 $1
-	01
-	( icon ) 83 =appicon
 
 @load-theme ( -- )
 	;&path .File/name DEO2
@@ -191,61 +238,8 @@ JMP2r
         #00 .timer STZ
         
     &return
-    JMP2r
+JMP2r
 
-@on-frame
-    #00 .Screen/auto DEO
-    ;handle-mouse JSR2
-    ;clear-screen JSR2
-    ;draw-ui JSR2
-
-
-    .Screen/width DEI2 #01 SFT2 #0020 SUB2 .Screen/x DEO2
-    #0000 .Screen/y DEO2
-
-    SCR-BREATH .view LDZ NEQ ,&skip-breath-text JCN
-    ;txt-breath ;draw-zstr JSR2
-
-    &skip-breath-text
-
-    SCR-HOLD .view LDZ NEQ ,&skip-hold-text JCN
-    ;txt-hold ;draw-zstr JSR2
-    ;txt-it ;draw-zstr JSR2
-
-    &skip-hold-text
-
-    SCR-INHALE .view LDZ NEQ ,&skip-inhale-text JCN
-    ;txt-breath ;draw-zstr JSR2
-    ;txt-in ;draw-zstr JSR2
-
-    &skip-inhale-text
-
-
-    ( Only process timing if MSK-PLAYING is set )
-    .state LDZ MSK-PLAYING AND #00 EQU ,draw JCN
-
-    (animate )
-    .timer LDZ INC .timer STZ
-
-    ( Check if we are in HOLD view )
-    .view LDZ SCR-BREATH NEQ ,&no-breath JCN
-        ;breath-logic JSR2
-    &no-breath
-    .view LDZ SCR-HOLD NEQ ,&no-hold JCN
-        ;hold-logic JSR2
-    &no-hold
-    .view LDZ SCR-INHALE NEQ ,&no-inhale JCN
-        ;inhale-logic JSR2
-    &no-inhale
-
-    @draw
-    .Screen/width DEI2 #01 SFT2 .Screen/height DEI2 #01 SFT2 .circle-r LDZ2
-    ;draw-circle JSR2
-    ;draw-center-stats JSR2
-
-    .Mouse/x DEI2 .Screen/x DEO2 .Mouse/y DEI2 .Screen/y DEO2
-    ;sprite-cursor .Screen/addr DEO2 #01 .Screen/sprite DEO
-BRK2
 
 @handle-back-button ( -- )
 	.Mouse/y DEI2 #0010 LTH2
@@ -573,6 +567,15 @@ JMP2r
     #01 JMP2r
     &no #00 JMP2r
 
+
+
+@meta $1
+	( name ) "Inner "Breeze 0a
+	( details ) "A 20 "guided 20 "breathing 20 "meditation 0a
+	( author ) "By 20 "Waozi 0a
+	( date ) &date "18 20 "Feb 20 "2026 $1
+	01
+	( icon ) 83 =appicon
 
 @load-rom ( filename* -- )
 	.File/name DEO2
