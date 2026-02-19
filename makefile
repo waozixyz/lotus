@@ -5,10 +5,29 @@ LIN=uxncli ${DIR}/uxnlin.rom
 EMU=uxn11
 ROM=bin/${ID}.rom
 
-APPL_TAL=$(wildcard appl/*.tal)
-APPL_ROM=$(patsubst appl/%.tal,bin/%.rom,$(APPL_TAL))
+# Application source files
+WM_TAL=$(wildcard wm/*.tal)
+CMD_TAL=$(wildcard cmd/*.tal)
 
-all: ${ROM} appl bin/nasu.rom
+# Exclude partial files and development tools from standalone build
+APPL_EXCLUDE = nasu-manifest nasu-assets loader
+WM_FILTER = $(filter-out $(addprefix wm/,$(addsuffix .tal,$(APPL_EXCLUDE))),$(WM_TAL))
+CMD_FILTER = $(filter-out $(addprefix cmd/,$(addsuffix .tal,$(APPL_EXCLUDE))),$(CMD_TAL))
+
+all: ${ROM} apps
+
+# Build all applications
+apps: $(patsubst %.tal,%.rom,$(WM_FILTER) $(CMD_FILTER))
+
+# Generic build rule (builds in-place)
+%.rom: %.tal
+	@ ${ASM} $< $@
+
+# Multi-file Nasu build (concatenates files and removes include directives)
+wm/nasu.rom: wm/nasu.tal wm/nasu-manifest.tal wm/nasu-assets.tal
+	@ cat $^ | sed 's/~nasu-assets.tal//' > /tmp/nasu-combined.tal
+	@ ${ASM} /tmp/nasu-combined.tal $@
+	@ rm /tmp/nasu-combined.tal
 
 lint:
 	@ ${LIN} src/${ID}.tal
@@ -16,42 +35,28 @@ test:
 	@ ${EMU} ${ROM} lemon15x12.icn
 run:
 	@if [ -n "$(APP)" ]; then \
-		${EMU} bin/$(APP).rom; \
+		${EMU} $(APP).rom; \
 	else \
 		${EMU} ${ROM}; \
 	fi
-clean:
-	@ rm -f ${ROM} ${ROM}.sym bin/*.rom bin/*.rom.sym
+
+# Clean applications only (not main ROM)
+clean-apps:
+	@ find wm -name "*.rom" -delete
+	@ find wm -name "*.sym" -delete
+	@ find cmd -name "*.rom" -delete
+	@ find cmd -name "*.sym" -delete
+
+clean: clean-apps
+	@ rm -f ${ROM} ${ROM}.sym
 install: ${ROM}
 	@ cp ${ROM} ${DIR}
 uninstall:
 	@ rm -f ${DIR}/${ID}.rom
 
-.PHONY: all clean lint run install uninstall appl nasu-test nasu-archive
+.PHONY: all clean lint run install uninstall apps clean-apps
 
 ${ROM}: src/*
 	@ mkdir -p bin
 	@ ${ASM} src/${ID}.tal ${ROM}
 
-appl: ${APPL_ROM}
-
-# Nasu-specific build (multi-file assembly)
-bin/nasu.rom: appl/nasu.tal appl/nasu-manifest.tal appl/nasu-assets.tal
-	@ mkdir -p bin
-	@ cat appl/nasu.tal appl/nasu-manifest.tal appl/nasu-assets.tal > bin/nasu-combined.tal
-	@ ${ASM} bin/nasu-combined.tal bin/nasu.rom
-	@ rm bin/nasu-combined.tal
-
-# Nasu testing
-nasu-test: bin/nasu.rom
-	@ ${EMU} bin/nasu.rom assets/ako10x10.chr
-
-# Nasu archive (standalone version)
-nasu-archive: bin/nasu.rom
-	@ cat appl/nasu.tal appl/nasu-manifest.tal appl/nasu-assets.tal | \
-	  sed 's/~[^[:space:]]\+//' > bin/nasu-standalone.tal
-	@ ${ASM} bin/nasu-standalone.tal bin/nasu-standalone.rom
-
-bin/%.rom: appl/%.tal
-	@ mkdir -p bin
-	@ ${ASM} $< $@

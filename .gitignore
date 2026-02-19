@@ -5,9 +5,12 @@
 /bin
 
 *.rom
+*.rom.sym
 .paper
 .snarf
 .theme
 
 newfile.txt
+/tmp
+*.combined.tal
 

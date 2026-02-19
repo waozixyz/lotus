@@ -11,6 +11,9 @@
 
 |0100 ( -> )
 
+	( | meta )
+	;meta #06 DEO2
+
 	#630f .System/r DEO2
 	#840f .System/g DEO2
 	#c60f .System/b DEO2
@@ -181,6 +184,24 @@ JMP2r
 @dict
 	&input "Input(.tal): 20 $1
 	&empty "Metadata 20 "Missing $1
+
+@appicon
+7e7e 7e7e 7e7e 7e7e 7e7e 7e7e 7e7e 0000
+7e42 4242 4242 4242 4242 427e 0000 0000
+7e42 4242 4242 4242 4242 427e 0000 0000
+7e42 4242 4242 4242 4242 427e 0000 0000
+7e42 4242 4242 4242 4242 427e 0000 0000
+7e42 4242 4242 4242 4242 427e 0000 0000
+7e42 4242 4242 4242 4242 427e 0000 0000
+7e7e 7e7e 7e7e 7e7e 7e7e 7e7e 7e7e 0000
+
+@meta $1
+	( name ) "Meta 0a
+	( details ) "ROM 20 "metadata 20 "viewer 0a
+	( author ) "By 20 "Hundred 20 "Rabbits 0a
+	( date ) "18 20 "Feb 20 "2026 $1
+	01
+	( icon ) 83 =appicon
 
 @font ( atari8 )
 0000 0000 0000 0000 6060 6060 6000 6000

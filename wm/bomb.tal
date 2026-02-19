@@ -3,7 +3,7 @@
 |20 @Screen &vector $2 &width $2 &height $2 &auto $1 &pad $1 &x $2 &y $2 &addr $2 &pixel $1 &sprite $1
 
 |0100 ( -> )
-
+	;meta #06 DEO2
 	( theme )
 	#750f .System/r DEO2
 	#db0f .System/g DEO2
@@ -56,6 +56,16 @@ BRK
 	
 (
 @|assets )
+@appicon
+8181 8181 8181 8181 8181 8181 8181 8181
+8181 8181 8181 8181 8181 8181 8181 8181
+8181 8181 8181 8181 8181 8181 8181 8181
+8181 8181 8181 8181 8181 8181 8181 8181
+8181 8181 8181 8181 8181 8181 8181 8181
+8181 8181 8181 8181 8181 8181 8181 8181
+8181 8181 8181 8181 8181 8181 8181 8181
+8181 8181 8181 8181 8181 8181 8181 8181
+
 @pattern-icn
 1038 7cfe 7c38 1000
 @uxn-chr
@@ -76,3 +86,10 @@ f0f8 f8f8 b878 f8f8 fcfc fcfc fcfc fcfc
 0103 0303 0303 2363 0307 0707 0737 77f7 ffff ffff dfa0 dfff ffff efff ffff ffff 
 f0f8 f8f8 b858 b8f8 fcfc 7cfc fcfc fcfc
 
+@meta $1
+	( name ) "Bomb 0a
+	( details ) "Animated 20 "explosion 20 "demo 0a
+	( author ) "By 20 "Hundred 20 "Rabbits 0a
+	( date ) "18 20 "Feb 20 "2026 $1
+	01
+	( icon ) 83 =appicon

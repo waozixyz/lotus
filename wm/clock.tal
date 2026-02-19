@@ -28,6 +28,7 @@
 |0100 ( -> )
 
 	( theme )
+	;meta #06 DEO2
 	#0ff8 .System/r DEO2
 	#0f08 .System/g DEO2
 	#0f08 .System/b DEO2
@@ -320,4 +321,22 @@ JMP2r
 	0202 0404 0808 1010 2020 4040 8080 0000
 	&blank
 	0000 0000 0000 0000 0000 0000 0000 0000
+
+@meta $1
+	( name ) "Clock 0a
+	( details ) "Analog 20 "and 20 "digital 20 "time 20 "display 0a
+	( author ) "By 20 "Hundred 20 "Rabbits 0a
+	( date ) "18 20 "Feb 20 "2026 $1
+	01
+	( icon ) 83 =appicon
+
+@appicon
+7c3c 3c3c 3c3c 3c3c 3c7c 0000 0000 0000
+c63c 3c3c 3c3c 3c3c 3c7c 0000 0000 0000
+c63c 3c3c 3c3c 3c3c 3c7c 0000 0000 0000
+c63c 3c3c 3c3c 3c3c 3c7c 0000 0000 0000
+c63c 3c3c 3c3c 3c3c 3c7c 0000 0000 0000
+c63c 3c3c 3c3c 3c3c 3c7c 0000 0000 0000
+c6c6 c63c 3c3c 3c7c 0000 0000 0000 0000
+7c38 60c6 c6c6 7c3c 0000 0000 0000 0000
 
