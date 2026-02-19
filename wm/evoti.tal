@@ -459,7 +459,7 @@ RTN
 %TITLE-X-OFFSET { #0010 }
 %FONT-HEIGHT { #0018 }
 
-@logo "assets/evoti-logo.chr $1
+@logo "lib/evoti-logo.chr $1
 
 @title-strings
     &title "Evotika $1
@@ -467,10 +467,10 @@ RTN
     &description2 "Make 20 "voting 20 "fun 20 "again! $1
 
 @menu-icons
-	&clock "assets/menu/clock.chr $1
-	&book "assets/menu/book.chr $1
-	&group "assets/menu/group.chr $1
-	&gear "assets/menu/gear.chr $1
+	&clock "lib/menu/clock.chr $1
+	&book "lib/menu/book.chr $1
+	&group "lib/menu/group.chr $1
+	&gear "lib/menu/gear.chr $1
 
 @menu-strings
 	&quick "Quick 20 "Process $1
@@ -648,8 +648,8 @@ RTN
 ( quick process )
 
 @quick-icons
-	&back "assets/evoti-back.chr $1
-	&next "assets/evoti-next.chr $1
+	&back "lib/evoti-back.chr $1
+	&next "lib/evoti-next.chr $1
 
 
 @quick-strings

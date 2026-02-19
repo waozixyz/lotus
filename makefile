@@ -3,60 +3,82 @@ DIR=~/roms
 ASM=uxncli ${DIR}/drifblim.rom
 LIN=uxncli ${DIR}/uxnlin.rom
 EMU=uxn11
-ROM=bin/${ID}.rom
 
-# Application source files
+# Source files
 WM_TAL=$(wildcard wm/*.tal)
 CMD_TAL=$(wildcard cmd/*.tal)
+POTATO_TAL=potato/potato.tal
 
-# Exclude partial files and development tools from standalone build
-APPL_EXCLUDE = nasu-manifest nasu-assets loader
+# Exclude partial files from standalone build
+APPL_EXCLUDE = nasu-manifest nasu-assets
 WM_FILTER = $(filter-out $(addprefix wm/,$(addsuffix .tal,$(APPL_EXCLUDE))),$(WM_TAL))
 CMD_FILTER = $(filter-out $(addprefix cmd/,$(addsuffix .tal,$(APPL_EXCLUDE))),$(CMD_TAL))
 
-all: ${ROM} apps
+# All ROMs go to bin/ with subdirectories
+WM_ROM=$(patsubst wm/%.tal,bin/wm/%.rom,$(WM_FILTER))
+CMD_ROM=$(patsubst cmd/%.tal,bin/cmd/%.rom,$(CMD_FILTER))
+POTATO_ROM=bin/${ID}.rom
 
-# Build all applications
-apps: $(patsubst %.tal,%.rom,$(WM_FILTER) $(CMD_FILTER))
+all: ${POTATO_ROM} ${WM_ROM} ${CMD_ROM}
 
-# Generic build rule (builds in-place)
-%.rom: %.tal
+# Main project (single file build, must build from potato/ dir for includes)
+${POTATO_ROM}: potato/potato.tal
+	@ mkdir -p bin
+	@ cd potato && ${ASM} potato.tal ../$@
+	@ rm -f ${@}.sym
+
+# WM apps
+bin/wm/%.rom: wm/%.tal
+	@ mkdir -p bin/wm
 	@ ${ASM} $< $@
+	@ rm -f ${@}.sym
 
-# Multi-file Nasu build (concatenates files and removes include directives)
-wm/nasu.rom: wm/nasu.tal wm/nasu-manifest.tal wm/nasu-assets.tal
+# CMD apps
+bin/cmd/%.rom: cmd/%.tal
+	@ mkdir -p bin/cmd
+	@ ${ASM} $< $@
+	@ rm -f ${@}.sym
+
+# Multi-file Nasu build
+bin/wm/nasu.rom: wm/nasu.tal wm/nasu-manifest.tal wm/nasu-assets.tal
+	@ mkdir -p bin/wm
 	@ cat $^ | sed 's/~nasu-assets.tal//' > /tmp/nasu-combined.tal
 	@ ${ASM} /tmp/nasu-combined.tal $@
+	@ rm -f ${@}.sym
 	@ rm /tmp/nasu-combined.tal
 
+# Lint
 lint:
-	@ ${LIN} src/${ID}.tal
+	@ ${LIN} ${POTATO_TAL}
+
+# Test
 test:
-	@ ${EMU} ${ROM} lemon15x12.icn
+	@ ${EMU} ${POTATO_ROM} lib/akane20x10.icn
+
+# Run main project
 run:
+	@ ${EMU} ${POTATO_ROM}
+
+# Run app from bin/
+run-app:
 	@if [ -n "$(APP)" ]; then \
-		${EMU} $(APP).rom; \
-	else \
-		${EMU} ${ROM}; \
+		if [ -f bin/wm/$(APP).rom ]; then \
+			${EMU} bin/wm/$(APP).rom; \
+		elif [ -f bin/cmd/$(APP).rom ]; then \
+			${EMU} bin/cmd/$(APP).rom; \
+		else \
+			echo "Error: bin/wm/$(APP).rom or bin/cmd/$(APP).rom not found"; \
+		fi; \
 	fi
 
-# Clean applications only (not main ROM)
-clean-apps:
-	@ find wm -name "*.rom" -delete
-	@ find wm -name "*.sym" -delete
-	@ find cmd -name "*.rom" -delete
-	@ find cmd -name "*.sym" -delete
+# Clean all ROMs
+clean:
+	@ rm -rf bin
 
-clean: clean-apps
-	@ rm -f ${ROM} ${ROM}.sym
-install: ${ROM}
-	@ cp ${ROM} ${DIR}
+install: ${POTATO_ROM}
+	@ cp ${POTATO_ROM} ${DIR}
+
 uninstall:
 	@ rm -f ${DIR}/${ID}.rom
 
-.PHONY: all clean lint run install uninstall apps clean-apps
-
-${ROM}: src/*
-	@ mkdir -p bin
-	@ ${ASM} src/${ID}.tal ${ROM}
-
+.PHONY: all clean lint run run-app install uninstall
