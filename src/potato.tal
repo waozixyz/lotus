@@ -24,6 +24,8 @@
 |100
 
 @on-reset ( -> )
+    #0200 .Screen/width DEO2
+    #0150 .Screen/height DEO2
 
 
 @size-system-start ;meta #06 DEO2

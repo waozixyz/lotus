@@ -22,7 +22,7 @@
 
 BRK
 
-@name "etc/nasu.rom $1
+@name "bin/nasu.rom $1
 
 @print ( short* -- )
 

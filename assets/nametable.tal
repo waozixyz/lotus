@@ -1,0 +1,159 @@
+( nametable )
+
+|10 @Console &vector $2 &read $1 &pad $5 &write $1 &error $1
+|a0 @File1 &vector $2 &success $2 &stat $2 &delete $1 &append $1 &name $2 &length $2 &read $2 &write $2
+|b0 @File2 &vector $2 &success $2 &stat $2 &delete $1 &append $1 &name $2 &length $2 &read $2 &write $2
+
+|0000
+
+@id $2
+@src $40
+@dst $40
+@buf $10
+@length $2
+
+|0100 ( -> )
+
+	;on-console .Console/vector DEO2
+
+BRK
+
+@on-console ( -> )
+
+	;src STH2
+
+	( read source )
+	.Console/read DEI
+	DUP #20 LTH OVR #7f GTH ORA ,&end JCN
+	STH2kr ;slen JSR2 #003f GTH2 ,&end JCN
+		STH2r ;sput JSR2 BRK
+		&end
+	POP
+	( prep destination )
+	;src ;dst ;scpy JSR2
+	;&nmt-ext ;dst ;scat JSR2
+	;dst .File2/name DEO2
+	STH2r ,parse-chr JSR
+	( export compressed spritesheet )
+	;src .File2/name DEO2
+	.length LDZ2 .File2/length DEO2
+	;spritesheet .File2/write DEO2
+	( halt )
+	#010f DEO
+
+BRK
+	&nmt-ext ".nmt $1
+
+@parse-chr ( file* -- )
+
+	.File1/name DEO2
+	#0010 .File1/length DEO2
+	&stream
+		;buf .File1/read DEO2
+		( save addr )
+		#0002 .File2/length DEO2
+		;buf ;add-tile JSR2 ,&addr STR2
+		;&addr .File2/write DEO2
+		( save color )
+		#0001 .File2/length DEO2
+		;&color .File2/write DEO2
+		.id LDZ2k INC2 ROT STZ2
+		.File1/success DEI2 ORA ,&stream JCN
+
+JMP2r
+	&addr $2
+	&color 81
+
+@add-tile ( tile* -- addr* )
+
+	DUP2 ;tile-exists JSR2 DUP2 #ffff EQU2 ,&create JCN
+		NIP2 JMP2r
+		&create
+	POP2
+	( create )
+	.length LDZ2 STH2k ;spritesheet ADD2 #0010 ;mcpy JSR2
+	STH2kr #0010 ADD2 .length STZ2
+	STH2r
+
+JMP2r
+
+@tile-exists ( tile* -- tile* )
+
+	,&target STR2
+	.length LDZ2 #0000
+	&loop
+		DUP2 ;spritesheet ADD2 [ LIT2 &target $2 ] ;tile-equal JSR2 #00 EQU ,&continue JCN
+			NIP2 JMP2r
+			&continue
+		INC2 GTH2k ,&loop JCN
+	POP2 POP2
+	#ffff
+
+JMP2r
+
+@tile-equal ( a* b* -- flag )
+
+	,&a STR2
+	,&b STR2
+	#1000
+	&loop
+		#00 OVRk [ LIT2 &a $2 ] ADD2 LDA
+		ROT ROT [ LIT2 &b $2 ] ADD2 LDA
+			EQU ,&continue JCN
+				POP2 #00 JMP2r
+				&continue
+		INC GTHk ,&loop JCN
+	POP2
+	#01
+
+JMP2r
+
+( stdlib )
+
+@slen ( str* -- len* )
+
+	DUP2 ,scap JSR SWP2 SUB2
+
+JMP2r
+
+@scap ( str* -- end* )
+
+	LDAk #00 NEQ JMP JMP2r
+	&while INC2 LDAk ,&while JCN
+
+JMP2r
+
+@sput ( char str* -- )
+
+	,scap JSR STA
+
+JMP2r
+
+@scat ( src* dst* -- )
+
+	DUP2 ,slen JSR ADD2
+
+@scpy ( src* dst* -- )
+
+	STH2
+	&while
+		LDAk STH2kr STA INC2r
+		INC2 LDAk ,&while JCN
+	POP2
+	#00 STH2r STA
+
+JMP2r
+
+@mcpy ( src* dst* len* -- )
+
+	SWP2 STH2
+	OVR2 ADD2 SWP2
+	&loop
+		LDAk STH2kr STA INC2r
+		INC2 GTH2k ,&loop JCN
+	POP2 POP2
+	POP2r
+
+JMP2r
+
+@spritesheet

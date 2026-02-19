@@ -30,8 +30,8 @@
 %TABBAR-Y      { #0000 }
 
 ( --- Sidebar Anchor Layout --- )
-%SIDEBAR-X      { #0180 }
-%SIDEBAR-Y      { #0020 }
+%SIDEBAR-X      { #0008 }
+%SIDEBAR-Y      { #0000 }
 %BTN-SIZE       { #0008 }
 
 ( --- Bitmasks --- )
@@ -45,10 +45,12 @@
 %SCR-INHALE   { #04 }
 %SCR-RESULT   { #05 }
 
-
 ( main program )
 |0100
-    .Screen/width DEI2 #01 SFT2
+    ;meta #06 DEO2
+
+    #012e .Screen/width DEO2
+    #00f0 .Screen/height DEO2
 
 
     load-theme
@@ -63,11 +65,19 @@
     SCR-BREATH .view STZ
 
     ;on-frame .Screen/vector DEO2
-
+    
     ,&skip-this JCN
     inbe-rom-path ;load-rom JSR2
     &skip-this
 BRK
+
+@meta $1
+	( name ) "Inner "Breeze 0a
+	( details ) "A 20 "guided 20 "breathing 20 "meditation 0a
+	( author ) "By 20 "Waozi 0a
+	( date ) &date "18 20 "Feb 20 "2026 $1
+	01
+	( icon ) 83 =appicon
 
 @load-theme ( -- )
 	;&path .File/name DEO2
@@ -137,7 +147,6 @@ JMP2r
     JMP2r
 
 @inhale-logic
-
     ( State Machine: 0=Inhale, 1=Hold, 2=Exhale )
     .r-direction LDZ #01 EQU ,&hold JCN
     .r-direction LDZ #02 EQU ,&exhale JCN
@@ -194,22 +203,22 @@ JMP2r
     .Screen/width DEI2 #01 SFT2 #0020 SUB2 .Screen/x DEO2
     #0000 .Screen/y DEO2
 
-    SCR-BREATH .view LDZ NEQ ,skip-breath-text JCN
+    SCR-BREATH .view LDZ NEQ ,&skip-breath-text JCN
     ;txt-breath ;draw-zstr JSR2
 
-    @skip-breath-text
+    &skip-breath-text
 
-    SCR-HOLD .view LDZ NEQ ,skip-hold-text JCN
+    SCR-HOLD .view LDZ NEQ ,&skip-hold-text JCN
     ;txt-hold ;draw-zstr JSR2
     ;txt-it ;draw-zstr JSR2
 
-    @skip-hold-text
+    &skip-hold-text
 
-    SCR-INHALE .view LDZ NEQ ,skip-inhale-text JCN
+    SCR-INHALE .view LDZ NEQ ,&skip-inhale-text JCN
     ;txt-breath ;draw-zstr JSR2
     ;txt-in ;draw-zstr JSR2
 
-    @skip-inhale-text
+    &skip-inhale-text
 
 
     ( Only process timing if MSK-PLAYING is set )
@@ -239,7 +248,8 @@ JMP2r
 BRK2
 
 @handle-back-button ( -- )
-	.Mouse/y DEI2 #0010 LTH2 .Mouse/x DEI2 #0040 LTH2 AND ,click-back JCN
+	.Mouse/y DEI2 #0010 LTH2
+    .Mouse/x DEI2 #0100 GTH2 AND ,click-back JCN
     JMP2r
 	@click-back
     ;potato-rom-path ;load-rom JSR2
@@ -447,7 +457,7 @@ JMP2r
 
 @draw-tabbar-text ( -- )
 	#0000 .Screen/y DEO2
-	#0010 .Screen/x DEO2
+	#0100 .Screen/x DEO2
 	;tab-back ;draw-zstr JSR2
 JMP2r
 
@@ -682,7 +692,7 @@ JMP2r
 @txt-it       "IT $1
 @txt-hold     "HOLD $1
 ( Tab names )
-@tab-back     "BACK $1
+@tab-back     "LOTUS $1
 
 @potato-rom-path "bin/potato.rom $1
 @inbe-rom-path "bin/inbe.rom $1
@@ -690,3 +700,11 @@ JMP2r
 @sprite-up     [ 183c 7e7e 3c3c 1818 ]
 @sprite-down   [ 1818 3c3c 7e7e 3c18 ]
 @sprite-seek   [ b0b8 bcbe bcb8 b000 ]
+
+
+@appicon
+	0000 0000 0000 0000 0000 0000 0000 0003 0007 1f3f 7f7e 7e7d 071f 3f7f ffff ffff
+	0000 0000 1e7e fefe 8080 809f ffff ffff 0307 0f0f 0f0f 0f0f 0408 1010 1010 1010
+	7bbf ffc7 e0e0 f0ff ff7f 3f3f 1710 0f0f fcfc f8e0 0000 0000 fefe fcf8 e000 0080
+	0f0f 0707 0301 0000 1010 080f 0703 0100 ffff ffff ffff 7f00 1f1f 7fff ffff ff7f
+	80c0 c0c0 c080 0000 c0e0 e0e0 e0c0 8000

@@ -459,7 +459,7 @@ RTN
 %TITLE-X-OFFSET { #0010 }
 %FONT-HEIGHT { #0018 }
 
-@logo "assets/logo.chr $1
+@logo "assets/evoti-logo.chr $1
 
 @title-strings
     &title "Evotika $1
@@ -648,8 +648,8 @@ RTN
 ( quick process )
 
 @quick-icons
-	&back "assets/back.chr $1
-	&next "assets/next.chr $1
+	&back "assets/evoti-back.chr $1
+	&next "assets/evoti-next.chr $1
 
 
 @quick-strings
