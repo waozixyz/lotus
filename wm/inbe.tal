@@ -50,9 +50,9 @@
     ;meta #06 DEO2
 
 
-	#0ff8 .System/r DEO2
-	#0f08 .System/g DEO2
-	#0f08 .System/b DEO2
+	#2f30 .System/r DEO2
+	#5e1d .System/g DEO2
+	#5c5d .System/b DEO2
     load-theme
 
     #012e .Screen/width DEO2
@@ -325,13 +325,13 @@ JMP2r
     #0000 btn-hit? #00 EQU ,&check-play JCN
 
         ( If view == BREATH, just reset current-val )
-        .view LDZ SCR-BREATH EQU ;to-breath JMP2
+        .view LDZ SCR-BREATH EQU ;to-breath JCN2
 
         ( If view == HOLD, go to BREATH )
-        .view LDZ SCR-HOLD EQU ;to-breath JMP2
+        .view LDZ SCR-HOLD EQU ;to-breath JCN2
 
         ( If view == INHALE, go to HOLD )
-        .view LDZ SCR-INHALE EQU ;to-hold JMP2
+        .view LDZ SCR-INHALE EQU ;to-hold JCN2
 
         ;skip-play JCN2 ( Safety skip )
 
@@ -345,10 +345,13 @@ JMP2r
     #0020 btn-hit? #00 EQU ;skip-play JCN2
 
         ( If view == BREATH, go to hold state )
-        .view LDZ SCR-BREATH EQU ;to-hold JMP2
+        .view LDZ SCR-BREATH EQU ;to-hold JCN2
 
         ( If view == HOLD, go to inhale state )
-        .view LDZ SCR-HOLD EQU ;to-inhale JMP2
+        .view LDZ SCR-HOLD EQU ;to-inhale JCN2
+
+        ( If view == INHALE, go to HOLD )
+        .view LDZ SCR-INHALE EQU ;to-breath JCN2
 
 
         ;skip-play JCN2
@@ -644,8 +647,7 @@ JMP2r
 @sprite-minus  [ 0000 007e 7e00 0000 ]
 @sprite-cursor [ 80c0 e0f0 f8e0 1010 ]
 
-@fill-icn [
-	ffff ffff ffff ffff ]
+@fill-icn [ ffff ffff ffff ffff ]
 
 ( Graphics Data - Fonts )
 @font
