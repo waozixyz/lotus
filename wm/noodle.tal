@@ -1,0 +1,861 @@
+( Hey now, Hey now, Don't dream it's over )
+
+|00 @System/vector $2 &expansion $2 &wst $1 &rst $1 &metadata $2 &r $2 &g $2 &b $2 &debug $1 &state $1
+|10 @Console/vector $2 &read $5 &type $1 &write $1 &error $1
+|20 @Screen/vector $2 &width $2 &height $2 &auto $1 &pad $1 &x $2 &y $2 &addr $2 &pixel $1 &sprite $1
+|80 @Controller/vector $2 &button $1 &key $1
+|90 @Mouse/vector $2 &x $2 &y $2 &state $4 &scrollx $2 &scrolly
+|a0 @File/vector $2 &success $1 &success-lb $1 &stat $2 &delete $1 &append $1 &name $2 &length $2 &read $2 &write $2
+
+|000
+
+	@filestate/changed $1
+	@brush/tool $1 &size $1 &oper $2 &mode $1 &patt $1 &patt-fn $2
+	@pointer/x0 $2 &y0 $2 &x1 $2 &y1 $2 &drag $1
+	@guide/x $2 &y $2 &x2 $2 &y2 $2
+	@panel/rect &x $2 &y $2 &x2 $2 &y2 $2
+	@canvas/rect &x $2 &y $2 &x2 $2 &y2 $2 &size &w $1 &h $1
+	@window/cols $1 &rows $1
+	@filepath/buf $40
+	@zoom/active $1 &x $2 &y $2
+
+|100
+
+@on-reset ( -> )
+	( | meta )
+	;meta #06 DEO2
+	( | theme )
+	#f075 .System/r DEO2
+	#f0c8 .System/g DEO2
+	#f096 .System/b DEO2
+	( | size thinkpad )
+	#02a8 .Screen/width DEO2
+	#0180 .Screen/height DEO2
+	.Screen/width DEI2 #03 SFT2 .window/cols STZ
+	NIP .Screen/height DEI2 #03 SFT2 .window/rows STZ
+	NIP theme/<load>
+	( | default brush )
+	#0000 DUP2 panel/<set-position>
+	#04 brush/<set-size>
+	#00 brush/<set-patt>
+	( | initial position )
+	canvas/<maximize>
+	panel/<draw>
+	( | begin. )
+	filepath/<init>
+	menu/<draw-bg>
+	menu/<draw>
+	filestate/<unchange>
+	canvas/<draw-size>
+	<untrap>
+	BRK
+
+@meta 00 "Noodle 0a
+	( details ) "A 20 "Drawing 20 "Program 0a
+	( author ) "By 20 "Hundred 20 "Rabbits 0a
+	( date ) "15 20 "Dec 20 "2025 00 01
+	( icon ) 83 =appicon
+
+(
+@|vectors )
+
+@<untrap> ( -- )
+	filepath/<draw>
+	;Mouse/state DEO
+	;on-button .Controller/vector DEO2
+	;on-mouse .Mouse/vector DEO2
+	JMP2r
+
+@on-mouse ( -> )
+	.Mouse/y DEI2 #0010 LTH2 ?menu/<trap>
+	( | test area )
+	.Mouse/x DEI2 .Mouse/y DEI2
+	( | handlers )
+	OVR2 OVR2 .panel/rect within-rect ?panel/<capture>
+	.zoom/active LDZ ?zoom/<capture>
+	OVR2 OVR2 .canvas/rect within-rect ?canvas/<capture>
+	POP2 POP2
+	( | Continue .. )
+	cursor/<update>
+	( | when drag&release )
+	;pointer/drag LDZ EQU ?{
+		.Mouse/state DEI ?{ ;pointer/drag STZ
+			BRK } }
+	( | route touch )
+	.Mouse/x DEI2 .Mouse/y DEI2 ;pointer/drag LDZ NEQ ;Mouse/state DEI NEQ AND ?on-drag
+	POP2 POP2 BRK
+
+@on-drag ( x* y* -> )
+	.pointer/drag LDZ #08 ADD LDZ2 JMP2
+
+@on-mouse-release ( x* y* -> )
+	cursor/<clear>
+	POP2 POP2 ;on-mouse .Mouse/vector DEO2
+	BRK
+
+@on-button ( -> )
+	.Controller/button DEI2 find-modkey ORAk #00 EQU ?{ DUP2 JSR2 }
+	POP2 BRK
+
+(
+@|Filepath )
+
+@filepath/on-console ( -> )
+	[ LIT2 04 -Console/type ] DEI NEQ ?{ /<open>
+		BRK }
+	.Console/read DEI /<push>
+	BRK
+
+@filepath/<init> ( -- )
+	.Console/type DEI ?{ canvas/<maximize> !filepath/<new> }
+	;&on-console .Console/vector DEO2
+	JMP2r
+
+@filepath/<new> ( -- )
+	/<draw>
+	;&untitled-txt /<set>
+	canvas/<clear>
+	.canvas/size LDZ2 /<put-size>
+	/<draw>
+	filestate/<unchange>
+	canvas/<draw> !panel/<draw>
+
+	&untitled-txt "untitled00x00.icn $1
+
+@filepath/<open> ( -- )
+	canvas/<clear>
+	filestate/<unchange>
+	/<load>
+	/get-size !canvas/<set-size>
+
+@filepath/<load> ( -- )
+	/is-tga ?tga/<load>
+	;&buf .File/name DEO2
+	#fff0 ;canvas/buf SUB2 .File/length DEO2
+	;canvas/buf .File/read DEO2
+	JMP2r
+
+@filepath/<save> ( -- )
+	;&buf .File/name DEO2
+	canvas/get-length .File/length DEO2
+	;canvas/buf .File/write DEO2 !filestate/<unchange>
+
+@filepath/<draw> ( -- )
+	#0100 .Screen/x DEO2
+	#0004 .Screen/y DEO2
+	[ LIT2 01 -Screen/auto ] DEO
+	#08 font/<set-color>
+	LIT "- font/<draw-chr>
+	LIT 20 font/<draw-chr>
+	;&buf font/draw-str POP2 JMP2r
+
+@filepath/is-tga ( -- )
+	[ LIT2 00 _&ptr ] LDR #0004 SUB2 LDA2k [ LIT2 ".t ] NEQ2 ?{
+		INC2 INC2 LDA2k [ LIT2 "ga ] NEQ2 ?{ POP2 #01 JMP2r } }
+	POP2 #00 JMP2r
+
+@filepath/<set> ( str* -- )
+	[ LIT2 -&buf _&ptr ] STR
+	( >> )
+
+@filepath/<push-str> ( str* -- )
+	&>w
+		LDAk DUP ?{ POP POP2 JMP2r }
+		/<push>
+		INC2 !&>w
+
+@filepath/<pop-ext> ( -- )
+	,&ptr LDR #04 SUB ,&ptr STR
+	JMP2r
+
+@filepath/<push> ( c -- )
+	[ LIT2 00 &ptr -&buf ] INCk ,&ptr STR
+	STZ2
+	JMP2r
+
+@filepath/<put-size> ( w h -- )
+	[ LIT2 "x _&ptr ] LDR #07 SUB LDZ NEQ ?{
+		( h ) hex/chr2 ,&ptr LDR #06 SUB STZ2
+		( w ) hex/chr2 ,&ptr LDR #09 SUB STZ2 }
+	JMP2r
+
+@filepath/get-size ( -- w h )
+	[ LIT2 "x _&ptr ] LDR #07 SUB LDZ NEQ ?{
+		( w ) ,&ptr LDR #09 SUB LDZ2 chr2/byte
+		( h ) ,&ptr LDR #06 SUB LDZ2 !chr2/byte }
+	#2020 JMP2r
+
+@filestate/<unchange> ( -- )
+	[ LIT2 0f -&changed ] STZ !/<draw>
+
+@filestate/<change> ( -- )
+	;&changed STZ
+	( >> )
+
+@filestate/<draw> ( -- )
+	[ LIT2 01 -Screen/auto ] DEO
+	#0006 .Screen/x DEO2
+	#0004 .Screen/y DEO2
+	;state-icn .Screen/addr DEO2
+	.&changed LDZ .Screen/sprite DEO
+	JMP2r
+
+(
+@|Panel )
+
+@panel/<capture> ( x* y* -> )
+	cursor/<clear>
+	;&on-mouse .Mouse/vector DEO2
+	POP2 POP2 BRK
+
+@panel/on-mouse ( -> )
+	cursor/<update>
+	.Mouse/x DEI2 .Mouse/y DEI2
+	( | handlers )
+	OVR2 OVR2 .&rect within-rect ?{ !on-mouse-release }
+	.Mouse/state DEI ?{ POP2 POP2 BRK }
+	.&y LDZ2 INC2 INC2 INC2 SUB2 #000a DIV2 NIP STH
+	.&x LDZ2 SUB2 #000a DIV2 NIP STHr
+	( | within x )
+	OVR #02 LTH ?{ POP2 BRK }
+	( | within y )
+	DUP #03 EQU ?&start-drag
+	DUP #08 EQU ?&start-drag
+	( | release when not drag )
+	;Mouse/state DEO
+	DUP #03 LTH ?&tool
+	DUP #03 GTH OVR #08 LTH AND ?&patt
+	DUP #07 GTH OVR #0d LTH AND ?&size
+	BRK
+	&tool DUP ADD ADD brush/<set-tool>
+	BRK
+	&patt #04 SUB DUP ADD ADD brush/<set-patt>
+	BRK
+	&size #09 SUB DUP ADD ADD brush/<set-size>
+	BRK
+
+@panel/on-drag ( -> )
+	.Mouse/state DEI ?{
+		( | release )
+		;&on-mouse .Mouse/vector DEO2
+		/<clear-shadow>
+		/<draw>
+		BRK }
+	( | drag )
+	/<clear-shadow>
+	( x ) .Mouse/x DEI2 [ LIT2 &offx $2 ] SUB2
+	( y ) .Mouse/y DEI2 [ LIT2 &offy $2 ] SUB2 /<set-position>
+	/<draw-shadow>
+	BRK
+
+@panel/start-drag ( x y -> )
+	POP2 cursor/<clear>
+	/<clear>
+	canvas/<draw-bg>
+	canvas/<draw>
+	.Mouse/x DEI2 .&x LDZ2 SUB2 ,&offx STR2
+	.Mouse/y DEI2 .&y LDZ2 SUB2 ,&offy STR2
+	;&on-drag .Mouse/vector DEO2
+	BRK
+
+@panel/<set-position> ( x* y* -- )
+	DUP2 #8000 GTH2 ?&invalid
+	OVR2 #8000 GTH2 ?&invalid
+	( miny ) #0010 GTH2k [ JMP SWP2 POP2 ]
+	( maxy ) .Screen/height DEI2 #008c SUB2 LTH2k [ JMP SWP2 POP2 ] DUP2 .&y STZ2
+	#0088 ADD2 .&y2 STZ2
+	( minx ) #0004 GTH2k [ JMP SWP2 POP2 ]
+	( maxx ) .Screen/width DEI2 #001c SUB2 LTH2k [ JMP SWP2 POP2 ] DUP2 .&x STZ2
+	#0018 ADD2 .&x2 STZ2
+	JMP2r
+
+	&invalid ( x* y* -- )
+	POP2 POP2 JMP2r
+
+@panel/<clear-shadow> ( -- )
+	.&x LDZ2 .Screen/x DEO2
+	.&y LDZ2 .Screen/y DEO2
+	#ef22 ;fill-icn [ LIT2 40 -Screen/sprite ] !<draw-times>
+
+@panel/<draw-shadow> ( -- )
+	.&x LDZ2 .Screen/x DEO2
+	.&y LDZ2 .Screen/y DEO2
+	#ef22 ;fill-icn [ LIT2 42 -Screen/sprite ] !<draw-times>
+
+@panel/<clear> ( -- )
+	.&x LDZ2 .Screen/x DEO2
+	.&y LDZ2 .Screen/y DEO2
+	#ef22 ;fill-icn [ LIT2 00 -Screen/sprite ] !<draw-times>
+
+@panel/<draw> ( -- )
+	/<clear>
+	/<draw-toolpane>
+	.&x LDZ2 INC2 .&x2 LDZ2 .&y LDZ2 #0026 ADD2 #02 /<draw-dash>
+	/<draw-pattpane>
+	.&x LDZ2 INC2 .&x2 LDZ2 .&y LDZ2 #0058 ADD2 #02 /<draw-dash> !/<draw-sizepane>
+
+@panel/<draw-toolpane> ( -- )
+	;tool-icns .Screen/addr DEO2
+	[ LIT2 06 -brush/tool ] LDZ .&x LDZ2 #0004 ADD2 .&y LDZ2 #0005 ADD2 !/<draw-icons>
+
+@panel/<draw-pattpane> ( -- )
+	;patt-icns .Screen/addr DEO2
+	[ LIT2 08 -brush/patt ] LDZ .&x LDZ2 #0004 ADD2 .&y LDZ2 #002d ADD2 !/<draw-icons>
+
+@panel/<draw-sizepane> ( -- )
+	;brush/mode LDZ #60 SFT ;size-icns ADD2 .Screen/addr DEO2
+	[ LIT2 08 -brush/size ] LDZ .&x LDZ2 #0004 ADD2 .&y LDZ2 #005f ADD2 !/<draw-icons>
+
+@panel/<draw-dash> ( x0* x1* y* color -- )
+	STH
+	[ LITr -Screen/pixel ] .Screen/y DEO2
+	SWP2
+	&>ld
+		DUP2 .Screen/x DEO2
+		DEOkr
+		INC2 INC2 GTH2k ?&>ld
+	POP2 POP2 POP2r JMP2r
+
+@panel/<draw-icons> ( length selection x* y* -- )
+	[ LIT2 04 -Screen/auto ] DEO
+	,&anchor-y STR2
+	,&anchor-x STR2
+	STH
+	#00
+	&>l
+		#00 OVR #01 AND #09 MUL [ LIT2 &anchor-x $2 ] ADD2 .Screen/x DEO2
+		#00 OVR #01 SFT #0a MUL [ LIT2 &anchor-y $2 ] ADD2 .Screen/y DEO2
+		#01 OVR STHkr EQU DUP ADD ADD .Screen/sprite DEO
+		INC GTHk ?&>l
+	POP2 POPr JMP2r
+
+(
+@|Canvas )
+
+%abs2 ( a* -- res* ) {
+	DUP2k #1f SFT2 MUL2 SUB2 }
+
+%lts2 ( a* b* -- f ) {
+	SUB2 POP #07 SFT }
+
+%gts2 ( a* b* -- f ) {
+	SWP2 lts2 }
+
+%gts2k ( a* b* -- f ) {
+	SWP2k SUB2 POP #07 SFT }
+
+%canvas/offset-pos ( x* y* -- x* y* ) {
+	.canvas/y LDZ2 ADD2 SWP2 .canvas/x LDZ2 ADD2 SWP2 }
+
+%<draw-lb> ( -- ) {
+	.Screen/y DEI2k #0008 ADD2 ROT DEO2 }
+
+@canvas/<capture> ( x* y* -> )
+	cursor/<clear>
+	;&on-mouse .Mouse/vector DEO2
+	POP2 POP2 BRK
+
+@canvas/on-mouse ( -> )
+	cursor/<update>
+	.Mouse/x DEI2 .Mouse/y DEI2
+	( | handlers )
+	OVR2 OVR2 .panel/rect within-rect ?on-mouse-release
+	OVR2 OVR2 .&rect within-rect ?{ !on-mouse-release }
+	.&y LDZ2 SUB2 SWP2 .&x LDZ2 SUB2 SWP2 brush/get-tool JMP2
+
+@canvas/<maximize> ( -- )
+	.window/cols LDZ .window/rows LDZ #02 SUB !/<set-size>
+
+@canvas/<draw-bg> ( -- )
+	.&x LDZ2 #0000 NEQ2 .&y LDZ2 #0010 NEQ2 ORA ?{ JMP2r }
+	( | is not covered )
+	#0010 .Screen/y DEO2
+	[ LIT2 01 -Screen/auto ] DEO
+	#0000 ;window/cols LDZ SUB ;window/rows LDZ SUB ;hash-icn [ LIT2 08 -Screen/sprite ] !<draw-rect>
+
+@canvas/<set-size> ( w h -- )
+	( max x ) SWP .window/cols LDZ LTHk [ JMP SWP ] POP
+	( min x ) #02 GTHk [ JMP SWP ] POP SWP
+	( max y ) .window/rows LDZ #02 SUB LTHk [ JMP SWP ] POP
+	( min y ) #02 GTHk [ JMP SWP ] POP
+	( change name ) DUP2 filepath/<put-size>
+	filepath/<draw>
+	DUP2 .&size LDZ2 EQU2 ?{
+		DUP .&h STZ
+		OVR .&w STZ
+		zoom/<center> }
+	/<center>
+	POP2 /<draw-size>
+	/<draw-bg>
+	/<draw> !panel/<draw>
+
+@canvas/<mod-x> ( offset* -- )
+	DUP2 .&x LDZ2 ADD2
+	( >> )
+
+@canvas/<set-x> ( x* -- )
+	DUP2 #8000 LTH2 ?{ POP2 JMP2r }
+	DUP2 .&x STZ2
+	;&w LDZ #20 SFT2 ADD2 .&x2 STZ2
+	/<draw-bg>
+	/<draw> !panel/<draw>
+
+@canvas/<mod-y> ( offset* -- )
+	DUP2 .&y LDZ2 ADD2
+	( >> )
+
+@canvas/<set-y> ( x* -- )
+	DUP2 #0010 SUB2 #8000 LTH2 ?{ POP2 JMP2r }
+	DUP2 .&y STZ2
+	;&h LDZ #20 SFT2 ADD2 .&y2 STZ2
+	/<draw-bg>
+	/<draw> !panel/<draw>
+
+@canvas/<center> ( -- )
+	.Screen/width DEI2 #01 SFT2 ;&w LDZ STH2k #20 SFT2 SUB2 DUP2 STH2r #30 SFT2 ADD2 .&x2 STZ2
+	.&x STZ2
+	.Screen/height DEI2 #01 SFT2 ;&h LDZ STH2k #20 SFT2 SUB2 #0008 ADD2 DUP2 STH2r #30 SFT2 ADD2 .&y2 STZ2
+	.&y STZ2
+	JMP2r
+
+@canvas/<draw-size> ( -- )
+	[ LIT2 01 -Screen/auto ] DEO
+	.Screen/width DEI2 #0030 SUB2 .Screen/x DEO2
+	#0004 .Screen/y DEO2
+	#0b font/<set-color>
+	.&size LDZ2 !font/<draw-size>
+
+@canvas/get-length ( -- length* )
+	;&w LDZ ;&h LDZ MUL2 #30 SFT2 JMP2r
+
+@canvas/within ( x* y* -- x* y* flag )
+	( clamp ) DUP2 #03 SFT2 NIP .&h LDZ #01 SUB GTH ?{
+		( clamp ) OVR2 #03 SFT2 NIP .&w LDZ #01 SUB GTH ?{ #01 JMP2r } }
+	#00 JMP2r
+
+@canvas/get-row ( x* y* -- row* )
+	STH2k #03 SFT2 SWP2 #03 SFT2 SWP2 ;&w LDZ MUL2 ADD2 #30 SFT2 STH2r #0007 AND2 ADD2 ;&buf ADD2 JMP2r
+
+@canvas/get-row-icn ( x y -- row* )
+	#0000 ROT SWP2 SWP SWP2 ;&w LDZ MUL2 ADD2 #30 SFT2 ;&buf ADD2 JMP2r
+
+@canvas/<clear> ( -- )
+	;&buf /get-length !mem/<clr>
+
+@canvas/invert ( -- )
+	;&buf STH2k /get-length ADD2 STH2r
+	&>l
+		( load ) STH2k LDAk #ff EOR
+		( save ) STH2r STA
+		INC2 GTH2k ?&>l
+	POP2 POP2 /<draw> !panel/<draw>
+
+@canvas/get-pixel ( x* y* -- b )
+	/within ?{ POP2 POP2 #02 JMP2r }
+	OVR2 NIP #07 AND STH
+	/get-row LDA
+	( flag ) #07 STHr SUB SFT #01 AND JMP2r
+
+@canvas/<set-pixel> ( x* y* color -- )
+	?/add-pixel
+	!/remove-pixel
+
+@canvas/add-pixel ( x* y* -- )
+	/within ?{ POP2 POP2 JMP2r }
+	OVR2 OVR2 /<request>
+	OVR2 NIP #07 AND STH
+	/get-row LDAk
+	( mask ) #0107 STHr SUB #40 SFT SFT ORA
+	( save ) ROT ROT STA
+	JMP2r
+
+@canvas/remove-pixel ( x* y* -- )
+	/within ?{ POP2 POP2 JMP2r }
+	OVR2 OVR2 /<request>
+	OVR2 NIP #07 AND STH
+	/get-row LDAk
+	( mask ) #0107 STHr SUB #40 SFT SFT #ff EOR AND
+	( save ) ROT ROT STA
+	JMP2r
+
+@canvas/<magic-pixel> ( x* y* -- )
+	/within ?{ POP2 POP2 JMP2r }
+	OVR2 OVR2 /<request>
+	( u ) OVR2 OVR2 #0001 SUB2 /get-pixel STH
+	( r ) OVR2 INC2 OVR2 /get-pixel DUP ADD STH
+	( d ) OVR2 OVR2 INC2 /get-pixel #20 SFT STH
+	( l ) OVR2 #0001 SUB2 OVR2 /get-pixel #30 SFT STH
+	ORA2r ORAr STHr
+	( | handlers )
+	DUP #03 EQU ?&remove
+	DUP #06 EQU ?&remove
+	DUP #09 EQU ?&remove
+	DUP #0c EQU ?&remove
+	POP POP2 POP2 JMP2r
+	&remove POP !/remove-pixel
+
+@canvas/<draw> ( -- )
+	.&size LDZ2 ORA ?{ JMP2r }
+	.zoom/active LDZ ?zoom/<draw>
+	[ LIT2 05 -Screen/auto ] DEO
+	.&y LDZ2 .Screen/y DEO2
+	.&x LDZ2 ;&w LDZ SUB ;&h LDZ SUB ;&buf [ LIT2 01 -Screen/sprite ] !<draw-rect>
+
+@canvas/<draw-tile> ( x h -- )
+	.zoom/active LDZ ?zoom/<draw-tile>
+	DUP2 /get-row-icn .Screen/addr DEO2
+	#00 SWP #30 SFT2 .&y LDZ2 ADD2 .Screen/y DEO2
+	#00 SWP #30 SFT2 .&x LDZ2 ADD2 .Screen/x DEO2
+	[ LIT2 01 -Screen/sprite ] DEO
+	JMP2r
+
+@canvas/find ( xy* -- xy* t )
+	STH2
+	,&ptr LDR2 ;&stack EQU2k ?{
+		&>lf
+			LDA2k STH2kr NEQ2 ?{
+				POP2 POP2 STH2r #01 JMP2r }
+			INC2 INC2 GTH2k ?&>lf }
+	POP2 POP2 STH2r #00 JMP2r
+
+@canvas/<request> ( x* y* -- )
+	.zoom/active LDZ ?{
+		#03 SFT2 NIP STH
+		#03 SFT2 NIP STHr /find ?{ DUP2 /<push> }
+		POP2 JMP2r }
+	.zoom/y LDZ2 SUB2 NIP STH
+	.zoom/x LDZ2 SUB2 NIP STHr /find ?{ DUP2 /<push> }
+	POP2 JMP2r
+
+@canvas/<push> ( xy* -- )
+	[ LIT2 &ptr =&stack ] INC2k INC2
+	( | overflow )
+	DUP2 ;&cap LTH2 ?{
+		POP2 POP2 POP2 ;&on-frame-full .Screen/vector DEO2
+		JMP2r }
+	( | push )
+	,&ptr STR2
+	STA2
+	;&on-frame .Screen/vector DEO2
+	JMP2r
+
+@canvas/on-frame ( -> )
+	[ LIT2 01 -Screen/auto ] DEO
+	,&ptr LDR2 ;&stack
+	&>lo
+		LDA2k /<draw-tile>
+		INC2 INC2 GTH2k ?&>lo
+	POP2 POP2 panel/<draw>
+	;&stack ;&ptr STA2
+	#0000 .Screen/vector DEO2
+	BRK
+
+@canvas/on-frame-full ( -> )
+	/<draw>
+	panel/<draw>
+	;&stack ;&ptr STA2
+	#0000 .Screen/vector DEO2
+	BRK
+
+@canvas/drag-u ( -- )
+	( move ) ;&buf ;&w LDZ #30 SFT2 STH2k ADD2 ;&buf /get-length mem/<sfl>
+	( clear ) ;&buf /get-length STH2kr SUB2 ADD2 STH2r mem/<clr>
+	/<draw> !panel/<draw>
+
+@canvas/drag-d ( -- )
+	( move ) ;&buf ;&buf ;&w LDZ #30 SFT2 STH2k ADD2 /get-length mem/<sfr>
+	( clear ) ;&buf STH2r mem/<clr>
+	/<draw> !panel/<draw>
+
+@canvas/drag-l ( -- )
+	;&w LDZ #30 SFT2 STH2
+	;&buf /get-length ADD2 ;&buf
+	&>ldl
+		( move ) DUP2 #0008 ADD2 OVR2 STH2kr #0008 SUB2 mem/<sfl>
+		( clear ) DUP2 STH2kr ADD2 #0008 SUB2 #0008 mem/<clr>
+		STH2kr ADD2 GTH2k ?&>ldl
+	POP2 POP2 POP2r /<draw> !panel/<draw>
+
+@canvas/drag-r ( -- )
+	;&w LDZ #30 SFT2 STH2
+	;&buf /get-length ADD2 ;&buf
+	&>ldr
+		( move ) DUP2 OVR2 #0008 ADD2 STH2kr #0008 SUB2 mem/<sfr>
+		( clear ) DUP2 #0008 mem/<clr>
+		STH2kr ADD2 GTH2k ?&>ldr
+	POP2 POP2 POP2r /<draw> !panel/<draw>
+
+@canvas/crop-h ( -- )
+	.&size LDZ2 #01 SUB !/<set-size>
+
+@canvas/size-h ( -- )
+	.&size LDZ2 INC !/<set-size>
+
+@canvas/crop-w ( -- )
+	[ LIT2r =&buf ] ;&buf /get-length ADD2 ;&buf
+	&>lsl
+		DUP2 STH2r ;&w LDZ #01 SUB #30 SFT2 ADD2k STH2
+		mem/<sfl>
+		;&w LDZ #30 SFT2 ADD2 GTH2k ?&>lsl
+	POP2 POP2 POP2r
+	( update ) .&size LDZ2 #0100 SUB2 !/<set-size>
+
+@canvas/size-w ( -- )
+	[ LIT2r =&buf ] ;&buf /get-length ADD2 ;&buf
+	&>lsr
+		DUP2 STH2r ;&w LDZ INC #30 SFT2 ADD2k STH2
+		mem/<sfr>
+		;&w LDZ #30 SFT2 ADD2 GTH2k ?&>lsr
+	POP2 POP2 POP2r
+	( update ) .&size LDZ2 #0100 ADD2 !/<set-size>
+
+(
+@|Zoom )
+
+@zoom/<capture> ( x* y* -> )
+	cursor/<clear>
+	;&on-mouse .Mouse/vector DEO2
+	POP2 POP2 BRK
+
+@zoom/on-mouse ( -> )
+	cursor/<update>
+	.Mouse/x DEI2 .Mouse/y DEI2
+	( | handlers )
+	OVR2 OVR2 .panel/rect within-rect ?on-mouse-release
+	DUP2 #0011 LTH2 ?on-mouse-release
+	( y ) #0010 SUB2 #03 SFT2 .&y LDZ2 ADD2 SWP2
+	( x ) #03 SFT2 .&x LDZ2 ADD2 SWP2 brush/get-tool JMP2
+
+@zoom/<draw> ( -- )
+	#0000 .Screen/x DEO2
+	#0010 .Screen/y DEO2
+	[ LIT2 80 -Screen/pixel ] DEO
+	[ LIT2 01 -Screen/auto ] DEO
+	;window/rows LDZ #0000
+	&>ver
+		DUP2 .&y LDZ2 ADD2 STH2
+		;window/cols LDZ #0000
+		&>hor
+			DUP2 .&x LDZ2 ADD2 STH2kr /<draw-pixel>
+			INC2 GTH2k ?&>hor
+		POP2 POP2 POP2r #0000 .Screen/x DEO2
+		<draw-lb>
+		INC2 GTH2k ?&>ver
+	POP2 POP2 JMP2r
+
+@zoom/<draw-tile> ( x h -- )
+	STH
+	#00 STHkr #30 SFT2 #0010 ADD2 .Screen/y DEO2
+	#00 SWP DUP2 #30 SFT2 .Screen/x DEO2
+	.&x LDZ2 ADD2 #00 STHr .&y LDZ2 ADD2
+	( >> )
+
+@zoom/<draw-pixel> ( x* y* -- )
+	OVR2 OVR2 canvas/get-pixel DUP #02 EQU ?{
+		#00 SWP #30 SFT2 ;pixel-icns ADD2 .Screen/addr DEO2
+		[ LIT2 01 -Screen/sprite ] DEO
+		( | ver )
+		#07 AND ?{
+			.Screen/x DEI2k #0008 SUB2 ROT DEO2
+			;ver-icn .Screen/addr DEO2
+			[ LIT2 05 -Screen/sprite ] DEO }
+		POP
+		( | hor )
+		#07 AND ?{
+			.Screen/x DEI2k #0008 SUB2 ROT DEO2
+			;hor-icn .Screen/addr DEO2
+			[ LIT2 05 -Screen/sprite ] DEO }
+		POP JMP2r }
+	POP
+	( | handle borders )
+	DUP2 ;canvas/h LDZ #30 SFT2 NEQ2 ?{
+		OVR2 ;canvas/w LDZ #30 SFT2 GTH2 ?{
+			POP2
+			( | corner )
+			;canvas/w LDZ #30 SFT2 NEQ2 ?{
+				;&border-corner .Screen/addr DEO2
+				[ LIT2 81 -Screen/sprite ] DEO
+				JMP2r }
+			;&border-bottom .Screen/addr DEO2
+			[ LIT2 81 -Screen/sprite ] DEO
+			JMP2r } }
+	OVR2 ;canvas/w LDZ #30 SFT2 NEQ2 ?{
+		DUP2 ;canvas/h LDZ #30 SFT2 GTH2 ?{
+			POP2 POP2 ;&border-right .Screen/addr DEO2
+			[ LIT2 81 -Screen/sprite ] DEO
+			JMP2r } }
+	POP2 POP2 ;hash2-icn .Screen/addr DEO2
+	[ LIT2 08 -Screen/sprite ] DEO
+	JMP2r
+
+@zoom/<toggle> ( -- )
+	.&active LDZ ?{
+		#01 .&active STZ
+		;&on-mouse .Mouse/vector DEO2
+		canvas/<draw-bg>
+		canvas/<draw> !panel/<draw> }
+	#00 .&active STZ
+	;on-mouse .Mouse/vector DEO2
+	canvas/<draw-bg>
+	canvas/<draw> !panel/<draw>
+
+@zoom/<center> ( -- )
+	#0000 .Screen/width DEI2 #04 SFT2 SUB2 [ LIT2 00 -canvas/w ] LDZ #31 SFT2 ADD2 .&x STZ2
+	#0000 .Screen/height DEI2 #04 SFT2 SUB2 [ LIT2 00 -canvas/h ] LDZ #31 SFT2 ADD2 .&y STZ2
+	JMP2r
+
+@zoom/move-u ( -- )
+	.&active LDZ ?{ #fffc !canvas/<mod-y> }
+	.&y LDZ2 #0001 SUB2 .&y STZ2
+	canvas/<draw> !panel/<draw>
+
+@zoom/move-d ( -- )
+	.&active LDZ ?{ #0004 !canvas/<mod-y> }
+	.&y LDZ2 INC2 .&y STZ2
+	canvas/<draw> !panel/<draw>
+
+@zoom/move-l ( -- )
+	.&active LDZ ?{ #fffc !canvas/<mod-x> }
+	.&x LDZ2 #0001 SUB2 .&x STZ2
+	canvas/<draw> !panel/<draw>
+
+@zoom/move-r ( -- )
+	.&active LDZ ?{ #0004 !canvas/<mod-x> }
+	.&x LDZ2 INC2 .&x STZ2
+	canvas/<draw> !panel/<draw>
+
+(
+@|Font )
+
+@font/get-width ( str* -- width* )
+	str/len #30 SFT2 JMP2r
+
+@font/draw-str-right ( text* -- text* )
+	DUP2 font/get-width STH2
+	.Screen/x DEI2k STH2r SUB2 ROT DEO2
+	( >> )
+
+@font/draw-str ( str* -- str* )
+	[ LIT2 01 -Screen/auto ] DEO
+	&>w
+		LDAk DUP ?{ POP INC2 JMP2r }
+		/<draw-chr>
+		INC2 !&>w
+
+@font/<draw-size> ( w h -- )
+	SWP font/<draw-byte>
+	[ LIT "x ] font/<draw-chr>
+	( >> )
+
+@font/<draw-byte> ( byte -- )
+	DUP #04 SFT /<draw-nibble>
+	( >> )
+
+@font/<draw-nibble> ( char -- )
+	hex/chr
+	( >> )
+
+@font/<draw-chr> ( char -- )
+	#20 SUB #00 SWP #30 SFT2 ;&spritesheet ADD2 .Screen/addr DEO2
+	[ LIT2 &color 03 -Screen/sprite ] DEO
+	JMP2r
+
+@font/<set-color> ( color -- )
+	,&color STR
+	JMP2r
+
+@cursor/<clear> ( -- )
+	;Screen/auto DEO
+	#40 ;fill-icn !/<draw>
+
+@cursor/<update> ( -- )
+	/<clear>
+	;Screen/auto DEO
+	#45 ;pointers-icns .Mouse/x DEI2 ,&x STR2
+	.Mouse/y DEI2 ,&y STR2
+	/<draw>
+	[ LIT2 42 -Screen/pixel ] DEO
+	JMP2r
+
+@cursor/<draw> ( color addr* -- )
+	.Screen/addr DEO2
+	[ LIT2 &x $2 ] .Screen/x DEO2
+	[ LIT2 &y $2 ] .Screen/y DEO2
+	.Screen/sprite DEO
+	JMP2r
+
+(
+@|Misc )
+
+@all/<redraw> ( -- )
+	menu/<draw-bg>
+	canvas/<draw-bg>
+	canvas/<draw-size>
+	canvas/<draw>
+	cursor/<clear>
+	filepath/<draw>
+	canvas/<draw-size>
+	filestate/<draw> !panel/<draw>
+
+@line/<paint> ( x1* y1* x* y* fn* -- )
+	;&fn STA2
+	;&y2 STA2
+	;&x2 STA2
+	STH2
+	STH2
+	( | x )
+	[ LIT2 ADD2r SUB2r ] ,&x2 LDR2 STH2kr SUB2k abs2 ,&dx STR2
+	gts2 [ JMP SWP POP ] ,&sx STR
+	SWP2r
+	( | y )
+	[ LIT2 ADD2r SUB2r ] ,&y2 LDR2 STH2kr SUB2k abs2 #0000 SWP2 SUB2 ,&dy STR2
+	gts2 [ JMP SWP POP ] ,&sy STR
+	,&dx LDR2 ,&dy LDR2 ADD2
+	&>w
+		( apply ) OVR2r STH2r STH2kr [ LIT2 &fn $2 ] JSR2
+		( y ) STH2kr [ LIT2 &y2 $2 ] NEQ2 ?{
+			( x ) OVR2r STH2r [ LIT2 &x2 $2 ] NEQ2 ?{
+				( stop ) POP2 POP2r POP2r JMP2r } }
+		( e .. e2 ) DUP2k ADD2 DUP2
+		( y ) [ LIT2 &dy $2 ] lts2 ?{
+			( e+dy ) SWP2 ,&dy LDR2 ADD2 SWP2
+			( x1+sx ) SWP2r [ LIT2r 0001 ] [ &sx $1 ] SWP2r }
+		( x ) [ LIT2 &dx $2 ] gts2 ?{
+			( e+dx ) ,&dx LDR2 ADD2
+			( y1+sy ) [ LIT2r 0001 ] [ &sy $1 ] }
+		!&>w
+
+@within-rect ( x* y* rect -- flag )
+	STH
+	( y LTH rect.y1 ) DUP2 STHkr INC INC LDZ2 lts2 ?&skip
+	( y GTH rect.y2 ) INC2k STHkr #06 ADD LDZ2 gts2 ?&skip
+	SWP2
+	( x LTH rect.x1 ) DUP2 STHkr LDZ2 lts2 ?&skip
+	( x GTH rect.x2 ) INC2k STHkr #04 ADD LDZ2 gts2 ?&skip
+	POP2 POP2 POPr #01 JMP2r
+	&skip POP2 POP2 POPr #00 JMP2r
+
+@<draw-rect> ( x* -cols -rows addr* action* -- )
+	STH2
+	.Screen/addr DEO2
+	&>t
+		OVR2 .Screen/x DEO2
+		OVR
+		&>t2
+			DEOkr
+			INC DUP ?&>t2
+		POP <draw-lb>
+		INC DUP ?&>t
+	POP2 POP2 POP2r JMP2r
+
+@<draw-times> ( -cols auto addr* action* -- )
+	STH2
+	.Screen/addr DEO2
+	.Screen/auto DEO
+	&>t
+		DEOkr
+		INC DUP ?&>t
+	POP POP2r JMP2r
+
+~noodle-tools.tal
+

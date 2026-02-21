@@ -1,0 +1,286 @@
+( manifest )
+
+@menu/<draw-bg> ( -- )
+	#0000 .Screen/x DEO2
+	#0000 .Screen/y DEO2
+	;window/cols LDZ SUB #11 ;&bg-icn [ LIT2 02 -Screen/sprite ] !<draw-times>
+
+@menu/<draw> ( mask -- )
+	#0010 .Screen/x DEO2
+	#0004 .Screen/y DEO2
+	[ LIT2r &sel ff 00 ] [ LIT2 &manifest =manifest ]
+	&>cat
+		#0b09 EQUkr STHr [ JMP SWP POP ] font/<set-color>
+		INC2k font/draw-str POP2 #20 font/<draw-chr>
+		skip-sub INCr LDAk ?&>cat
+	POP2 POP2r JMP2r
+
+@menu/<close> ( -- )
+	<untrap>
+	;&sel LDA DUP #ff EQU ?{
+		DUP #00 /<draw-sub>
+		#ff ;&sel STA
+		all/<redraw>
+		/<draw> }
+	POP JMP2r
+
+@menu/<select> ( cat -- )
+	( exists ) DUP /get-cat ORA ?{ POP JMP2r }
+	( clear ) ;&sel LDA
+	( unchanged ) EQUk ?/<deselect>
+	( unselected ) DUP #ff EQU ?{ DUP #00 /<draw-sub> }
+	POP
+	( draw ) all/<redraw>
+	#ff ;&sel-sub STA
+	DUP ;&sel STA
+	#ff /<draw-sub> !/<draw>
+
+@menu/<deselect> ( cat cat -- )
+	POP2 !/<close>
+
+@menu/<select-sub> ( sub -- )
+	/get-sub /<close>
+	ORAk ROT ROT JCN2
+	JMP2r
+
+@menu/<trap> ( -> )
+	;&on-mouse .Mouse/vector DEO2
+	cursor/<update>
+	BRK
+
+@menu/<draw-label> ( label* -- next-label* )
+	.Screen/x DEI2 .Screen/y DEI2 .Screen/auto DEI [ LIT2 f2 -Screen/auto ] DEO
+	;fill-icn ;blank-icn ;font/color LDA #00 EQU [ JMP SWP2 POP2 ] .Screen/addr DEO2
+	;font/color LDA .Screen/sprite DEO
+	.Screen/auto DEO
+	.Screen/y DEO2
+	( mod ) STH2k #0078 ADD2 .Screen/x DEO2
+	LDA2k get-modkey-str font/draw-str-right POP2 STH2r .Screen/x DEO2
+	#0004 ADD2 !font/draw-str
+
+@menu/on-mouse ( -> )
+	cursor/<update>
+	( | when touch cat )
+	;Mouse/state DEI EQU ?{
+		.Mouse/y DEI2 #000c GTH2 ?{
+			.Mouse/x DEI2 /get-xcat /<select>
+			;Mouse/state DEO
+			BRK } }
+	( | when sub active )
+	;&sel LDA #ff EQU ?{
+		( | when sel changed )
+		.Mouse/y DEI2 #0004 SUB2 #03 SFT2 NIP #01 SUB DUP ;&sel-sub LDA EQU ?{
+			DUP ;&sel-sub STA
+			;&sel LDA #ff /<draw-sub> }
+		POP
+		( | when touch sub )
+		;Mouse/state DEI EQU ?{
+			;&sel-sub LDA /<select-sub>
+			;Mouse/state DEO }
+		BRK }
+	( | do not leave if menu is active )
+	;&sel LDA INC ?{
+		.Mouse/y DEI2 #000c LTH2 ?{ /<close> } }
+	BRK
+
+@menu/get-cat ( cat -- cat* )
+	STH
+	[ LITr 00 ] ;&manifest LDA2
+	&>w
+		EQUkr STHr ?{
+			skip-sub INCr LDAk ?&>w
+		POP2 #0000 }
+	POP2r JMP2r
+
+@menu/get-sub ( sub -- sub* )
+	STH
+	;&sel LDA /get-cat LDAk STH
+	INC2 str/cap STHr #00
+	&>ls
+		DUP STHkr EQU ?{
+			SWP2 #0004 ADD2 str/cap SWP2 INC GTHk ?&>ls
+		POP2 POP2 POPr #0000 JMP2r }
+	POP2 INC2 INC2 LDA2 POPr JMP2r
+
+@menu/get-catx ( cat -- x* )
+	LIT2r 0000 ,&target-catx STR
+	#00 ,&id STR
+	;&manifest LDA2
+	&>lcx
+		[ LIT &id 00 ] [ LIT &target-catx $1 ] EQU ?{
+			INC2k font/get-width #0008 ADD2 STH2
+			ADD2r skip-sub ,&id LDR INC ,&id STR
+			LDAk ?&>lcx
+		POP2 }
+	STH2r #0010 ADD2 JMP2r
+
+@menu/get-xcat ( x* -- <cat> )
+	#0010 SUB2 LIT2r 0000 ,&target-xcat STR2
+	#00 ,&id-xcat STR
+	;&manifest LDA2
+	&>wxc
+		INC2k font/get-width #0008 ADD2 STH2r ADD2 DUP2 [ LIT2 &target-xcat $2 ] LTH2 ?{
+			POP2 POP2 [ LIT &id-xcat 00 ] JMP2r }
+		STH2
+		skip-sub ,&id-xcat LDR INC ,&id-xcat STR
+		LDAk ?&>wxc
+	POP2 POP2r #ff JMP2r
+
+@menu/<draw-sub> ( cat mask -- )
+	,&mask STR
+	POP ;&sel LDA /get-cat ORAk #00 EQU ?{
+		;&sel LDA /get-catx ,&anchor STR2
+		LDAk STH
+		INC2 str/cap STHr #00
+		&>subcat
+			STHk #0b09 STHr [ LIT &sel-sub ff ] EQU [ JMP SWP POP ] [ LIT &mask $1 ] AND font/<set-color>
+			[ LIT2 &anchor $2 ] .Screen/x DEO2
+			#00 OVR INC #30 SFT2 #0004 ADD2 .Screen/y DEO2
+			SWP2 /<draw-label>
+			SWP2 INC GTHk ?&>subcat
+		POP2 POP2 }
+	POP2 JMP2r
+
+(
+@|TODOs )
+
+@find-modkey ( mod key -- fn* )
+	ORAk ?{ JMP2r }
+	,&mk STR2
+	;menu/manifest LDA2
+	&>cat
+		LDAk STH
+		INC2 str/cap STHr #00
+		&>subcat
+			OVR2 LDA2 [ LIT2 &mk $2 ] NEQ2 ?{
+				POP2 INC2 INC2 LDA2 JMP2r }
+			SWP2 #0004 ADD2 str/cap SWP2 INC GTHk ?&>subcat
+		POP2 LDAk ?&>cat
+	POP2 #0000 JMP2r
+
+@skip-sub ( sub* -- sub* )
+	LDAk STH
+	INC2 str/cap STHr #00
+	&>subcat
+		SWP2 #0004 ADD2 str/cap SWP2 INC GTHk ?&>subcat
+	POP2 JMP2r
+
+@get-modkey-str ( mod key -- str* )
+	;&buf #0008 mem/<clr>
+	( mod ) SWP STH
+	#0800 &loop STHkr OVR SFT #01 AND #00 EQU ?{
+		#00 OVR ;&buttons ADD2 LDA ;&buf str/<put> }
+	INC GTHk ?&loop
+	POP2
+	( mix ) DUP #00 NEQ STHr #00 NEQ #0101 NEQ2 ?{ LIT "+ ;&buf str/<put> }
+	( key ) DUP #08 NEQ ?{ ;&bsp !&cat }
+	DUP #09 NEQ ?{ ;&tab !&cat }
+	DUP #0d NEQ ?{ ;&ent !&cat }
+	DUP #20 NEQ ?{ ;&spc !&cat }
+	DUP #1b NEQ ?{ ;&esc !&cat }
+	DUP #7f NEQ ?{ ;&del !&cat }
+	DUP ;&buf str/<put> &end POP ;&buf JMP2r
+	&buf $8
+	&buttons "ABsSUDLR $1 &cat ;&buf str/<cat> !&end
+
+	&bsp "bsp $1
+	&tab "tab $1
+	&ent "ent $1
+	&spc "spc $1
+	&esc "esc $1
+	&del "del $1
+
+@exit ( -- )
+	#800f DEO
+	JMP2r
+
+(
+@|Theme )
+
+@theme/<load> ( -- )
+	;&path .File/name DEO2
+	#0002 .File/length DEO2
+	;&r .File/read DEO2
+	;&g .File/read DEO2
+	;&b .File/read DEO2
+	.File/success-lb DEI ?{ JMP2r }
+	LIT2 &r $2 .System/r DEO2
+	LIT2 &g $2 .System/g DEO2
+	LIT2 &b $2 .System/b DEO2
+	JMP2r
+
+	&path ".theme $1
+
+(
+@|Standard )
+
+@chr/hex ( char -- <val> )
+	( dec ) [ LIT "0 ] SUB DUP #09 GTH [ JMP JMP2r ]
+	( hex ) #27 SUB DUP #0a SUB #05 GTH [ JMP JMP2r ]
+	( nil ) POP #ff JMP2r
+
+@chr2/byte ( hn ln -- byte )
+	SWP chr/hex #40 SFT SWP chr/hex ORA JMP2r
+
+@hex/chr2 ( byte -- hn ln )
+	DUP #04 SFT hex/chr SWP
+	( >> )
+
+@hex/chr ( hex -- char )
+	#0f AND DUP #09 GTH #27 MUL ADD #30 ADD JMP2r
+
+@str/<print> ( str* -- )
+	&>wp
+		LDAk DUP ?{ POP POP2 JMP2r }
+		#18 DEO
+		INC2 !&>wp
+
+@str/cap ( str* -- end* )
+	LDAk ?{ INC2 JMP2r }
+	INC2 !/cap
+
+@str/cap-1 ( str* -- end* )
+	LDAk ?{ JMP2r }
+	INC2 !/cap-1
+
+@str/len ( str* -- len* )
+	DUP2 str/cap-1 SWP2 SUB2 JMP2r
+
+@str/<put> ( chr str* -- )
+	/cap-1 INC2k #00 ROT ROT STA
+	STA
+	JMP2r
+
+@str/<cat> ( src* dst* -- )
+	/cap-1 STH2
+	&>w
+		LDAk STH2kr STA
+		INC2r INC2 LDAk ?&>w
+	POP2 #00 STH2r STA
+	JMP2r
+
+@mem/<clr> ( src* len* -- )
+	,&lclr STR2
+	,&aclr STR2
+	;&clr .System/expansion DEO2
+	JMP2r
+	&clr 00 &lclr $2 0000 &aclr $2 00
+
+@mem/<sfl> ( a* b* len* -- )
+	,&ll STR2
+	,&dst-l STR2
+	,&src-l STR2
+	;&mmu-sfl .System/expansion DEO2
+	JMP2r
+	&mmu-sfl 01 &ll $2 0000 &src-l $2 0000 &dst-l $2
+
+@mem/<sfr> ( a* b* len* -- )
+	,&lr STR2
+	,&dst-r STR2
+	,&src-r STR2
+	;&mmu-sfr .System/expansion DEO2
+	JMP2r
+	&mmu-sfr 02 &lr $2 0000 &src-r $2 0000 &dst-r $2
+
+~noodle-assets.tal
+

@@ -10,7 +10,7 @@ CMD_TAL=$(wildcard cmd/*.tal)
 POTATO_TAL=potato/potato.tal
 
 # Exclude partial files from standalone build
-APPL_EXCLUDE = nasu-manifest nasu-assets
+APPL_EXCLUDE = nasu-manifest nasu-assets noodle-tools noodle-manifest noodle-assets
 WM_FILTER = $(filter-out $(addprefix wm/,$(addsuffix .tal,$(APPL_EXCLUDE))),$(WM_TAL))
 CMD_FILTER = $(filter-out $(addprefix cmd/,$(addsuffix .tal,$(APPL_EXCLUDE))),$(CMD_TAL))
 
@@ -46,6 +46,14 @@ bin/wm/nasu.rom: wm/nasu.tal wm/nasu-manifest.tal wm/nasu-assets.tal
 	@ ${ASM} /tmp/nasu-combined.tal $@
 	@ rm -f ${@}.sym
 	@ rm /tmp/nasu-combined.tal
+
+# Multi-file Noodle build
+bin/wm/noodle.rom: wm/noodle.tal wm/noodle-tools.tal wm/noodle-manifest.tal wm/noodle-assets.tal
+	@ mkdir -p bin/wm
+	@ cat $^ | sed 's/~noodle-[a-z]*\.tal//' > /tmp/noodle-combined.tal
+	@ ${ASM} /tmp/noodle-combined.tal $@
+	@ rm -f ${@}.sym
+	@ rm /tmp/noodle-combined.tal
 
 # Lint
 lint:
