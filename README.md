@@ -1,6 +1,6 @@
-# A potato
+# Lotus
 
-[Potato](https://wiki.xxiivv.com/site/potato.html) is a desktop environment, written in [Uxntal](https://wiki.xxiivv.com/site/uxntal.html).
+Lotus is a collection of uxntal apps, including some of my own. It is based on [Potato](https://wiki.xxiivv.com/site/potato.html) a desktop environment, written in [Uxntal](https://wiki.xxiivv.com/site/uxntal.html).
 
 ## Build
 
